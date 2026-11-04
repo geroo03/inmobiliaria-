@@ -197,6 +197,7 @@ function photoHotspots(sceneId: string, key: PhotoKey, variant: 'dia' | 'noche')
  */
 const SCENE_DEFS: { id: string; name: string; day: PhotoKey; night: PhotoKey | null }[] = [
   { id: 'frente', name: 'Frente', day: 'frente-dia', night: 'frente-noche' },
+  { id: 'esquina', name: 'Esquina', day: 'esquina-dia', night: 'esquina-noche' },
 ];
 
 const scenes: Scene[] = SCENE_DEFS.map((d) => {

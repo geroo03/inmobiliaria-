@@ -15,8 +15,9 @@ for (const [key, p] of Object.entries(photos)) {
   const [[ya, da], [yb, db]] = side.d;
   const d = (y) => da + ((y - ya) * (db - da)) / (yb - ya);
   const sideLeft = side.x < front.left;
-  const band = (yTop, yBottom) => {
+  const band = (yTop, yBottom, withSide = true) => {
     const f = [[front.left, yTop], [front.right, yTop + front.slope], [front.right, yBottom + front.slope], [front.left, yBottom]];
+    if (!withSide) return f.map(([x, y]) => n(x, y));
     const s = [[side.x, yTop + d(yTop)], [side.x, yBottom + d(yBottom)]];
     const pts = sideLeft
       ? [s[0], f[0], f[1], f[2], f[3], s[1]]
@@ -26,7 +27,8 @@ for (const [key, p] of Object.entries(photos)) {
   const floors = [];
   for (let level = 1; level < slabs.length; level++) {
     const yBottom = slabs[level - 1], yTop = slabs[level];
-    floors.push({ level, polygon: band(yTop, yBottom), anchor: n((front.left + front.right) / 2, (yTop + yBottom) / 2) });
+    // En los pisos bajos la pared lateral queda tapada por las casas vecinas: solo cuenta la fachada.
+    floors.push({ level, polygon: band(yTop, yBottom, level >= (side.fromLevel ?? 1)), anchor: n((front.left + front.right) / 2, (yTop + yBottom) / 2) });
   }
   out[key] = {
     file: p.file,
