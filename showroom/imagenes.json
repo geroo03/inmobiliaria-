@@ -84,11 +84,11 @@
       },
       {
         "ambiente": "Dormitorio",
-        "src": ""
+        "src": "img/casa-patio/dormitorio.webp"
       },
       {
         "ambiente": "Baño",
-        "src": ""
+        "src": "img/casa-patio/bano.webp"
       }
     ],
     "casa-compacta": [
@@ -119,5 +119,34 @@
         "src": ""
       }
     ]
-  }
+  },
+  "maquetas": {
+    "casa-patio": {
+      "src": "img/casa-patio/maqueta.webp",
+      "_puntos": "x e y van de 0 a 1, medidos desde la esquina superior izquierda de la imagen. ambiente debe coincidir con una pestaña.",
+      "puntos": [
+        {
+          "ambiente": "Fachada",
+          "x": 0.5,
+          "y": 0.27
+        },
+        {
+          "ambiente": "Living",
+          "x": 0.26,
+          "y": 0.47
+        },
+        {
+          "ambiente": "Dormitorio",
+          "x": 0.84,
+          "y": 0.68
+        },
+        {
+          "ambiente": "Baño",
+          "x": 0.81,
+          "y": 0.5
+        }
+      ]
+    }
+  },
+  "_instrucciones_maqueta": "En maquetas va la imagen isométrica de cada modelo y sus puntos clickeables."
 }

@@ -13,7 +13,7 @@ El **modo desarrolladora** permite cambiar el estado y el precio de una unidad. 
 
 ## Vitrina a pantalla completa
 
-Cada ficha tiene el botón «Ver vitrina a pantalla completa»: fondo oscuro, la imagen de cada ambiente a pantalla completa con su nombre, pestañas abajo (Fachada, Salón y cocina, Dormitorio principal, Baño, Maqueta) y un panel con la ficha (dormitorios, baños, m², precio, estado, características y «Agendar visita»). La pestaña «Maqueta» muestra el modelo 3D sin techo con etiquetas sobre cada ambiente que llevan a su imagen. Si falta la imagen de un ambiente, se ve «Render en preparación». Se cierra con Esc o «Cerrar», y las flechas del teclado cambian de pestaña.
+Cada ficha tiene el botón «Ver vitrina a pantalla completa»: fondo oscuro, la imagen de cada ambiente a pantalla completa con su nombre, pestañas abajo (Fachada, Salón y cocina, Dormitorio principal, Baño, Maqueta) y un panel con la ficha (dormitorios, baños, m², precio, estado, características y «Agendar visita»). La pestaña «Maqueta» muestra el modelo 3D sin techo con etiquetas sobre cada ambiente que llevan a su imagen. Si falta la imagen de un ambiente, se ve «Render en preparación». Se cierra con Esc o «Cerrar», y las flechas del teclado cambian de pestaña. Si el modelo tiene una maqueta isométrica en `imagenes.json` (sección `maquetas`, con la imagen y los puntos `x`, `y` entre 0 y 1), la pestaña «Maqueta» muestra esa imagen con etiquetas clickeables y el modelo 3D pasa a la pestaña «Modelo 3D». Hoy la tiene la Casa Patio.
 
 ## Fotos
 

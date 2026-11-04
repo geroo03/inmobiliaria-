@@ -284,6 +284,11 @@ svg text { font-family: var(--body); }
 .vt-stage .v3d-slot { background: #0E1B26; }
 .vt-hot { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; cursor: pointer;
   background: rgba(11, 22, 32, .86); color: #fff; border: 1px solid rgba(234, 241, 244, .28); border-radius: 999px; padding: 5px 11px 5px 7px; font: 600 12px/1.2 var(--body); }
+.vt-maq { position: absolute; inset: 0; display: grid; place-items: center; padding: 48px 16px 72px; container-type: size; background: #020925; }
+@media (max-width: 600px) { .vt-maq { padding: 44px 6px 64px; } .vt-hot { font-size: 11px; padding: 4px 8px 4px 6px; } }
+.vt-maq-box { position: relative; aspect-ratio: 16 / 9; width: min(100cqw, 100cqh * 16 / 9); max-width: 100%; }
+.vt-maq-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.vt-hot-pct { transform: translate(-50%, -50%); }
 .vt-hot i { width: 10px; height: 10px; border-radius: 50%; background: #4FD1C5; box-shadow: 0 0 0 4px rgba(79, 209, 197, .25); }
 .vt-panel { background: #102231; border: 1px solid rgba(234, 241, 244, .08); border-radius: 14px; padding: 20px; display: grid; gap: 16px; align-content: start; overflow: auto; min-height: 0; }
 .vt-panel .vt-eye { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #4FD1C5; }
@@ -681,6 +686,8 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   var IMAGES = {};
   Object.keys(IMG_DEFAULT).forEach(function (k) { IMAGES[k] = IMG_DEFAULT[k].map(function (a) { return { ambiente: a, src: '' }; }); });
   var IMG_PATH = /^img\/[A-Za-z0-9_\-\/]+\.(jpe?g|png|webp|avif)$/i;
+  var MAQUETAS = {}; // imagen isométrica por modelo, con sus puntos clickeables
+  function cleanSrc(v) { var src = typeof v === 'string' ? v.trim() : ''; return (IMG_PATH.test(src) && src.indexOf('..') === -1) ? src : ''; }
   function applyImageJson(data) {
     var modelos = data && typeof data === 'object' ? data.modelos : null;
     if (!modelos || typeof modelos !== 'object') return false;
@@ -692,6 +699,15 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
         return { ambiente: it.ambiente.trim().slice(0, 40), src: (IMG_PATH.test(src) && src.indexOf('..') === -1) ? src : '' };
       });
       if (clean.length) IMAGES[k] = clean;
+    });
+    var maqs = data.maquetas && typeof data.maquetas === 'object' ? data.maquetas : {};
+    Object.keys(IMG_DEFAULT).forEach(function (k) {
+      var mq = maqs[k];
+      if (!mq || typeof mq !== 'object' || !cleanSrc(mq.src)) return;
+      var pts = (Array.isArray(mq.puntos) ? mq.puntos : []).slice(0, 12).filter(function (pt) {
+        return pt && typeof pt.ambiente === 'string' && typeof pt.x === 'number' && typeof pt.y === 'number' && pt.x >= 0 && pt.x <= 1 && pt.y >= 0 && pt.y <= 1;
+      }).map(function (pt) { return { ambiente: pt.ambiente.trim().slice(0, 40), x: pt.x, y: pt.y }; });
+      MAQUETAS[k] = { src: cleanSrc(mq.src), puntos: pts };
     });
     return true;
   }
@@ -1470,8 +1486,11 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     'lote': ['Lote con servicios', 'Listo para construir', 'Frente sobre la calle de los Talas']
   };
   function vtTabs(item, isCasa) {
-    var tabs = (IMAGES[modelKey(item, isCasa)] || []).map(function (it) { return { label: VT_LABEL[it.ambiente] || it.ambiente, src: it.src }; });
-    tabs.push({ label: 'Maqueta', maqueta: true });
+    var key = modelKey(item, isCasa);
+    var tabs = (IMAGES[key] || []).map(function (it) { return { label: VT_LABEL[it.ambiente] || it.ambiente, src: it.src }; });
+    // Con render isométrico, la maqueta es esa imagen y el modelo 3D queda como pestaña aparte.
+    if (MAQUETAS[key]) { tabs.push({ label: 'Maqueta', maqImg: MAQUETAS[key] }); tabs.push({ label: 'Modelo 3D', maqueta: true }); }
+    else tabs.push({ label: 'Maqueta', maqueta: true });
     return tabs;
   }
   function vtHotspotTargets() {
@@ -1507,13 +1526,22 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
         '<div class="vt-pending"><b>Maqueta 3D</b><span>No se pudo cargar el visor 3D en este navegador.</span></div>';
       tabs.forEach(function (t, j) { if (VT_ROOM[t.label]) h += '<button class="vt-hot" type="button" data-action="vt-tab" data-i="' + j + '" hidden><i></i>' + esc(t.label) + '</button>'; });
       h += '<span class="vt-badge">Maqueta ilustrativa · arrastrá para girar</span>';
+    } else if (tab.maqImg) {
+      h += '<div class="vt-maq"><div class="vt-maq-box"><img src="' + esc(tab.maqImg.src) + '" alt="Maqueta isométrica de ' + esc(name) + ' (imagen ilustrativa)">';
+      tab.maqImg.puntos.forEach(function (pt) {
+        var label = VT_LABEL[pt.ambiente] || pt.ambiente, j = -1;
+        tabs.forEach(function (t, k2) { if (t.label === label && !t.maqImg && !t.maqueta) j = k2; });
+        if (j < 0) return;
+        h += '<button class="vt-hot vt-hot-pct" type="button" data-action="vt-tab" data-i="' + j + '" data-x="' + pt.x + '" data-y="' + pt.y + '"><i></i>' + esc(label) + '</button>';
+      });
+      h += '</div></div><span class="vt-badge">Maqueta ilustrativa · tocá un ambiente</span>';
     } else if (tab.src) {
       h += '<img class="vt-img" src="' + esc(tab.src) + '" alt="' + esc(tab.label) + ' de ' + esc(name) + ' (imagen ilustrativa)"><div class="vt-shade"></div>';
       h += '<span class="vt-badge">Imagen ilustrativa</span>';
     } else {
       h += '<div class="vt-pending"><b>Render en preparación</b><span>Mientras tanto, recorré la casa en la maqueta 3D.</span></div>';
     }
-    if (!tab.maqueta) h += '<div class="vt-title"><p>' + esc(name) + ' · ' + esc(place) + '</p><h2>' + esc(tab.label) + '</h2></div>';
+    if (!tab.maqueta && !tab.maqImg) h += '<div class="vt-title"><p>' + esc(name) + ' · ' + esc(place) + '</p><h2>' + esc(tab.label) + '</h2></div>';
     h += '<div class="vt-tabs" role="tablist" aria-label="Ambientes">' + tabs.map(function (t, j) {
       return '<button class="vt-tab" role="tab" type="button" data-action="vt-tab" data-i="' + j + '" aria-selected="' + (j === i) + '">' + esc(t.label) + '</button>';
     }).join('') + '</div></div>';
@@ -1531,6 +1559,10 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (S.vtMsg) h += '<p class="vt-legal" role="status">' + esc(S.vtMsg) + '</p>';
     h += '<p class="vt-legal">Imágenes, maqueta y precios ilustrativos de un proyecto ficticio. Corredor responsable: [Nombre y apellido], Mat. CPI Córdoba N.° [pendiente].</p></aside></div>';
     vitrinaEl.innerHTML = h;
+    vitrinaEl.querySelectorAll('.vt-hot-pct').forEach(function (b) {
+      b.style.left = (Number(b.dataset.x) * 100) + '%';
+      b.style.top = (Number(b.dataset.y) * 100) + '%';
+    });
     vitrinaEl.querySelectorAll('.vt-img').forEach(function (img) {
       img.addEventListener('error', function () { img.outerHTML = '<div class="vt-pending"><b>' + esc(tab.label) + '</b><span>No se pudo cargar la imagen.</span></div>'; }, { once: true });
     });
