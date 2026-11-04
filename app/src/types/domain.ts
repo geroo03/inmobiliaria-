@@ -48,6 +48,8 @@ export interface Scene {
   width: number;
   height: number;
   hotspots: Hotspot[];
+  /** Polígonos propios de la imagen de noche cuando no tiene el mismo encuadre que la de día. */
+  hotspotsNight: Hotspot[] | null;
 }
 
 export type TransitionDirection = 'left' | 'right';
@@ -56,7 +58,8 @@ export interface SceneTransition {
   fromSceneId: string;
   toSceneId: string;
   direction: TransitionDirection;
-  videoDayUrl: string;
+  /** Sin video, el visor pasa de una escena a otra con un fundido. */
+  videoDayUrl: string | null;
   videoDayMobileUrl: string | null;
   videoNightUrl: string | null;
   videoNightMobileUrl: string | null;

@@ -166,7 +166,7 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
         />
       )}
 
-      {scene && !transitioning && <HotspotLayer scene={scene} availability={availability} onOpen={openHotspot} />}
+      {scene && !transitioning && <HotspotLayer scene={scene} night={night} availability={availability} onOpen={openHotspot} />}
 
       {/* Barra superior */}
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3 sm:p-4">
@@ -198,14 +198,15 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
   );
 }
 
-function HotspotLayer({ scene, availability, onOpen }: { scene: Scene; availability: FloorAvailability[]; onOpen: (h: Hotspot) => void }) {
+function HotspotLayer({ scene, night, availability, onOpen }: { scene: Scene; night: boolean; availability: FloorAvailability[]; onOpen: (h: Hotspot) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const size = useElementSize(ref);
   const [hover, setHover] = useState<Hotspot | null>(null);
   const fit = fitTransform(size.width, size.height, scene.width, scene.height, 'cover');
   const byFloor = new Map(availability.map((a) => [a.floorId, a]));
-  const areas = scene.hotspots.filter((h) => h.target.type === 'floor');
-  const labels = scene.hotspots.filter((h) => h.target.type !== 'floor');
+  const hotspots = night && scene.hotspotsNight ? scene.hotspotsNight : scene.hotspots;
+  const areas = hotspots.filter((h) => h.target.type === 'floor');
+  const labels = hotspots.filter((h) => h.target.type !== 'floor');
   const hoverInfo = hover?.target.type === 'floor' ? byFloor.get(hover.target.floorId) : undefined;
 
   return (

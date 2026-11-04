@@ -1,7 +1,8 @@
 -- Esquema inicial del showroom virtual (multi-proyecto).
 -- Basado en el plan «Showroom virtual inmobiliario». Cambios respecto del plan:
 --   * scene_hotspots acepta target_type 'floor' (un piso del edificio dentro de una escena exterior).
---   * scene_transitions guarda también el video de noche (si falta, el visor corta directo).
+--   * scene_transitions guarda también el video de noche; sin video, el visor hace un fundido.
+--   * scene_hotspots.variant: polígonos propios de la imagen de noche cuando no tiene el mismo encuadre.
 -- Coordenadas de polígonos: normalizadas 0–1 respecto de la imagen, [[x, y], ...].
 
 create extension if not exists pgcrypto;
@@ -67,7 +68,7 @@ create table scene_transitions (
   from_scene_id uuid not null references scenes(id) on delete cascade,
   to_scene_id uuid not null references scenes(id) on delete cascade,
   direction text not null check (direction in ('left', 'right')),
-  video_day_url text not null,         -- 1080p
+  video_day_url text,                  -- 1080p; null = fundido entre imágenes
   video_day_mobile_url text,           -- 720p
   video_night_url text,
   video_night_mobile_url text,
@@ -106,7 +107,8 @@ create table scene_hotspots (
   target_scene_id uuid references scenes(id) on delete set null,
   target_building_id uuid references buildings(id) on delete set null,
   target_floor_id uuid references floors(id) on delete set null,
-  target_url text check (target_url is null or target_url ~ '^https://')
+  target_url text check (target_url is null or target_url ~ '^https://'),
+  variant text not null default 'all' check (variant in ('all', 'day', 'night'))
 );
 create index scene_hotspots_scene_idx on scene_hotspots (scene_id);
 

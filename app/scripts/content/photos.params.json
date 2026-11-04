@@ -1,0 +1,113 @@
+{
+  "_ayuda": "Medidas en píxeles de cada foto (1536 × 1024). slabs: altura (y) del piso de cada nivel, de abajo hacia arriba: planta baja/piso 1, ..., techo del último piso. front: bordes izquierdo y derecho de la fachada; slope: cuánto baja la losa en el borde derecho. side: pared lateral visible (x del borde lejano) y su desvío vertical d en dos alturas, por la perspectiva.",
+  "photos": {
+    "frente-dia": {
+      "file": "frente-dia.webp",
+      "width": 1536,
+      "height": 1024,
+      "front": {
+        "left": 620,
+        "right": 940,
+        "slope": 0
+      },
+      "side": {
+        "x": 554,
+        "d": [
+          [
+            118,
+            24
+          ],
+          [
+            900,
+            5
+          ]
+        ]
+      },
+      "slabs": [
+        800,
+        716,
+        630,
+        545,
+        459,
+        374,
+        288,
+        202,
+        118
+      ],
+      "ground": 900,
+      "top": 25
+    },
+    "frente-noche": {
+      "file": "frente-noche.webp",
+      "width": 1536,
+      "height": 1024,
+      "front": {
+        "left": 590,
+        "right": 952,
+        "slope": 0
+      },
+      "side": {
+        "x": 1012,
+        "d": [
+          [
+            120,
+            8
+          ],
+          [
+            860,
+            4
+          ]
+        ]
+      },
+      "slabs": [
+        775,
+        695,
+        612,
+        530,
+        447,
+        365,
+        282,
+        200,
+        120
+      ],
+      "ground": 860,
+      "top": 40
+    },
+    "esquina-noche": {
+      "file": "esquina-noche.webp",
+      "width": 1536,
+      "height": 1024,
+      "front": {
+        "left": 605,
+        "right": 920,
+        "slope": 10
+      },
+      "side": {
+        "x": 415,
+        "d": [
+          [
+            100,
+            77
+          ],
+          [
+            820,
+            10
+          ]
+        ]
+      },
+      "slabs": [
+        820,
+        737,
+        652,
+        565,
+        478,
+        395,
+        312,
+        227,
+        140
+      ],
+      "ground": 905,
+      "top": 40
+    }
+  }
+}

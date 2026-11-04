@@ -1,7 +1,8 @@
 /**
  * Proyecto de prueba «Torre Algarrobo»: datos ficticios generados con semilla fija, con las mismas
  * tipologías, precios y estados que el showroom estático del repositorio (showroom/showroom.html).
- * Las imágenes, videos y máscaras salen de app/scripts/content (ver README).
+ * Las fotos de las vistas son imágenes ilustrativas generadas con IA; sus polígonos salen de
+ * scripts/content/photos.params.json. La planta sale del modelo 3D (scripts/content, ver README).
  */
 import type {
   Building,
@@ -16,7 +17,7 @@ import type {
   Typology,
   UnitStatus,
 } from '@/types/domain';
-import scenesMeta from './scenes.json';
+import photos from './fotos.json';
 import floorMeta from './floor.json';
 
 const SLUG = 'torre-algarrobo';
@@ -32,7 +33,7 @@ export const project: Project = {
   primaryColor: '#164056',
   whatsappNumber: null,
   seoDescription: 'Recorré Torre Algarrobo: elegí piso y departamento, mirá disponibilidad y precios y consultá por WhatsApp.',
-  ogImageUrl: media('scenes/frente-dia.webp'),
+  ogImageUrl: media('fotos/frente-dia.webp'),
   entrySceneId: 'frente',
   disclaimer: 'Proyecto ficticio de demostración. Imágenes, superficies y precios ilustrativos.',
 };
@@ -88,7 +89,7 @@ const typologies: Typology[] = LETTERS.map((l) => {
   };
 });
 
-const FLOORS = 9;
+const FLOORS = 8; // planta baja + 8 pisos, como en las fotos
 const floors: Floor[] = Array.from({ length: FLOORS }, (_, i) => ({
   id: `piso-${i + 1}`,
   buildingId: building.id,
@@ -116,7 +117,7 @@ const toPoint = (p: number[]): Point => [p[0], p[1]];
 const toPolygon = (ps: number[][]): Polygon => ps.map(toPoint);
 
 /** Sin precio publicado: la desarrolladora prefiere que consulten (se muestra «Consultar precio»). */
-const HIDDEN_PRICE = new Set(['3A', '6B', '8A', '9C']);
+const HIDDEN_PRICE = new Set(['3A', '6B', '8A', '7C']);
 
 /** Fila completa de la unidad (como en la tabla units), con el precio de lista aunque no se publique. */
 interface UnitRow {
@@ -167,52 +168,64 @@ const unitRows = buildUnits();
 /** Lo que se expone al público: sin precio de lista cuando no se publica. */
 const units: PublicUnit[] = unitRows.map((r) => r.unit);
 
-const SCENE_ORDER = scenesMeta.scenes.map((s) => s.id);
+type PhotoKey = keyof typeof photos;
 
-const scenes: Scene[] = scenesMeta.scenes.map((s) => {
-  const floorHotspots: Hotspot[] = s.floors.map((f) => ({
-    id: `${s.id}-piso-${f.level}`,
-    label: `Piso ${f.level}`,
-    polygon: toPolygon(f.polygon),
-    labelAnchor: toPoint(f.anchor),
-    target: { type: 'floor', buildingId: building.id, floorId: `piso-${f.level}` },
-  }));
+function photoHotspots(sceneId: string, key: PhotoKey, variant: 'dia' | 'noche'): Hotspot[] {
+  const ph = photos[key];
+  return [
+    {
+      id: `${sceneId}-${variant}-torre`,
+      label: building.name,
+      polygon: toPolygon(ph.tower),
+      labelAnchor: toPoint(ph.towerAnchor),
+      target: { type: 'building', buildingId: building.id },
+    },
+    ...ph.floors.map((f): Hotspot => ({
+      id: `${sceneId}-${variant}-piso-${f.level}`,
+      label: `Piso ${f.level}`,
+      polygon: toPolygon(f.polygon),
+      labelAnchor: toPoint(f.anchor),
+      target: { type: 'floor', buildingId: building.id, floorId: `piso-${f.level}` },
+    })),
+  ];
+}
+
+/**
+ * Vistas con foto. Cada una tiene su foto de día y, si existe, la de noche con sus propios polígonos
+ * (la IA no siempre respeta el encuadre). Para sumar una vista: medirla en photos.params.json,
+ * regenerar fotos.json y agregarla acá.
+ */
+const SCENE_DEFS: { id: string; name: string; day: PhotoKey; night: PhotoKey | null }[] = [
+  { id: 'frente', name: 'Frente', day: 'frente-dia', night: 'frente-noche' },
+];
+
+const scenes: Scene[] = SCENE_DEFS.map((d) => {
+  const day = photos[d.day];
   return {
-    id: s.id,
-    name: s.name,
-    imageDayUrl: media(`scenes/${s.id}-dia.webp`),
-    imageNightUrl: media(`scenes/${s.id}-noche.webp`),
-    width: scenesMeta.width,
-    height: scenesMeta.height,
-    hotspots: [
-      {
-        id: `${s.id}-torre`,
-        label: building.name,
-        polygon: toPolygon(s.tower),
-        labelAnchor: toPoint(s.towerAnchor),
-        target: { type: 'building', buildingId: building.id },
-      },
-      ...floorHotspots,
-    ],
+    id: d.id,
+    name: d.name,
+    imageDayUrl: media(`fotos/${day.file}`),
+    imageNightUrl: d.night ? media(`fotos/${photos[d.night].file}`) : null,
+    width: day.width,
+    height: day.height,
+    hotspots: photoHotspots(d.id, d.day, 'dia'),
+    hotspotsNight: d.night ? photoHotspots(d.id, d.night, 'noche') : null,
   };
 });
 
-/** Órbita: hacia la derecha se pasa a la escena siguiente; hacia la izquierda, a la anterior (video invertido). */
-const transitions: SceneTransition[] = SCENE_ORDER.flatMap((from, i) => {
-  const to = SCENE_ORDER[(i + 1) % SCENE_ORDER.length];
-  const file = (moment: 'dia' | 'noche', reverse: boolean, size: '1080' | '720') =>
-    media(`transiciones/${reverse ? `${to}__${from}` : `${from}__${to}`}-${moment}-${size}.mp4`);
-  const make = (a: string, b: string, reverse: boolean, direction: 'left' | 'right'): SceneTransition => ({
-    fromSceneId: a,
-    toSceneId: b,
-    direction,
-    videoDayUrl: file('dia', reverse, '1080'),
-    videoDayMobileUrl: file('dia', reverse, '720'),
-    videoNightUrl: file('noche', reverse, '1080'),
-    videoNightMobileUrl: file('noche', reverse, '720'),
-  });
-  return [make(from, to, false, 'right'), make(to, from, true, 'left')];
-});
+/** Órbita entre las vistas, sin video por ahora: el visor hace un fundido. */
+const transitions: SceneTransition[] =
+  scenes.length < 2
+    ? []
+    : scenes.slice(0, scenes.length === 2 ? 1 : scenes.length).flatMap((from, i) => {
+        // Con dos vistas alcanza un par (ida y vuelta); con más, se cierra el anillo.
+        const to = scenes[(i + 1) % scenes.length];
+        const none = { videoDayUrl: null, videoDayMobileUrl: null, videoNightUrl: null, videoNightMobileUrl: null };
+        return [
+          { fromSceneId: from.id, toSceneId: to.id, direction: 'right' as const, ...none },
+          { fromSceneId: to.id, toSceneId: from.id, direction: 'left' as const, ...none },
+        ];
+      });
 
 export const torreAlgarrobo = { project, building, floors, typologies, units, scenes, transitions };
 export type SeedProject = typeof torreAlgarrobo;

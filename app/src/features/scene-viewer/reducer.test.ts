@@ -58,6 +58,10 @@ describe('buildTransitionGraph', () => {
   it('cuts at night when there is no night video', () => {
     expect(buildTransitionGraph(T, { night: true, mobile: false, resolve }).get('b', 'a')).toBeUndefined();
   });
+  it('returns undefined when the transition has no video (crossfade)', () => {
+    const noVideo: SceneTransition[] = [{ ...T[0], videoDayUrl: null, videoDayMobileUrl: null }];
+    expect(buildTransitionGraph(noVideo, { night: false, mobile: true, resolve }).get('a', 'b')).toBeUndefined();
+  });
   it('returns undefined for unknown pairs', () => {
     expect(buildTransitionGraph(T, { night: false, mobile: false, resolve }).get('a', 'z')).toBeUndefined();
   });

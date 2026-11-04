@@ -16,8 +16,8 @@ export function buildTransitionGraph(transitions: readonly SceneTransition[], op
       const t = map.get(`${from}>${to}`);
       if (!t) return undefined;
       const day = (opts.mobile && t.videoDayMobileUrl) || t.videoDayUrl;
-      const night = (opts.mobile && t.videoNightMobileUrl) || t.videoNightUrl;
       // De noche sin video nocturno se corta directo: un video de día en medio de la noche se ve peor que el corte.
+      const night = (opts.mobile && t.videoNightMobileUrl) || t.videoNightUrl;
       const path = opts.night ? night : day;
       return path ? { videoUrl: opts.resolve(path) } : undefined;
     },
