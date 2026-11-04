@@ -15,6 +15,10 @@ El **modo desarrolladora** permite cambiar el estado y el precio de una unidad. 
 
 Cada ficha tiene el botón «Ver vitrina a pantalla completa»: fondo oscuro, la imagen de cada ambiente a pantalla completa con su nombre, pestañas abajo (Fachada, Salón y cocina, Dormitorio principal, Baño, Maqueta) y un panel con la ficha (dormitorios, baños, m², precio, estado, características y «Agendar visita»). La pestaña «Maqueta» muestra el modelo 3D sin techo con etiquetas sobre cada ambiente que llevan a su imagen. Si falta la imagen de un ambiente, se ve «Render en preparación». Se cierra con Esc o «Cerrar», y las flechas del teclado cambian de pestaña. Si el modelo tiene una maqueta isométrica en `imagenes.json` (sección `maquetas`, con la imagen y los puntos `x`, `y` entre 0 y 1), la pestaña «Maqueta» muestra esa imagen con etiquetas clickeables y el modelo 3D pasa a la pestaña «Modelo 3D». Hoy la tiene la Casa Patio.
 
+## Edificio en 3D
+
+En la vista Edificio, «Ver el edificio en 3D» abre la torre completa a pantalla completa: cada departamento se pinta según su estado (o como vidrio, con «Ver disponibilidad»), al pasar el mouse sobre un piso se ve cuántas unidades quedan y al tocarlo se elige. El panel muestra el piso elegido con su planta y sus unidades; tocar una abre la vitrina de esa unidad, que tiene «‹ Edificio» para volver. Las flechas arriba y abajo del teclado cambian de piso.
+
 ## Fotos
 
 Las rutas de las fotos están en `imagenes.json`, una lista por modelo (`tipologia-a` a `tipologia-d`, `casa-patio`, `casa-compacta` y `lote`). Para cargar una foto:

@@ -317,6 +317,41 @@ svg text { font-family: var(--body); }
   .vt-title { bottom: 74px; }
 }
 
+/* Edificio 3D */
+.torre-cta { width: 100%; margin: 0 0 12px; }
+.tw-counter { position: absolute; right: 16px; top: 16px; display: grid; gap: 6px; min-width: 180px; padding: 10px 12px; font-size: 13px;
+  background: rgba(11, 22, 32, .84); border: 1px solid rgba(234, 241, 244, .16); border-radius: 12px; }
+.tw-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.tw-row span { display: inline-flex; align-items: center; gap: 7px; }
+.tw-row b { font-variant-numeric: tabular-nums; }
+.tw-row i { width: 9px; height: 9px; border-radius: 50%; }
+.tw-row i.disp { background: #4BBA7F; } .tw-row i.res { background: #E1A83C; } .tw-row i.vend { background: #8A979D; }
+.tw-toggle { justify-self: start; border: 1px solid rgba(234, 241, 244, .22); background: transparent; color: #EAF1F4; border-radius: 999px; padding: 4px 10px; font: 600 12px/1.2 var(--body); cursor: pointer; }
+.tw-toggle[aria-pressed="true"] { background: #4FD1C5; border-color: #4FD1C5; color: #0B1620; }
+.tw-tip { position: absolute; left: 0; top: 0; pointer-events: none; padding: 8px 10px; font-size: 12px; color: #fff; white-space: nowrap;
+  background: rgba(11, 22, 32, .92); border: 1px solid rgba(234, 241, 244, .25); border-radius: 10px; }
+.tw-tip b { display: block; font-family: var(--display); font-size: 15px; }
+.tw-step { display: flex; align-items: center; gap: 14px; }
+.tw-step .vt-btn { width: 44px; height: 44px; padding: 0; font-size: 20px; }
+.tw-num { font-family: var(--display); font-size: 56px; font-weight: 700; line-height: 1; min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
+.tw-step p { margin: 0; color: #9FB3BD; font-size: 13px; }
+.tw-mini svg { display: block; width: 100%; height: auto; }
+.twm-u { cursor: pointer; }
+.twm-u rect { stroke: #102231; stroke-width: 4; }
+.twm-u.disp rect { fill: #4BBA7F; } .twm-u.res rect { fill: #E1A83C; } .twm-u.vend rect { fill: #5C6A70; }
+.twm-u text { fill: #0B1620; font: 700 30px var(--display); }
+.twm-u.vend text { fill: #DCE4E8; }
+.twm-core { fill: #1D3446; }
+.twm-cap { fill: #9FB3BD; font: 600 16px var(--body); letter-spacing: .1em; }
+.tw-units { display: grid; gap: 6px; }
+.tw-unit { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; text-align: left; cursor: pointer;
+  background: rgba(234, 241, 244, .05); border: 1px solid rgba(234, 241, 244, .1); border-radius: 10px; padding: 10px 12px; color: #EAF1F4; font: 13px/1.35 var(--body); }
+.tw-unit:hover { border-color: rgba(79, 209, 197, .6); }
+.tw-unit:focus-visible { outline: 3px solid #4FD1C5; outline-offset: 2px; }
+.tw-unit b { font-family: var(--display); font-size: 20px; }
+.tw-unit small { color: #9FB3BD; }
+.tw-unit .tw-p { text-align: right; font-variant-numeric: tabular-nums; }
+
 /* Plano en grande */
 .modal { position: fixed; inset: 0; z-index: 50; background: var(--scrim); display: grid; place-items: center;
   padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
@@ -426,6 +461,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   <section id="view-edificio" role="tabpanel" aria-labelledby="tab-edificio">
     <div class="stage">
       <div class="panel">
+        <button class="btn primary torre-cta" type="button" data-action="torre-open">Ver el edificio en 3D</button>
         <h2>Elegí un piso</h2>
         <p class="sub">Cada ventana es una unidad, pintada según su estado.</p>
         <div id="facade" class="facade"></div>
@@ -797,7 +833,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   rebuild();
 
   var firstCasaDisp = CASAS.filter(function (c) { return c.estado === 'disp' && c.modelo === 'patio'; })[0] || CASAS[0];
-  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0, roof: true, vtTab: 0, vtMsg: '' };
+  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0, roof: true, vtTab: 0, vtMsg: '', vtKind: 'unidad', torrePiso: 7, disp: true };
 
   function $(sel) { return document.querySelector(sel); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -1447,10 +1483,23 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     V3.slot = null;
   }
   function v3Mount() {
-    var vtOpen = !vitrinaEl.hidden, mode = vtOpen ? 'vitrina' : 'ficha';
+    var vtOpen = !vitrinaEl.hidden, mode = vtOpen ? (S.vtKind === 'torre' ? 'torre' : 'vitrina') : 'ficha';
     var slot = vtOpen ? vitrinaEl.querySelector('.v3d-slot') :
       (modal.hidden ? document.querySelector('#ficha .v3d-slot, #ficha-casa .v3d-slot') : document.querySelector('#plan-modal-body .v3d-slot'));
     if (!slot || !v3Ensure()) { v3Stop(); V3.hot = null; return; }
+    if (mode === 'torre') {
+      if (V3.key !== 'torre') torreBuild();
+      torreColors();
+      V3.hot = null;
+      v3Stop();
+      V3.slot = slot;
+      slot.appendChild(V3.renderer.domElement);
+      v3Resize();
+      if (window.ResizeObserver) { V3.ro = new ResizeObserver(v3Resize); V3.ro.observe(slot); }
+      twWire();
+      v3Loop();
+      return;
+    }
     var item = currentItem(), isCasa = S.view !== 'edificio';
     if (!item) { v3Stop(); return; }
     if (V3.key !== v3Key(item, isCasa, mode)) v3Build(item, isCasa, mode);
@@ -1510,6 +1559,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     return out;
   }
   function renderVitrina() {
+    if (S.vtKind === 'torre') { renderTorre(); return; }
     var item = currentItem(), isCasa = S.view !== 'edificio';
     if (!item) return;
     var key = modelKey(item, isCasa), tabs = vtTabs(item, isCasa);
@@ -1518,7 +1568,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     var name = isCasa ? item.modeloNombre : 'Unidad ' + item.nombre;
     var place = isCasa ? 'Barrio Los Talas · lote ' + item.n : 'Torre Algarrobo · piso ' + item.piso;
     var h = '<div class="vt-top"><div class="vt-brand"><b>' + (isCasa ? 'Barrio Los Talas' : 'Torre Algarrobo') + '</b><span>Córdoba · proyecto ficticio de demostración</span></div>' +
-      '<div class="vt-actions">' + (item.estado !== 'vend' ? '<button class="vt-btn primary" type="button" data-action="vt-visit">Agendar visita</button>' : '') +
+      '<div class="vt-actions">' + (!isCasa ? '<button class="vt-btn" type="button" data-action="vt-torre">‹ Edificio</button>' : '') + (item.estado !== 'vend' ? '<button class="vt-btn primary" type="button" data-action="vt-visit">Agendar visita</button>' : '') +
       '<button class="vt-btn" type="button" data-action="vt-close">Cerrar</button></div></div>';
     h += '<div class="vt-body"><div class="vt-stage">';
     if (tab.maqueta) {
@@ -1572,8 +1622,9 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   // Al apuntar a una etiqueta de la maqueta, el giro automático se detiene para poder tocarla.
   vitrinaEl.addEventListener('pointerover', function (e) { if (e.target.closest && e.target.closest('.vt-hot') && V3.controls) V3.controls.autoRotate = false; });
   var vtTrigger = null;
-  function openVitrina(trigger) {
-    vtTrigger = trigger; S.vtTab = 0; S.vtMsg = '';
+  function openVitrina(trigger, kind) {
+    vtTrigger = trigger; S.vtTab = 0; S.vtMsg = ''; S.vtKind = kind || 'unidad';
+    if (S.vtKind === 'torre') S.torrePiso = S.piso;
     vitrinaEl.hidden = false;
     document.documentElement.style.overflow = 'hidden';
     renderVitrina();
@@ -1585,7 +1636,183 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     vitrinaEl.innerHTML = '';
     document.documentElement.style.overflow = '';
     V3.hot = null;
-    if (then) then(); else { renderAll(); refocus('[data-action="vt-open"]'); }
+    if (S.vtKind === 'torre' && S.piso !== S.torrePiso) {
+      var us = UNITS.filter(function (u) { return u.piso === S.torrePiso; });
+      S.piso = S.torrePiso;
+      S.unidad = (us.filter(function (u) { return u.estado === 'disp'; })[0] || us[0]).id;
+    }
+    if (then) then(); else { renderAll(); refocus(S.vtKind === 'torre' ? '[data-action="torre-open"]' : '[data-action="vt-open"]'); }
+  }
+
+  /* ---------- Edificio en 3D ----------
+     Torre de 9 pisos armada con la planta tipo: cada unidad es un volumen vidriado que se pinta por estado
+     (disponible, reservada, vendida) o se ve como vidrio, con balcones, losas, núcleo y el entorno de la calle. */
+  var TW = { units: [], hoverPiso: 0, wired: false, ray: null, down: null };
+  var TW_COL = { disp: 0x3FAE6E, res: 0xE0A33A, vend: 0x7E898F, glass: 0x9DB4C0 };
+  var TW_FOOT = { A: [0, 0, 6.4, 2.9], B: [6.4, 0, 4.8, 2.9], D: [0, 3.9, 4.8, 2.9], C: [4.8, 3.9, 6.4, 2.9] };
+  var TW_BALC = { A: [.8, -1.5, 4.8, 1.5], B: [7.0, -1.5, 3.6, 1.5], D: [.6, 6.8, 3.6, 1.5], C: [5.8, 6.8, 4.8, 1.5] };
+  var TW_W = 11.2, TW_D = 6.8, TW_PB = 4, TW_FH = 3;
+  function skyTexture() {
+    var c = document.createElement('canvas'); c.width = 2; c.height = 256;
+    var x = c.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, '#5F7FA6'); gr.addColorStop(.55, '#C9B6A6'); gr.addColorStop(1, '#F2C08E');
+    x.fillStyle = gr; x.fillRect(0, 0, 2, 256);
+    var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+  }
+  function torreBuild() {
+    var scene = new THREE.Scene();
+    scene.background = skyTexture();
+    scene.fog = new THREE.Fog(new THREE.Color(0xD9C2AE).convertSRGBToLinear().getHex(), 70, 170);
+    scene.add(new THREE.HemisphereLight(0xFFF1E0, 0x5A5148, .6));
+    var sun = new THREE.DirectionalLight(0xFFD2A0, 1.15);
+    sun.position.set(-40, 35, -25); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+    var sc = sun.shadow.camera; sc.left = -40; sc.right = 40; sc.top = 45; sc.bottom = -20; sc.near = 1; sc.far = 150; sun.shadow.bias = -.0005;
+    scene.add(sun);
+    var g = new THREE.Group(), glass = mat(COL.glass, { transparent: true, opacity: .35, roughness: .1 });
+    box(g, -45, -.12, -40, 100, .1, 80, 0x8D9A7C, { noShadow: true });
+    box(g, -45, -.06, -10, 100, .06, 7, 0x4E5458, { noShadow: true });
+    box(g, -45, -.02, -3, 100, .1, 3, 0xCFC9BD, { noShadow: true });
+    for (var tx = -10; tx <= 22; tx += 6) tree3d(g, tx, -1.6, .85);
+    box(g, -16, 0, -.4, 13, 13, 9, 0xD8CFC2);
+    box(g, 14, 0, -.4, 12, 19, 9, 0xCFC6B8);
+    // Planta baja: lobby vidriado con luz cálida.
+    box(g, 0, 0, .3, TW_W, TW_PB, TW_D - .3, COL.wall);
+    box(g, .6, .1, -.02, TW_W - 1.2, TW_PB - .5, .06, 0, { mat: mat(0xF6D9A8, { emissive: new THREE.Color(0xF2B866).convertSRGBToLinear(), emissiveIntensity: .45, roughness: .3 }), noShadow: true });
+    box(g, 4.6, 0, -.08, .9, TW_PB, .1, COL.deck);
+    TW.units = [];
+    for (var p = 1; p <= PISOS; p++) {
+      var y0 = TW_PB + (p - 1) * TW_FH;
+      box(g, -.1, y0, -.1, TW_W + .2, .25, TW_D + .2, 0xF1ECE4);
+      box(g, 0, y0 + .25, 2.9, TW_W, TW_FH - .25, 1.0, COL.wall);
+      box(g, -.2, y0 + .25, -.15, .3, TW_FH - .25, TW_D + .3, COL.wall);
+      box(g, TW_W - .1, y0 + .25, -.15, .3, TW_FH - .25, TW_D + .3, COL.wall);
+      box(g, 6.25, y0 + .25, -.25, .3, TW_FH - .25, .3, COL.deck);
+      box(g, 4.65, y0 + .25, TW_D - .05, .3, TW_FH - .25, .3, COL.deck);
+      LETRAS.forEach(function (l) {
+        var f = TW_FOOT[l], u = unitById((p + l).toLowerCase());
+        var m = new THREE.Mesh(new THREE.BoxGeometry(f[2] - .12, TW_FH - .35, f[3] - .12), new THREE.MeshStandardMaterial({ transparent: true }));
+        m.position.set(f[0] + f[2] / 2, y0 + .25 + (TW_FH - .35) / 2, f[1] + f[3] / 2);
+        m.castShadow = true; m.receiveShadow = true;
+        m.userData = { id: u.id, piso: p };
+        g.add(m); TW.units.push(m);
+        var b = TW_BALC[l], front = b[1] < 0;
+        box(g, b[0], y0, b[1], b[2], .2, b[3], 0xF1ECE4);
+        box(g, b[0], y0 + .2, front ? b[1] : b[1] + b[3] - .04, b[2], 1.0, .04, 0, { mat: glass, noShadow: true });
+        box(g, b[0], y0 + .2, b[1], .04, 1.0, b[3], 0, { mat: glass, noShadow: true });
+        box(g, b[0] + b[2] - .04, y0 + .2, b[1], .04, 1.0, b[3], 0, { mat: glass, noShadow: true });
+      });
+    }
+    var top = TW_PB + PISOS * TW_FH;
+    box(g, -.2, top, -.2, TW_W + .4, .4, TW_D + .4, 0xF1ECE4);
+    box(g, 3.5, top + .4, 2.6, 4, 2.2, 1.8, 0xE4DDD1);
+    g.position.set(-TW_W / 2, 0, -TW_D / 2);
+    scene.add(g);
+    V3.scene = scene; V3.key = 'torre'; V3.roof = null; V3.plan = null; V3.mode = 'torre';
+    V3.camera.position.set(-40, 24, -64);
+    V3.controls.target.set(0, 14, 0);
+    V3.controls.minDistance = 18; V3.controls.maxDistance = 95;
+    V3.controls.autoRotate = !reduced.matches; V3.controls.autoRotateSpeed = .3;
+    V3.controls.update();
+  }
+  function torreColors() {
+    TW.units.forEach(function (m) {
+      var u = unitById(m.userData.id), on = S.disp, sel = m.userData.piso === S.torrePiso, hov = m.userData.piso === TW.hoverPiso;
+      var col = on ? TW_COL[u.estado] : TW_COL.glass, mt = m.material;
+      mt.color.set(col).convertSRGBToLinear();
+      mt.opacity = on ? .94 : .82;
+      mt.metalness = on ? 0 : .35; mt.roughness = on ? .55 : .15;
+      if (on) { mt.emissive.set(col).convertSRGBToLinear(); mt.emissiveIntensity = sel ? .6 : (hov ? .45 : .16); }
+      else { mt.emissive.set(0x4FD1C5).convertSRGBToLinear(); mt.emissiveIntensity = sel ? .55 : (hov ? .3 : 0); }
+    });
+  }
+  function twPick(e) {
+    var el = V3.renderer.domElement, r = el.getBoundingClientRect();
+    TW.ray = TW.ray || new THREE.Raycaster();
+    var v = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    TW.ray.setFromCamera(v, V3.camera);
+    var hit = TW.ray.intersectObjects(TW.units, false)[0];
+    return hit ? hit.object.userData : null;
+  }
+  function twWire() {
+    if (TW.wired) return;
+    TW.wired = true;
+    var el = V3.renderer.domElement;
+    el.addEventListener('pointermove', function (e) {
+      if (V3.mode !== 'torre') return;
+      var d = twPick(e), tip = vitrinaEl.querySelector('.tw-tip');
+      var piso = d ? d.piso : 0;
+      if (piso !== TW.hoverPiso) { TW.hoverPiso = piso; torreColors(); }
+      if (!tip) return;
+      if (!d) { tip.hidden = true; return; }
+      var us = UNITS.filter(function (u) { return u.piso === d.piso; }), disp = us.filter(function (u) { return u.estado === 'disp'; }).length;
+      var r = el.getBoundingClientRect();
+      tip.innerHTML = '<b>Piso ' + d.piso + '</b>' + disp + ' de 4 disponibles · tocá para elegirlo';
+      tip.style.transform = 'translate(' + (e.clientX - r.left + 14) + 'px,' + (e.clientY - r.top - 20) + 'px)';
+      tip.hidden = false;
+    });
+    el.addEventListener('pointerleave', function () { if (V3.mode === 'torre' && TW.hoverPiso) { TW.hoverPiso = 0; torreColors(); } });
+    el.addEventListener('pointerdown', function (e) { TW.down = [e.clientX, e.clientY]; });
+    el.addEventListener('pointerup', function (e) {
+      if (V3.mode !== 'torre' || !TW.down) return;
+      var moved = Math.abs(e.clientX - TW.down[0]) + Math.abs(e.clientY - TW.down[1]);
+      TW.down = null;
+      if (moved > 6) return; // fue un arrastre para girar
+      var d = twPick(e);
+      if (!d) return;
+      V3.controls.autoRotate = false;
+      S.torrePiso = d.piso;
+      renderVitrina();
+    });
+  }
+  function torreMiniPlan(p) {
+    var s = '<svg viewBox="-10 -40 580 400" role="group" aria-label="Planta del piso ' + p + '">';
+    s += '<text class="twm-cap" x="280" y="-14" text-anchor="middle">FRENTE · NORTE</text>';
+    s += '<rect class="twm-core" x="0" y="145" width="560" height="50"/>';
+    LETRAS.forEach(function (l) {
+      var f = TW_FOOT[l], u = unitById((p + l).toLowerCase());
+      s += '<g class="twm-u ' + u.estado + '" data-action="tw-unit" data-unit="' + u.id + '" aria-hidden="true">' +
+        '<rect x="' + f[0] * 50 + '" y="' + f[1] * 50 + '" width="' + f[2] * 50 + '" height="' + f[3] * 50 + '" rx="6"/>' +
+        '<text x="' + (f[0] + f[2] / 2) * 50 + '" y="' + ((f[1] + f[3] / 2) * 50 + 11) + '" text-anchor="middle">' + u.nombre + '</text></g>';
+    });
+    return s + '</svg>';
+  }
+  function renderTorre() {
+    var p = S.torrePiso, us = UNITS.filter(function (u) { return u.piso === p; });
+    var cnt = { disp: 0, res: 0, vend: 0 }; UNITS.forEach(function (u) { cnt[u.estado]++; });
+    var dispP = us.filter(function (u) { return u.estado === 'disp'; }).length;
+    var fachada = (IMAGES['tipologia-a'] || [])[0], tabs = ['Edificio 3D', 'Fachada'], t = ((S.vtTab % 2) + 2) % 2;
+    var h = '<div class="vt-top"><div class="vt-brand"><b>Torre Algarrobo</b><span>Córdoba · proyecto ficticio de demostración</span></div>' +
+      '<div class="vt-actions"><button class="vt-btn" type="button" data-action="vt-close">Cerrar</button></div></div>';
+    h += '<div class="vt-body"><div class="vt-stage">';
+    if (t === 0) {
+      h += v3Available() ? '<div class="v3d-slot" role="img" aria-label="Edificio en 3D. Arrastrá para girar y tocá un piso."></div>' :
+        '<div class="vt-pending"><b>Edificio en 3D</b><span>No se pudo cargar el visor 3D en este navegador.</span></div>';
+      h += '<div class="tw-counter"><div class="tw-row"><span><i class="disp"></i>Disponibles</span><b>' + cnt.disp + '</b></div>' +
+        '<div class="tw-row"><span><i class="res"></i>Reservadas</span><b>' + cnt.res + '</b></div>' +
+        '<div class="tw-row"><span><i class="vend"></i>Vendidas</span><b>' + cnt.vend + '</b></div>' +
+        '<button class="tw-toggle" type="button" data-action="tw-disp" aria-pressed="' + S.disp + '">Ver disponibilidad</button></div>';
+      h += '<div class="tw-tip" hidden></div><span class="vt-badge">Modelo ilustrativo · arrastrá para girar, tocá un piso</span>';
+    } else if (fachada && fachada.src) {
+      h += '<img class="vt-img" src="' + esc(fachada.src) + '" alt="Fachada de Torre Algarrobo (imagen ilustrativa)"><div class="vt-shade"></div><span class="vt-badge">Imagen ilustrativa</span>' +
+        '<div class="vt-title"><p>Torre Algarrobo · Córdoba</p><h2>Fachada</h2></div>';
+    } else {
+      h += '<div class="vt-pending"><b>Render en preparación</b><span>Mientras tanto, recorré el edificio en 3D.</span></div>';
+    }
+    h += '<div class="vt-tabs" role="tablist" aria-label="Vista">' + tabs.map(function (lb, j) {
+      return '<button class="vt-tab" role="tab" type="button" data-action="vt-tab" data-i="' + j + '" aria-selected="' + (j === t) + '">' + lb + '</button>';
+    }).join('') + '</div></div>';
+    h += '<aside class="vt-panel" aria-label="Elegí tu piso"><div><p class="vt-eye">Torre Algarrobo · 9 pisos</p><h3 id="vt-name">Elegí tu piso</h3></div>';
+    h += '<div class="tw-step"><button class="vt-btn" type="button" data-action="tw-step" data-d="-1" aria-label="Piso anterior"' + (p <= 1 ? ' disabled' : '') + '>−</button>' +
+      '<span class="tw-num" aria-live="polite">' + p + '</span><button class="vt-btn" type="button" data-action="tw-step" data-d="1" aria-label="Piso siguiente"' + (p >= PISOS ? ' disabled' : '') + '>+</button>' +
+      '<p>' + dispP + ' de 4 unidades<br>disponibles</p></div>';
+    h += '<div class="tw-mini">' + torreMiniPlan(p) + '</div>';
+    h += '<div class="tw-units">' + us.map(function (u) {
+      return '<button class="tw-unit" type="button" data-action="tw-unit" data-unit="' + u.id + '"><b>' + u.nombre + '</b><span>' + u.amb + ' amb · ' + u.cub + ' m²<br><small>' + u.orient + '</small></span>' +
+        '<span class="tw-p">' + (u.estado === 'vend' ? '—' : fmtUSD(u.precio)) + '<br><small>' + STATE_LABEL[u.estado] + '</small></span></button>';
+    }).join('') + '</div>';
+    h += '<p class="vt-legal">Tocá una unidad para ver sus imágenes, su maqueta y su ficha. Modelo, imágenes y precios ilustrativos de un proyecto ficticio.</p></aside></div>';
+    vitrinaEl.innerHTML = h;
+    v3Mount();
   }
 
   function wireGalleryImages() {
@@ -1874,6 +2101,15 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (action === 'plan-open') { openPlan(item, el, 'plan'); return; }
     if (action === 'v3-open') { openPlan(item, el, '3d'); return; }
     if (action === 'vt-open') { openVitrina(el); return; }
+    if (action === 'torre-open') { openVitrina(el, 'torre'); return; }
+    if (action === 'vt-torre') { S.vtKind = 'torre'; S.torrePiso = item.piso; S.vtTab = 0; renderVitrina(); refocus('#vitrina [data-action="vt-close"]'); return; }
+    if (action === 'tw-step') { S.torrePiso = Math.min(PISOS, Math.max(1, S.torrePiso + Number(el.dataset.d))); renderVitrina(); refocus('#vitrina [data-action="tw-step"][data-d="' + el.dataset.d + '"]'); return; }
+    if (action === 'tw-disp') { S.disp = !S.disp; el.setAttribute('aria-pressed', String(S.disp)); torreColors(); return; }
+    if (action === 'tw-unit') {
+      var tu = unitById(el.dataset.unit);
+      if (tu) { S.view = 'edificio'; S.unidad = tu.id; S.piso = tu.piso; S.vtKind = 'unidad'; S.vtTab = 0; S.vtMsg = ''; renderVitrina(); refocus('#vitrina [data-action="vt-torre"]'); }
+      return;
+    }
     if (action === 'vt-close') { closeVitrina(); return; }
     if (action === 'vt-tab') { S.vtTab = Number(el.dataset.i) || 0; renderVitrina(); refocus('#vitrina .vt-tab[data-i="' + S.vtTab + '"]'); return; }
     if (action === 'vt-visit') {
@@ -1969,7 +2205,11 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (vitrinaEl.hidden) return;
     var tag = (e.target.tagName || '').toLowerCase();
     if (e.key === 'Escape') { e.preventDefault(); closeVitrina(); }
-    else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && tag !== 'input') {
+    else if (S.vtKind === 'torre' && (e.key === 'ArrowUp' || e.key === 'ArrowDown') && tag !== 'input') {
+      e.preventDefault();
+      S.torrePiso = Math.min(PISOS, Math.max(1, S.torrePiso + (e.key === 'ArrowUp' ? 1 : -1)));
+      renderVitrina();
+    } else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && tag !== 'input') {
       e.preventDefault();
       S.vtTab += e.key === 'ArrowRight' ? 1 : -1;
       renderVitrina();
