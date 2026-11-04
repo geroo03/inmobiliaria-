@@ -220,7 +220,7 @@ const scenes: Scene[] = SCENE_DEFS.map((d) => {
  * Videos de giro de día (generados con IA). La vuelta es el mismo video invertido.
  * Los pares que no están acá se pasan con un fundido; de noche, siempre fundido.
  */
-const DAY_VIDEOS = new Set<string>([]); // p. ej. 'frente>esquina' cuando esté el video
+const DAY_VIDEOS = new Set(['frente>esquina']);
 
 function videosFor(from: string, to: string) {
   const forward = DAY_VIDEOS.has(`${from}>${to}`), backward = DAY_VIDEOS.has(`${to}>${from}`);

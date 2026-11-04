@@ -40,6 +40,8 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
   // Imagen anterior que se desvanece encima de la nueva cuando se cambia sin video (o el video falla).
   const [fadeFrom, setFadeFrom] = useState<string | null>(null);
+  // Video que terminó: queda en su último cuadro y se desvanece sobre la foto, por si la IA redibujó detalles.
+  const [endedVideo, setEndedVideo] = useState<string | null>(null);
   const playing = state.kind === 'transitioning' && playingUrl === state.videoUrl;
 
   const imageOf = useCallback(
@@ -59,6 +61,7 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
       if (next.kind === 'idle' && !(state.kind === 'transitioning' && playing)) {
         setFadeFrom(imageOf(state.kind === 'idle' ? state.scene : state.from));
       }
+      if (e.type === 'VIDEO_ENDED' && state.kind === 'transitioning') setEndedVideo(state.videoUrl);
       if (e.type !== 'NAVIGATE') setPlayingUrl(null);
       setState(next);
     },
@@ -150,19 +153,21 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
           draggable={false}
         />
       )}
-      {state.kind === 'transitioning' && (
+      {(state.kind === 'transitioning' || endedVideo) && (
+        // Mismo key mientras reproduce y mientras se desvanece: React conserva el elemento en su último cuadro.
         <video
-          key={state.videoUrl}
-          src={state.videoUrl}
-          className="absolute inset-0 h-full w-full object-cover"
+          key={state.kind === 'transitioning' ? state.videoUrl : endedVideo ?? ''}
+          src={state.kind === 'transitioning' ? state.videoUrl : endedVideo ?? undefined}
+          className={`absolute inset-0 h-full w-full object-cover ${state.kind === 'idle' ? 'scene-fade-out' : ''}`}
           autoPlay
           muted
           playsInline
           preload="auto"
           aria-hidden
-          onPlaying={() => setPlayingUrl(state.videoUrl)}
-          onEnded={() => dispatch({ type: 'VIDEO_ENDED' })}
-          onError={() => dispatch({ type: 'VIDEO_FAILED' })}
+          onPlaying={() => state.kind === 'transitioning' && setPlayingUrl(state.videoUrl)}
+          onEnded={() => state.kind === 'transitioning' && dispatch({ type: 'VIDEO_ENDED' })}
+          onError={() => state.kind === 'transitioning' && dispatch({ type: 'VIDEO_FAILED' })}
+          onAnimationEnd={() => setEndedVideo(null)}
         />
       )}
 
