@@ -11,6 +11,10 @@ La primera vista del carrusel es la **casa en 3D**, armada con los mismos datos 
 
 El **modo desarrolladora** permite cambiar el estado y el precio de una unidad. Esos cambios se guardan solo en el navegador de quien los hace (`localStorage`). En una versión real, irían a una base de datos compartida.
 
+## Vitrina a pantalla completa
+
+Cada ficha tiene el botón «Ver vitrina a pantalla completa»: fondo oscuro, la imagen de cada ambiente a pantalla completa con su nombre, pestañas abajo (Fachada, Salón y cocina, Dormitorio principal, Baño, Maqueta) y un panel con la ficha (dormitorios, baños, m², precio, estado, características y «Agendar visita»). La pestaña «Maqueta» muestra el modelo 3D sin techo con etiquetas sobre cada ambiente que llevan a su imagen. Si falta la imagen de un ambiente, se ve «Render en preparación». Se cierra con Esc o «Cerrar», y las flechas del teclado cambian de pestaña.
+
 ## Fotos
 
 Las rutas de las fotos están en `imagenes.json`, una lista por modelo (`tipologia-a` a `tipologia-d`, `casa-patio`, `casa-compacta` y `lote`). Para cargar una foto:

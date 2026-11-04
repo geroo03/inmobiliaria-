@@ -251,6 +251,67 @@ svg text { font-family: var(--body); }
 .modal-tabs { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 3px; }
 .modal-tabs .tab { padding: 6px 14px; font-size: 13px; }
 
+/* Vitrina inmersiva: un solo mundo oscuro, igual en los dos temas */
+.vt-cta { width: 100%; margin-top: 10px; padding: 11px 14px; }
+.vitrina { position: fixed; inset: 0; z-index: 60; background: #0B1620; color: #EAF1F4; display: grid; grid-template-rows: auto minmax(0, 1fr);
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); color-scheme: dark; }
+.vt-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-block: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.vt-brand { display: grid; gap: 1px; min-width: 0; }
+.vt-brand b { font-family: var(--display); font-size: 15px; letter-spacing: .14em; text-transform: uppercase; }
+.vt-brand span { font-size: 12px; color: #9FB3BD; }
+.vt-actions { display: flex; gap: 8px; align-items: center; }
+.vt-btn { white-space: nowrap; border: 1px solid rgba(234, 241, 244, .22); background: transparent; color: #EAF1F4; font: 600 13px/1.2 var(--body); padding: 9px 14px; border-radius: 10px; cursor: pointer; }
+.vt-btn.primary { background: #4FD1C5; border-color: #4FD1C5; color: #0B1620; }
+.vt-btn:focus-visible, .vt-tab:focus-visible, .vt-hot:focus-visible { outline: 3px solid #4FD1C5; outline-offset: 2px; }
+.vt-body { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; min-height: 0;
+  padding-bottom: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.vt-stage { position: relative; border-radius: 14px; overflow: hidden; background: #0E1B26; min-height: 0; }
+.vt-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vt-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11, 22, 32, 0) 40%, rgba(11, 22, 32, .88)); pointer-events: none; }
+.vt-title { position: absolute; left: 24px; right: 24px; bottom: 78px; pointer-events: none; }
+.vt-title p { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #4FD1C5; }
+.vt-title h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(28px, 4vw, 44px); line-height: 1.05; color: #fff; text-wrap: balance; }
+.vt-badge { position: absolute; left: 16px; top: 16px; background: rgba(11, 22, 32, .75); color: #EAF1F4; border: 1px solid rgba(234, 241, 244, .2); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+.vt-tabs { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: 4px; padding: 4px; max-width: calc(100% - 24px); overflow-x: auto;
+  background: rgba(11, 22, 32, .78); border: 1px solid rgba(234, 241, 244, .14); border-radius: 999px; }
+.vt-tab { border: 0; background: transparent; color: #C9D6DC; font: 600 13px/1.2 var(--body); padding: 8px 14px; border-radius: 999px; white-space: nowrap; cursor: pointer; }
+.vt-tab[aria-selected="true"] { background: #EAF1F4; color: #0B1620; }
+.vt-pending { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 6px; padding: 24px;
+  background: radial-gradient(circle at 30% 20%, #1B3A52, #0B1620 70%); }
+.vt-pending b { font-family: var(--display); font-size: 22px; }
+.vt-pending span { color: #9FB3BD; font-size: 14px; max-width: 36ch; }
+.vt-stage .v3d-slot { background: #0E1B26; }
+.vt-hot { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; cursor: pointer;
+  background: rgba(11, 22, 32, .86); color: #fff; border: 1px solid rgba(234, 241, 244, .28); border-radius: 999px; padding: 5px 11px 5px 7px; font: 600 12px/1.2 var(--body); }
+.vt-hot i { width: 10px; height: 10px; border-radius: 50%; background: #4FD1C5; box-shadow: 0 0 0 4px rgba(79, 209, 197, .25); }
+.vt-panel { background: #102231; border: 1px solid rgba(234, 241, 244, .08); border-radius: 14px; padding: 20px; display: grid; gap: 16px; align-content: start; overflow: auto; min-height: 0; }
+.vt-panel .vt-eye { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #4FD1C5; }
+.vt-panel h3 { margin: 0; font-family: var(--display); font-size: 30px; line-height: 1.05; }
+.vt-panel .vt-sub { margin: 4px 0 0; color: #9FB3BD; font-size: 13px; }
+.vt-stats { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid rgba(234, 241, 244, .14); border-radius: 10px; }
+.vt-stats div { padding: 10px 12px; display: grid; gap: 2px; }
+.vt-stats div + div { border-left: 1px solid rgba(234, 241, 244, .14); }
+.vt-stats b { font-family: var(--display); font-size: 22px; font-variant-numeric: tabular-nums; }
+.vt-stats span { font-size: 11px; color: #9FB3BD; }
+.vt-price { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.vt-price b { font-family: var(--display); font-size: 28px; font-variant-numeric: tabular-nums; }
+.vt-state { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: rgba(234, 241, 244, .1); }
+.vt-state i { width: 8px; height: 8px; border-radius: 50%; }
+.vt-state i.disp { background: #4BBA7F; } .vt-state i.res { background: #E1A83C; } .vt-state i.vend { background: #8A979D; }
+.vt-feats { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+.vt-feats li { display: flex; gap: 10px; align-items: flex-start; }
+.vt-feats li::before { content: ""; flex: none; width: 14px; height: 14px; margin-top: 3px; border-radius: 50%; border: 2px solid #4FD1C5; box-shadow: inset 0 0 0 2px #102231, inset 0 0 0 6px #4FD1C5; }
+.vt-panel .vt-btns { display: grid; gap: 8px; }
+.vt-legal { margin: 0; font-size: 11px; color: #8DA2AC; }
+@media (max-width: 960px) {
+  .vitrina { overflow-y: auto; grid-template-rows: auto auto; }
+  .vt-body { grid-template-columns: minmax(0, 1fr); }
+  .vt-stage { height: 62vh; min-height: 320px; }
+  .vt-panel { overflow: visible; }
+  .vt-title { bottom: 74px; }
+}
+
 /* Plano en grande */
 .modal { position: fixed; inset: 0; z-index: 50; background: var(--scrim); display: grid; place-items: center;
   padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
@@ -410,6 +471,8 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     <p>El modo desarrolladora guarda los cambios solo en este navegador.</p>
   </footer>
 </div>
+
+<div class="vitrina" id="vitrina" role="dialog" aria-modal="true" aria-labelledby="vt-name" hidden></div>
 
 <div class="modal" id="plan-modal" role="dialog" aria-modal="true" aria-labelledby="plan-modal-title" hidden>
   <div class="modal-box">
@@ -718,7 +781,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   rebuild();
 
   var firstCasaDisp = CASAS.filter(function (c) { return c.estado === 'disp' && c.modelo === 'patio'; })[0] || CASAS[0];
-  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0, roof: true };
+  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0, roof: true, vtTab: 0, vtMsg: '' };
 
   function $(sel) { return document.querySelector(sel); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -1300,15 +1363,16 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     }
     g.add(roof);
     g.position.set(-cx, 0, -cz);
-    return { group: g, roof: roof, size: Math.max(v[2], v[3]) };
+    return { group: g, roof: roof, size: Math.max(v[2], v[3]), cx: cx, cz: cz };
   }
-  function v3Key(item, isCasa) { return isCasa ? (item.modelo === 'lote' ? 'lote-' + item.sup : 'casa-' + item.modelo) : 'tipologia-' + item.letra; }
-  function v3Build(item, isCasa) {
+  function v3Key(item, isCasa, mode) { return (isCasa ? (item.modelo === 'lote' ? 'lote-' + item.sup : 'casa-' + item.modelo) : 'tipologia-' + item.letra) + '|' + (mode || 'ficha'); }
+  function v3Build(item, isCasa, mode) {
+    var vitrina = mode === 'vitrina';
     var pf = planFor(item, isCasa), isHouse = isCasa && item.modelo !== 'lote';
     var scene = new THREE.Scene();
     var root = document.documentElement, dark = root.getAttribute('data-theme') === 'dark' ||
       (root.getAttribute('data-theme') !== 'light' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    var sky = dark ? 0x1D2E32 : 0xCFE0EA;
+    var sky = vitrina ? 0x0E1B26 : (dark ? 0x1D2E32 : 0xCFE0EA);
     // El fondo se pinta tal cual; la niebla pasa por el shader, por eso va en lineal.
     scene.background = new THREE.Color(sky);
     scene.fog = new THREE.Fog(new THREE.Color(sky).convertSRGBToLinear().getHex(), 40, 120);
@@ -1322,14 +1386,16 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     sun.shadow.bias = -.0005;
     scene.add(sun);
     scene.add(built.group);
-    V3.scene = scene; V3.roof = built.roof; V3.key = v3Key(item, isCasa);
-    V3.roof.visible = isHouse && S.roof;
+    V3.scene = scene; V3.roof = built.roof; V3.key = v3Key(item, isCasa, mode);
+    V3.offset = [built.cx, built.cz]; V3.plan = pf.model; V3.mode = mode || 'ficha';
+    V3.roof.visible = !vitrina && isHouse && S.roof;
     var dist = R0 * 1.15;
-    if (isHouse && S.roof) V3.camera.position.set(dist * .75, dist * .42, dist * .95);
+    if (vitrina) V3.camera.position.set(dist * .5, dist * .95, dist * .72);
+    else if (isHouse && S.roof) V3.camera.position.set(dist * .75, dist * .42, dist * .95);
     else V3.camera.position.set(dist * .55, dist * .75, dist * .85);
     V3.controls.target.set(0, isHouse ? 1 : .4, 0);
     V3.controls.minDistance = R0 * .35; V3.controls.maxDistance = R0 * 2.2;
-    V3.controls.autoRotate = !reduced.matches; V3.controls.autoRotateSpeed = .6;
+    V3.controls.autoRotate = !reduced.matches; V3.controls.autoRotateSpeed = vitrina ? .35 : .6;
     V3.controls.update();
   }
   function v3Resize() {
@@ -1339,10 +1405,24 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     V3.renderer.setSize(w, h, false);
     V3.camera.aspect = w / h; V3.camera.updateProjectionMatrix();
   }
+  var V3_TMP = null;
+  function v3Hotspots() {
+    // Ubica cada etiqueta sobre su ambiente proyectando el centro del ambiente a la pantalla.
+    if (!V3.hot || !V3.hot.length || !V3.slot) return;
+    V3_TMP = V3_TMP || new THREE.Vector3();
+    var w = V3.slot.clientWidth, h = V3.slot.clientHeight;
+    V3.hot.forEach(function (hs) {
+      V3_TMP.set(hs.x, 1.2, hs.z).project(V3.camera);
+      var visible = V3_TMP.z < 1 && Math.abs(V3_TMP.x) < 1.05 && Math.abs(V3_TMP.y) < 1.05;
+      hs.el.hidden = !visible;
+      if (visible) hs.el.style.transform = 'translate(' + ((V3_TMP.x + 1) / 2 * w) + 'px,' + ((1 - V3_TMP.y) / 2 * h) + 'px) translate(-50%, -50%)';
+    });
+  }
   function v3Loop() {
     V3.raf = requestAnimationFrame(v3Loop);
     V3.controls.update();
     V3.renderer.render(V3.scene, V3.camera);
+    v3Hotspots();
   }
   function v3Stop() {
     if (V3.raf) cancelAnimationFrame(V3.raf);
@@ -1351,12 +1431,15 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     V3.slot = null;
   }
   function v3Mount() {
-    var slot = modal.hidden ? document.querySelector('#ficha .v3d-slot, #ficha-casa .v3d-slot') : document.querySelector('#plan-modal-body .v3d-slot');
-    if (!slot || !v3Ensure()) { v3Stop(); return; }
+    var vtOpen = !vitrinaEl.hidden, mode = vtOpen ? 'vitrina' : 'ficha';
+    var slot = vtOpen ? vitrinaEl.querySelector('.v3d-slot') :
+      (modal.hidden ? document.querySelector('#ficha .v3d-slot, #ficha-casa .v3d-slot') : document.querySelector('#plan-modal-body .v3d-slot'));
+    if (!slot || !v3Ensure()) { v3Stop(); V3.hot = null; return; }
     var item = currentItem(), isCasa = S.view !== 'edificio';
     if (!item) { v3Stop(); return; }
-    if (V3.key !== v3Key(item, isCasa)) v3Build(item, isCasa);
-    if (V3.roof) V3.roof.visible = isCasa && item.modelo !== 'lote' && S.roof;
+    if (V3.key !== v3Key(item, isCasa, mode)) v3Build(item, isCasa, mode);
+    if (V3.roof) V3.roof.visible = !vtOpen && isCasa && item.modelo !== 'lote' && S.roof;
+    V3.hot = vtOpen ? vtHotspotTargets() : null;
     v3Stop();
     V3.slot = slot;
     slot.appendChild(V3.renderer.domElement);
@@ -1370,6 +1453,106 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     return '<div class="v3d-slot' + (big ? ' v3d-big' : '') + '" role="img" aria-label="Modelo 3D ilustrativo. Arrastrá para girar."></div>' +
       (house ? '<div class="v3d-tools"><button class="btn small-btn" type="button" data-action="v3-roof">' + (S.roof ? 'Ver por dentro' : 'Poner el techo') + '</button></div>' : '') +
       '<span class="v3d-hint">Arrastrá para girar · rueda o dos dedos para acercar</span>';
+  }
+
+  /* ---------- Vitrina inmersiva ---------- */
+  var vitrinaEl = document.getElementById('vitrina');
+  var VT_LABEL = { 'Living': 'Salón y cocina', 'Dormitorio': 'Dormitorio principal' };
+  var VT_ROOM = { 'Salón y cocina': /^Estar/, 'Dormitorio principal': /^Dorm\. ppal|^Dorm\. 1|^Dormitorio/, 'Baño': /^Baño/,
+    'Ambiente único': /^Ambiente/, 'Kitchenette': /^Kitchenette/ };
+  var VT_FEATS = {
+    'casa-patio': ['Patio central con césped y árbol', 'Galería de madera hacia el jardín', 'Living comedor con cocina integrada', 'Tres dormitorios y dos baños en una planta'],
+    'casa-compacta': ['Living comedor con cocina integrada', 'Galería semicubierta y jardín', 'Dos dormitorios al frente', 'Lavarropas integrado en la cocina'],
+    'tipologia-a': ['Balcón de 9 m² al norte', 'Living comedor con cocina integrada', 'Dos dormitorios y lavadero'],
+    'tipologia-b': ['Balcón de 6 m² al norte', 'Dormitorio con ventana al este', 'Baño con lugar para lavarropas'],
+    'tipologia-c': ['Balcón de 5 m² al sur', 'Dormitorio con ventana al este', 'Baño con lugar para lavarropas'],
+    'tipologia-d': ['Balcón de 4 m² al sur', 'Ambiente único de 16,5 m²', 'Kitchenette integrada al ingreso'],
+    'lote': ['Lote con servicios', 'Listo para construir', 'Frente sobre la calle de los Talas']
+  };
+  function vtTabs(item, isCasa) {
+    var tabs = (IMAGES[modelKey(item, isCasa)] || []).map(function (it) { return { label: VT_LABEL[it.ambiente] || it.ambiente, src: it.src }; });
+    tabs.push({ label: 'Maqueta', maqueta: true });
+    return tabs;
+  }
+  function vtHotspotTargets() {
+    // Un punto por pestaña que tenga ambiente en el plano; el primero que coincide, en coordenadas del modelo 3D.
+    var item = currentItem(), isCasa = S.view !== 'edificio';
+    if (!item || !V3.plan) return null;
+    var out = [];
+    vtTabs(item, isCasa).forEach(function (t, i) {
+      var re = VT_ROOM[t.label];
+      if (!re) return;
+      // Entre varios ambientes que coinciden (Baño y Baño 2), el de nombre más corto es el principal.
+      var room = (V3.plan.rooms || []).filter(function (r) { return re.test(r.n); }).sort(function (a, b) { return a.n.length - b.n.length; })[0];
+      var el = vitrinaEl.querySelector('.vt-hot[data-i="' + i + '"]');
+      if (!room || !el) return;
+      out.push({ el: el, x: room.r[0] + room.r[2] / 2 - V3.offset[0], z: room.r[1] + room.r[3] / 2 - V3.offset[1] });
+    });
+    return out;
+  }
+  function renderVitrina() {
+    var item = currentItem(), isCasa = S.view !== 'edificio';
+    if (!item) return;
+    var key = modelKey(item, isCasa), tabs = vtTabs(item, isCasa);
+    var i = ((S.vtTab % tabs.length) + tabs.length) % tabs.length, tab = tabs[i];
+    var labels = isCasa ? STATE_LOTE : STATE_LABEL;
+    var name = isCasa ? item.modeloNombre : 'Unidad ' + item.nombre;
+    var place = isCasa ? 'Barrio Los Talas · lote ' + item.n : 'Torre Algarrobo · piso ' + item.piso;
+    var h = '<div class="vt-top"><div class="vt-brand"><b>' + (isCasa ? 'Barrio Los Talas' : 'Torre Algarrobo') + '</b><span>Córdoba · proyecto ficticio de demostración</span></div>' +
+      '<div class="vt-actions">' + (item.estado !== 'vend' ? '<button class="vt-btn primary" type="button" data-action="vt-visit">Agendar visita</button>' : '') +
+      '<button class="vt-btn" type="button" data-action="vt-close">Cerrar</button></div></div>';
+    h += '<div class="vt-body"><div class="vt-stage">';
+    if (tab.maqueta) {
+      h += v3Available() ? '<div class="v3d-slot" role="img" aria-label="Maqueta 3D de ' + esc(name) + '. Arrastrá para girar."></div>' :
+        '<div class="vt-pending"><b>Maqueta 3D</b><span>No se pudo cargar el visor 3D en este navegador.</span></div>';
+      tabs.forEach(function (t, j) { if (VT_ROOM[t.label]) h += '<button class="vt-hot" type="button" data-action="vt-tab" data-i="' + j + '" hidden><i></i>' + esc(t.label) + '</button>'; });
+      h += '<span class="vt-badge">Maqueta ilustrativa · arrastrá para girar</span>';
+    } else if (tab.src) {
+      h += '<img class="vt-img" src="' + esc(tab.src) + '" alt="' + esc(tab.label) + ' de ' + esc(name) + ' (imagen ilustrativa)"><div class="vt-shade"></div>';
+      h += '<span class="vt-badge">Imagen ilustrativa</span>';
+    } else {
+      h += '<div class="vt-pending"><b>Render en preparación</b><span>Mientras tanto, recorré la casa en la maqueta 3D.</span></div>';
+    }
+    if (!tab.maqueta) h += '<div class="vt-title"><p>' + esc(name) + ' · ' + esc(place) + '</p><h2>' + esc(tab.label) + '</h2></div>';
+    h += '<div class="vt-tabs" role="tablist" aria-label="Ambientes">' + tabs.map(function (t, j) {
+      return '<button class="vt-tab" role="tab" type="button" data-action="vt-tab" data-i="' + j + '" aria-selected="' + (j === i) + '">' + esc(t.label) + '</button>';
+    }).join('') + '</div></div>';
+    // Panel con la ficha.
+    var stats = isCasa && item.modelo === 'lote'
+      ? [[item.sup, 'm² de lote'], ['10', 'm de frente'], [item.fila === 'norte' ? 'Sur' : 'Norte', 'Frente al']]
+      : [[item.dorm || 'Mono', 'Dormitorios'], [item.banos, item.banos === 1 ? 'Baño' : 'Baños'], [item.cub, 'm² cubiertos']];
+    h += '<aside class="vt-panel" aria-label="Ficha"><div><p class="vt-eye">' + esc(place) + '</p><h3 id="vt-name">' + esc(name) + '</h3><p class="vt-sub">' +
+      (isCasa ? (item.modelo === 'lote' ? 'Lote de ' + item.sup + ' m²' : 'Casa en lote de ' + item.sup + ' m²') : item.orient + ' · balcón ' + item.balc + ' m²') + '</p></div>';
+    h += '<div class="vt-stats">' + stats.map(function (st) { return '<div><b>' + st[0] + '</b><span>' + st[1] + '</span></div>'; }).join('') + '</div>';
+    h += '<div class="vt-price"><b>' + (item.estado === 'vend' ? (isCasa ? 'Vendido' : 'Vendida') : fmtUSD(item.precio)) + '</b><span class="vt-state"><i class="' + item.estado + '"></i>' + labels[item.estado] + '</span></div>';
+    h += '<ul class="vt-feats">' + (VT_FEATS[key] || []).map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>';
+    h += '<div class="vt-btns">' + (item.estado !== 'vend' ? '<button class="vt-btn primary" type="button" data-action="vt-visit">Agendar visita</button>' : '') +
+      '<button class="vt-btn" type="button" data-action="vt-link">Copiar enlace a esta ficha</button></div>';
+    if (S.vtMsg) h += '<p class="vt-legal" role="status">' + esc(S.vtMsg) + '</p>';
+    h += '<p class="vt-legal">Imágenes, maqueta y precios ilustrativos de un proyecto ficticio. Corredor responsable: [Nombre y apellido], Mat. CPI Córdoba N.° [pendiente].</p></aside></div>';
+    vitrinaEl.innerHTML = h;
+    vitrinaEl.querySelectorAll('.vt-img').forEach(function (img) {
+      img.addEventListener('error', function () { img.outerHTML = '<div class="vt-pending"><b>' + esc(tab.label) + '</b><span>No se pudo cargar la imagen.</span></div>'; }, { once: true });
+    });
+    v3Mount();
+  }
+  // Al apuntar a una etiqueta de la maqueta, el giro automático se detiene para poder tocarla.
+  vitrinaEl.addEventListener('pointerover', function (e) { if (e.target.closest && e.target.closest('.vt-hot') && V3.controls) V3.controls.autoRotate = false; });
+  var vtTrigger = null;
+  function openVitrina(trigger) {
+    vtTrigger = trigger; S.vtTab = 0; S.vtMsg = '';
+    vitrinaEl.hidden = false;
+    document.documentElement.style.overflow = 'hidden';
+    renderVitrina();
+    var c = vitrinaEl.querySelector('[data-action="vt-close"]'); if (c) c.focus();
+  }
+  function closeVitrina(then) {
+    if (vitrinaEl.hidden) return;
+    vitrinaEl.hidden = true;
+    vitrinaEl.innerHTML = '';
+    document.documentElement.style.overflow = '';
+    V3.hot = null;
+    if (then) then(); else { renderAll(); refocus('[data-action="vt-open"]'); }
   }
 
   function wireGalleryImages() {
@@ -1432,7 +1615,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     var vend = u.estado === 'vend';
     var ppm = Math.round(u.precio / (u.cub + u.balc * 0.5));
     var h = '<div class="unit-head"><div><p class="eyebrow">Piso ' + u.piso + ' · ' + u.orient + '</p><div class="unit-id">' + u.nombre + '</div></div>' + pill(u.estado, STATE_LABEL) + '</div>';
-    h += gallery(modelKey(u, false), u, false);
+    h += gallery(modelKey(u, false), u, false) + '<button class="btn primary vt-cta" type="button" data-action="vt-open">Ver vitrina a pantalla completa</button>';
     if (vend) {
       h += '<p class="small muted">Esta unidad ya no está a la venta.</p>';
     } else {
@@ -1523,7 +1706,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     var c = casaById(S.casa) || CASAS[0];
     var vend = c.estado === 'vend';
     var h = '<div class="unit-head"><div><p class="eyebrow">Fila ' + c.fila + ' · lote de ' + c.sup + ' m²</p><div class="unit-id">Lote ' + c.n + '</div><p class="modelo">' + c.modeloNombre + '</p></div>' + pill(c.estado, STATE_LOTE) + '</div>';
-    h += gallery(modelKey(c, true), c, true);
+    h += gallery(modelKey(c, true), c, true) + '<button class="btn primary vt-cta" type="button" data-action="vt-open">Ver vitrina a pantalla completa</button>';
     if (vend) h += '<p class="small muted">Este lote ya no está a la venta.</p>';
     else h += '<div class="price">' + fmtUSD(c.precio) + '</div><p class="small muted">' + c.modalidad + ' · precio ficticio' + (c.estado === 'res' ? ' · reservado: podés anotarte por si se libera' : '') + '</p>';
     h += '<dl class="facts">' + fact('Superficie del lote', c.sup + ' m²') + fact('Sup. cubierta', c.cub ? c.cub + ' m²' : 'A construir') +
@@ -1657,6 +1840,21 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (!item && action !== 'dev-reset') return;
     if (action === 'plan-open') { openPlan(item, el, 'plan'); return; }
     if (action === 'v3-open') { openPlan(item, el, '3d'); return; }
+    if (action === 'vt-open') { openVitrina(el); return; }
+    if (action === 'vt-close') { closeVitrina(); return; }
+    if (action === 'vt-tab') { S.vtTab = Number(el.dataset.i) || 0; renderVitrina(); refocus('#vitrina .vt-tab[data-i="' + S.vtTab + '"]'); return; }
+    if (action === 'vt-visit') {
+      closeVitrina(function () { S.act = { kind: 'visita', id: item.id, dia: 'Lunes' }; renderAll(); showFicha(S.view === 'edificio' ? 'ficha' : 'ficha-casa'); refocus('#f-nombre'); });
+      return;
+    }
+    if (action === 'vt-link') {
+      var tag = S.view === 'edificio' ? 'u-' + item.id : 'lote-' + item.n;
+      S.vtMsg = 'El enlace de esta página ahora termina en #' + tag + '. Compartilo y se abre directo en esta ficha.';
+      history.replaceState ? history.replaceState(null, '', '#' + tag) : (location.hash = tag);
+      renderVitrina();
+      refocus('#vitrina [data-action="vt-link"]');
+      return;
+    }
     if (action === 'modal-plan' || action === 'modal-3d') { modalMode = action === 'modal-3d' ? '3d' : 'plan'; renderModal(item); refocus('#' + (modalMode === '3d' ? 'mtab-3d' : 'mtab-plan')); return; }
     if (action === 'v3-roof') {
       S.roof = !S.roof;
@@ -1735,6 +1933,22 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   }
   modal.addEventListener('click', function (e) { if (e.target === modal) closePlan(); });
   document.addEventListener('keydown', function (e) {
+    if (vitrinaEl.hidden) return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (e.key === 'Escape') { e.preventDefault(); closeVitrina(); }
+    else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && tag !== 'input') {
+      e.preventDefault();
+      S.vtTab += e.key === 'ArrowRight' ? 1 : -1;
+      renderVitrina();
+    } else if (e.key === 'Tab') {
+      var f = Array.prototype.slice.call(vitrinaEl.querySelectorAll('button:not([hidden])'));
+      if (!f.length) return;
+      var idx = f.indexOf(document.activeElement);
+      e.preventDefault();
+      f[(idx + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+    }
+  });
+  document.addEventListener('keydown', function (e) {
     if (modal.hidden) return;
     if (e.key === 'Escape') { e.preventDefault(); closePlan(); }
     else if (e.key === 'Tab') {
@@ -1759,7 +1973,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   });
 
   document.addEventListener('keydown', function (e) {
-    if (!modal.hidden) return;
+    if (!modal.hidden || !vitrinaEl.hidden) return;
     if (e.key !== 'Enter' && e.key !== ' ') return;
     var el = e.target.closest && e.target.closest('g[role="button"], tr[data-id], tr[data-casa]');
     if (!el || el !== e.target) return;
