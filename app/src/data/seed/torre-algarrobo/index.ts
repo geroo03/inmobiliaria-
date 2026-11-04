@@ -198,6 +198,8 @@ function photoHotspots(sceneId: string, key: PhotoKey, variant: 'dia' | 'noche')
 const SCENE_DEFS: { id: string; name: string; day: PhotoKey; night: PhotoKey | null }[] = [
   { id: 'frente', name: 'Frente', day: 'frente-dia', night: 'frente-noche' },
   { id: 'esquina', name: 'Esquina', day: 'esquina-dia', night: 'esquina-noche' },
+  // Sin foto de noche: de noche se ve la de día.
+  { id: 'lateral', name: 'Lateral', day: 'lateral-dia', night: null },
 ];
 
 const scenes: Scene[] = SCENE_DEFS.map((d) => {
@@ -214,17 +216,33 @@ const scenes: Scene[] = SCENE_DEFS.map((d) => {
   };
 });
 
-/** Órbita entre las vistas, sin video por ahora: el visor hace un fundido. */
+/**
+ * Videos de giro de día (generados con IA). La vuelta es el mismo video invertido.
+ * Los pares que no están acá se pasan con un fundido; de noche, siempre fundido.
+ */
+const DAY_VIDEOS = new Set<string>([]); // p. ej. 'frente>esquina' cuando esté el video
+
+function videosFor(from: string, to: string) {
+  const forward = DAY_VIDEOS.has(`${from}>${to}`), backward = DAY_VIDEOS.has(`${to}>${from}`);
+  if (!forward && !backward) return { videoDayUrl: null, videoDayMobileUrl: null };
+  const name = forward ? `${from}__${to}` : `${to}__${from}-reversa`;
+  return {
+    videoDayUrl: media(`transiciones/${name}-1080.mp4`),
+    videoDayMobileUrl: media(`transiciones/${name}-720.mp4`),
+  };
+}
+
+/** Órbita entre las vistas: hacia la derecha la siguiente, hacia la izquierda la anterior. */
 const transitions: SceneTransition[] =
   scenes.length < 2
     ? []
     : scenes.slice(0, scenes.length === 2 ? 1 : scenes.length).flatMap((from, i) => {
         // Con dos vistas alcanza un par (ida y vuelta); con más, se cierra el anillo.
         const to = scenes[(i + 1) % scenes.length];
-        const none = { videoDayUrl: null, videoDayMobileUrl: null, videoNightUrl: null, videoNightMobileUrl: null };
+        const night = { videoNightUrl: null, videoNightMobileUrl: null };
         return [
-          { fromSceneId: from.id, toSceneId: to.id, direction: 'right' as const, ...none },
-          { fromSceneId: to.id, toSceneId: from.id, direction: 'left' as const, ...none },
+          { fromSceneId: from.id, toSceneId: to.id, direction: 'right' as const, ...videosFor(from.id, to.id), ...night },
+          { fromSceneId: to.id, toSceneId: from.id, direction: 'left' as const, ...videosFor(to.id, from.id), ...night },
         ];
       });
 
