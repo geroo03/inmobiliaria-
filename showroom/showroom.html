@@ -1,0 +1,938 @@
+<title>Showroom Algarrobo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: lámina de obra. Fachada a la izquierda, planta al centro, ficha a la derecha; en celular todo se apila. */
+:root {
+  --bg: #EDF0EB;
+  --surface: #F8F9F6;
+  --surface-2: #E2E8E3;
+  --ink: #16252A;
+  --muted: #4E6065;
+  --line: #C4CDC7;
+  --accent: #23705C;
+  --accent-soft: #D3E6DE;
+  --on-accent: #F8F9F6;
+  --st-disp: #2B8E59;
+  --st-res: #C68814;
+  --st-vend: #7D888E;
+  --facade: #DCE2DD;
+  --facade-side: #C1CAC4;
+  --roof: #A8B3AD;
+  --glass: #B3C4C9;
+  --tree: #6B9B63;
+  --tree-2: #4E7E49;
+  --trunk: #7A6650;
+  --ground: #CCD3CB;
+  --street: #D6DCD5;
+  --display: 'Bricolage Grotesque', 'Public Sans', system-ui, sans-serif;
+  --body: 'Public Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E181B; --surface: #152327; --surface-2: #1D2E32; --ink: #E3EAE6; --muted: #9CACA8; --line: #2E4044;
+    --accent: #57B99B; --accent-soft: #1D3A33; --on-accent: #0E181B;
+    --st-disp: #4BBA7F; --st-res: #E1A83C; --st-vend: #76838A;
+    --facade: #26373B; --facade-side: #1A292D; --roof: #35494D; --glass: #435B61;
+    --tree: #4F7F4A; --tree-2: #3D6939; --trunk: #5E4E3D; --ground: #1F2D2B; --street: #1B282B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E181B; --surface: #152327; --surface-2: #1D2E32; --ink: #E3EAE6; --muted: #9CACA8; --line: #2E4044;
+  --accent: #57B99B; --accent-soft: #1D3A33; --on-accent: #0E181B;
+  --st-disp: #4BBA7F; --st-res: #E1A83C; --st-vend: #76838A;
+  --facade: #26373B; --facade-side: #1A292D; --roof: #35494D; --glass: #435B61;
+  --tree: #4F7F4A; --tree-2: #3D6939; --trunk: #5E4E3D; --ground: #1F2D2B; --street: #1B282B;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.wrap {
+  max-width: 1340px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+h1, h2 { text-wrap: balance; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0; }
+.small { font-size: 13px; }
+.muted { color: var(--muted); }
+
+/* Encabezado */
+.top { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-end; justify-content: space-between; }
+.brand { min-width: 0; display: grid; gap: 4px; }
+.brand h1 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 4.4vw, 48px); line-height: 1; letter-spacing: -0.015em; margin: 0; }
+.proj-sub { margin: 0; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.demo-badge { display: inline-flex; align-items: center; border: 1px dashed var(--muted); color: var(--ink); border-radius: 999px; padding: 1px 10px; font-size: 12px; font-weight: 600; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; }
+.stat { display: grid; gap: 2px; padding: 8px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); min-width: 104px; }
+.stat b { font-family: var(--display); font-size: 26px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat b.stat-price { font-size: 19px; line-height: 1.5; }
+.stat span { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.dot.disp { background: var(--st-disp); }
+.dot.res { background: var(--st-res); }
+.dot.vend { background: repeating-linear-gradient(45deg, var(--st-vend) 0 2px, transparent 2px 4px); box-shadow: inset 0 0 0 1.5px var(--st-vend); }
+
+/* Barra de controles */
+.bar { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; justify-content: space-between; margin-block: 20px 14px; }
+.tabs { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: 4px; gap: 4px; max-width: 100%; }
+.tab { border: 0; background: transparent; color: var(--ink); font: 600 14px/1.2 var(--body); padding: 9px 16px; border-radius: 999px; cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.filters .lbl { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-right: 2px; }
+.filters .sep { width: 1px; height: 22px; background: var(--line); margin-inline: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 5px 12px; font: 500 13px/1.3 var(--body); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.dev-ctl { display: flex; gap: 8px; align-items: center; }
+.switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.switch input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+/* Grilla principal */
+.stage { display: grid; grid-template-columns: minmax(220px, 270px) minmax(0, 1fr) minmax(300px, 360px); gap: 16px; align-items: start; }
+.stage.casas { grid-template-columns: minmax(0, 1fr) minmax(300px, 370px); }
+@media (max-width: 1080px) {
+  .stage { grid-template-columns: minmax(200px, 250px) minmax(0, 1fr); }
+  .stage .ficha { grid-column: 1 / -1; }
+  .stage.casas { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 680px) {
+  .stage { grid-template-columns: minmax(0, 1fr); }
+  .facade svg { max-height: 380px; }
+}
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; min-width: 0; }
+.panel h2 { font-family: var(--display); font-size: 19px; font-weight: 700; line-height: 1.2; margin: 0 0 2px; }
+.panel .sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+.facade svg, .plan svg, .master svg { display: block; width: 100%; height: auto; }
+.facade svg { max-height: 560px; }
+.legend { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding: 0; font-size: 13px; color: var(--muted); }
+.legend li { display: inline-flex; align-items: center; gap: 6px; }
+.list-panel { margin-top: 16px; }
+.list-head { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; }
+
+/* SVG: edificio */
+svg text { font-family: var(--body); }
+.face { fill: var(--facade); stroke: var(--ink); stroke-width: 1.2; }
+.side { fill: var(--facade-side); stroke: var(--ink); stroke-width: 1.2; }
+.roof { fill: var(--roof); stroke: var(--ink); stroke-width: 1.2; }
+.tank { fill: var(--facade-side); stroke: var(--ink); stroke-width: 1; }
+.glass { fill: var(--glass); stroke: var(--ink); stroke-width: .8; }
+.door { fill: var(--ink); opacity: .75; }
+.slab { stroke: var(--ink); stroke-width: 1; opacity: .3; }
+.ground { fill: var(--ground); }
+.walk { stroke: var(--ink); stroke-width: 1; opacity: .25; }
+.tree { fill: var(--tree); }
+.tree2 { fill: var(--tree-2); }
+.trunk { fill: var(--trunk); }
+.sidewin { fill: var(--glass); opacity: .7; }
+.win { stroke: var(--ink); stroke-width: .8; }
+.win.s-disp { fill: var(--st-disp); }
+.win.s-res { fill: var(--st-res); }
+.win.s-vend { fill: url(#hatch); }
+.win.dim { opacity: .22; }
+.floor { cursor: pointer; outline: none; }
+.floor .band { fill: transparent; }
+.floor:hover .band { fill: var(--accent); fill-opacity: .10; }
+.floor.sel .band { fill: var(--accent); fill-opacity: .16; stroke: var(--accent); stroke-width: 2.5; }
+.floor:focus-visible .band { stroke: var(--accent); stroke-width: 3; stroke-dasharray: 5 3; }
+.f-num { font-size: 13px; fill: var(--muted); font-weight: 600; }
+.floor.sel .f-num { fill: var(--accent); font-weight: 700; }
+
+/* SVG: planta */
+.orient { font-size: 11px; letter-spacing: .12em; fill: var(--muted); font-weight: 600; }
+.floorbg { fill: var(--surface-2); }
+.corridor { fill: var(--surface-2); }
+.core { fill: var(--roof); stroke: var(--ink); stroke-width: 1; }
+.core-t { font-size: 12px; fill: var(--muted); }
+.outline { fill: none; stroke: var(--ink); stroke-width: 3; }
+.balc { fill: var(--surface-2); stroke: var(--ink); stroke-width: 1; stroke-dasharray: 4 3; }
+.unit, .lot-g { cursor: pointer; outline: none; }
+.u-bg, .lot-bg { fill: var(--surface); }
+.s-disp .u-fill, .s-disp .lot-fill { fill: var(--st-disp); fill-opacity: .24; }
+.s-res .u-fill, .s-res .lot-fill { fill: var(--st-res); fill-opacity: .30; }
+.s-vend .u-fill, .s-vend .lot-fill { fill: url(#hatch); }
+.unit:hover .u-fill, .lot-g:hover .lot-fill { fill-opacity: .42; }
+.u-shape, .lot-line { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.sel .u-shape, .sel .lot-line { stroke: var(--accent); stroke-width: 4.5; }
+.unit:focus-visible .u-shape, .lot-g:focus-visible .lot-line { stroke: var(--accent); stroke-width: 3; stroke-dasharray: 6 4; }
+.unit.dim, .lot-g.dim { opacity: .3; }
+.u-label { font-family: var(--display); font-weight: 800; font-size: 28px; fill: var(--ink); }
+.u-meta { font-size: 13px; fill: var(--muted); }
+.u-price { font-size: 15px; font-weight: 700; fill: var(--ink); font-variant-numeric: tabular-nums; }
+.u-state { font-size: 13px; font-weight: 600; fill: var(--ink); }
+.sdot.s-disp { fill: var(--st-disp); }
+.sdot.s-res { fill: var(--st-res); }
+.sdot.s-vend { fill: var(--st-vend); }
+.hatch-bg { fill: var(--surface); }
+.hatch-line { stroke: var(--st-vend); stroke-width: 3; }
+
+/* SVG: barrio */
+.mp-bg { fill: var(--surface-2); }
+.street { fill: var(--street); }
+.street-line { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 18 14; opacity: .5; }
+.street-t { font-size: 15px; fill: var(--muted); font-weight: 600; letter-spacing: .04em; }
+.house { fill: var(--surface); stroke: var(--ink); stroke-width: 1.4; }
+.patio-in { fill: var(--tree); opacity: .55; }
+.house-empty { fill: none; stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.lot-n { font-family: var(--display); font-weight: 800; font-size: 22px; fill: var(--ink); }
+.lot-s { font-size: 12px; font-weight: 600; fill: var(--ink); }
+.mp-note { font-size: 13px; fill: var(--muted); }
+
+/* Plano chico */
+.mini-plan { margin: 4px 0 14px; }
+.mini-plan svg { width: 100%; height: auto; display: block; background: var(--surface-2); border-radius: 8px; }
+.mini-plan figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.room { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+.room.ext { fill: var(--surface-2); stroke-dasharray: 4 3; }
+.room.patio { fill: var(--tree); fill-opacity: .25; }
+.room-t { font-size: 12px; fill: var(--ink); }
+
+/* Ficha */
+.ficha { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+@media (max-width: 1080px) { .ficha { position: static; } }
+.unit-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.unit-id { font-family: var(--display); font-size: 44px; font-weight: 800; line-height: 1; letter-spacing: -0.01em; margin-top: 2px; }
+.modelo { font-weight: 600; margin: 4px 0 0; }
+.state-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); white-space: nowrap; }
+.price { font-family: var(--display); font-size: 30px; font-weight: 700; margin-top: 14px; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.price + p { margin: 2px 0 0; }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 16px 0; }
+.facts div { min-width: 0; border-top: 1px solid var(--line); padding-top: 6px; }
+.facts dt { font-size: 12px; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 9px 14px; border-radius: 8px; font: 600 14px/1.2 var(--body); cursor: pointer; }
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.small-btn { padding: 6px 10px; font-size: 13px; }
+.btn:focus-visible, .chip:focus-visible, .tab:focus-visible, tr:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 2px;
+}
+.act-box:empty { display: none; }
+.act-box { margin-top: 12px; }
+.box { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--surface-2); display: grid; gap: 10px; }
+.box p { margin: 0; }
+.field { display: grid; gap: 4px; }
+.field label { font-size: 13px; font-weight: 600; }
+.field input, .field select { font: 15px var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; box-sizing: border-box; }
+.form-err { color: var(--ink); font-size: 13px; border-left: 3px solid var(--st-res); padding-left: 8px; }
+.ok { border-left: 3px solid var(--st-disp); padding-left: 10px; }
+.wa-msg { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 14px; overflow-wrap: anywhere; }
+.tours { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 14px; }
+.tours a { color: var(--accent); font-weight: 600; text-underline-offset: 3px; }
+.dev { border: 1px dashed var(--accent); border-radius: 8px; padding: 12px; margin-top: 16px; display: grid; gap: 10px; }
+.dev fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.dev legend { font-size: 13px; font-weight: 600; margin-bottom: 4px; padding: 0; }
+.radio { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; }
+.radio input { accent-color: var(--accent); }
+
+/* Lista */
+.list-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); white-space: nowrap; }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.num, th.num { text-align: right; }
+tr[data-id], tr[data-casa] { cursor: pointer; }
+tr[data-id]:hover, tr[data-casa]:hover { background: var(--surface-2); }
+tr.sel { background: var(--accent-soft); }
+td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
+.empty { padding: 16px 4px; color: var(--muted); }
+
+/* Pie legal */
+.legal { margin-top: 24px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 4px; }
+.legal p { margin: 0; }
+.legal b { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<svg class="defs" aria-hidden="true" focusable="false"><defs>
+  <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect class="hatch-bg" width="8" height="8"/>
+    <line class="hatch-line" x1="0" y1="0" x2="0" y2="8"/>
+  </pattern>
+</defs></svg>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <p class="eyebrow">Showroom digital · Córdoba Capital</p>
+      <h1 id="proj-title">Torre Algarrobo</h1>
+      <p class="proj-sub"><span id="proj-sub"></span><span class="demo-badge">Proyecto ficticio de demostración</span></p>
+    </div>
+    <div class="stats" id="stats" aria-live="polite"></div>
+  </header>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="Proyecto">
+      <button class="tab" role="tab" type="button" data-view="edificio" id="tab-edificio" aria-controls="view-edificio">Edificio · departamentos</button>
+      <button class="tab" role="tab" type="button" data-view="casas" id="tab-casas" aria-controls="view-casas">Barrio · casas y lotes</button>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="dev-ctl">
+      <label class="switch" for="dev-toggle"><input type="checkbox" id="dev-toggle"> Modo desarrolladora</label>
+      <button class="btn small-btn" id="dev-reset" type="button" data-action="dev-reset" hidden>Restablecer demo</button>
+    </div>
+  </div>
+
+  <section id="view-edificio" role="tabpanel" aria-labelledby="tab-edificio">
+    <div class="stage">
+      <div class="panel">
+        <h2>Elegí un piso</h2>
+        <p class="sub">Cada ventana es una unidad, pintada según su estado.</p>
+        <div id="facade" class="facade"></div>
+      </div>
+      <div class="panel">
+        <h2 id="plan-title">Planta</h2>
+        <p class="sub" id="plan-sub"></p>
+        <div id="plan" class="plan"></div>
+        <ul class="legend">
+          <li><i class="dot disp"></i>Disponible</li>
+          <li><i class="dot res"></i>Reservada</li>
+          <li><i class="dot vend"></i>Vendida</li>
+          <li>Línea punteada: balcón</li>
+        </ul>
+      </div>
+      <aside class="panel ficha" id="ficha" aria-label="Ficha de la unidad"></aside>
+    </div>
+    <div class="panel list-panel">
+      <div class="list-head"><h2 id="list-title">Unidades</h2><p class="sub">Tocá una fila para ver su ficha.</p></div>
+      <div class="list-wrap" id="list"></div>
+    </div>
+  </section>
+
+  <section id="view-casas" role="tabpanel" aria-labelledby="tab-casas" hidden>
+    <div class="stage casas">
+      <div class="panel">
+        <h2>Elegí un lote</h2>
+        <p class="sub">Cada lote muestra si tiene casa, qué modelo y su estado.</p>
+        <div id="master" class="master"></div>
+        <ul class="legend">
+          <li><i class="dot disp"></i>Disponible</li>
+          <li><i class="dot res"></i>Reservado</li>
+          <li><i class="dot vend"></i>Vendido</li>
+          <li>Recuadro punteado: lote sin construir</li>
+        </ul>
+      </div>
+      <aside class="panel ficha" id="ficha-casa" aria-label="Ficha del lote"></aside>
+    </div>
+    <div class="panel list-panel">
+      <div class="list-head"><h2 id="list-casas-title">Lotes</h2><p class="sub">Tocá una fila para ver su ficha.</p></div>
+      <div class="list-wrap" id="list-casas"></div>
+    </div>
+  </section>
+
+  <footer class="legal">
+    <p><b>Comercializa:</b> [Nombre de la inmobiliaria] · <b>Corredor responsable:</b> [Nombre y apellido], Mat. CPI Córdoba N.° [pendiente] (Ley 9445, art. 16 n).</p>
+    <p>Proyectos, planos, superficies, fechas y precios ficticios, solo para demostración. Las imágenes y los planos son ilustrativos y no están a escala.</p>
+    <p>El modo desarrolladora guarda los cambios solo en este navegador.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STATE_LABEL = { disp: 'Disponible', res: 'Reservada', vend: 'Vendida' };
+  var STATE_LOTE = { disp: 'Disponible', res: 'Reservado', vend: 'Vendido' };
+  var STATES = ['disp', 'res', 'vend'];
+  var STORE_KEY = 'showroom-algarrobo-v1';
+  var PISOS = 9;
+  var TOURS_EDIF = [
+    ['Recorrido 360° de ejemplo', 'https://geroo03.github.io/inmobiliaria-c-rdoba-3D/visita-360/'],
+    ['Maqueta 3D navegable de ejemplo', 'https://geroo03.github.io/inmobiliaria-c-rdoba-3D/noveno/']
+  ];
+  var TOURS_CASA = [
+    ['Casa Patio en 3D (ejemplo)', 'https://geroo03.github.io/inmobiliaria-c-rdoba-3D/'],
+    ['Visita con fotos de ejemplo', 'https://geroo03.github.io/inmobiliaria-c-rdoba-3D/visita-real/']
+  ];
+
+  var TIPOS = {
+    A: { amb: 3, dorm: 2, banos: 1, cub: 68, balc: 9, orient: 'Norte · frente', frente: true },
+    B: { amb: 2, dorm: 1, banos: 1, cub: 46, balc: 6, orient: 'Norte · frente', frente: true },
+    C: { amb: 2, dorm: 1, banos: 1, cub: 44, balc: 5, orient: 'Sur · contrafrente', frente: false },
+    D: { amb: 1, dorm: 0, banos: 1, cub: 33, balc: 4, orient: 'Sur · contrafrente', frente: false }
+  };
+  var LETRAS = ['A', 'B', 'C', 'D'];
+  // Rectángulos de la planta tipo: [x, y, ancho, alto] en el viewBox 600 × 410.
+  var RECTS = { A: [20, 40, 320, 145], B: [340, 40, 240, 145], D: [20, 235, 240, 145], C: [260, 235, 320, 145] };
+  var BALC = { A: [60, 28, 240, 12], B: [370, 28, 180, 12], D: [50, 380, 180, 12], C: [300, 380, 240, 12] };
+
+  var PLANOS = {
+    A: [['Balcón', 40, 0, 240, 24, 'ext'], ['Estar · comedor', 0, 24, 180, 110], ['Cocina', 180, 24, 70, 70], ['Lav.', 250, 24, 70, 70],
+        ['Hall', 180, 94, 140, 40], ['Dorm. 1', 0, 134, 120, 86], ['Baño', 120, 134, 70, 86], ['Dorm. 2', 190, 134, 130, 86]],
+    B: [['Balcón', 60, 0, 200, 24, 'ext'], ['Estar · comedor', 0, 24, 190, 110], ['Cocina', 190, 24, 130, 60], ['Hall', 190, 84, 130, 50],
+        ['Dormitorio', 0, 134, 190, 86], ['Baño', 190, 134, 130, 86]],
+    C: [['Balcón', 60, 0, 200, 24, 'ext'], ['Estar · cocina integrada', 0, 24, 200, 116], ['Dormitorio', 200, 24, 120, 116],
+        ['Baño', 0, 140, 110, 80], ['Ingreso', 110, 140, 210, 80]],
+    D: [['Balcón', 80, 0, 160, 24, 'ext'], ['Ambiente único', 0, 24, 220, 130], ['Kitchenette', 220, 24, 100, 130],
+        ['Baño', 0, 154, 120, 66], ['Ingreso', 120, 154, 200, 66]]
+  };
+  var MODELOS = {
+    patio: { nombre: 'Casa Patio', dorm: 3, banos: 2, cub: 118, modalidad: 'Casa llave en mano' },
+    compacta: { nombre: 'Casa Compacta', dorm: 2, banos: 1, cub: 86, modalidad: 'Casa llave en mano' },
+    lote: { nombre: 'Lote sin construir', dorm: 0, banos: 0, cub: 0, modalidad: 'Lote con servicios' }
+  };
+  var PLANOS_CASA = {
+    patio: [['Estar · comedor', 0, 0, 150, 90], ['Cocina', 150, 0, 80, 90], ['Dorm. ppal.', 230, 0, 90, 110], ['Patio', 90, 90, 140, 70, 'patio'],
+            ['Dorm. 2', 0, 90, 90, 130], ['Baño', 230, 110, 90, 50], ['Dorm. 3', 90, 160, 140, 60], ['Baño 2', 230, 160, 90, 60]],
+    compacta: [['Estar · comedor · cocina', 0, 0, 200, 110], ['Dorm. 1', 200, 0, 120, 110], ['Baño', 200, 110, 70, 50], ['Lav.', 270, 110, 50, 50],
+               ['Dorm. 2', 0, 110, 120, 110], ['Jardín', 120, 110, 80, 110, 'patio'], ['Galería', 200, 160, 120, 60, 'patio']],
+    lote: [['Lote listo para construir', 0, 0, 320, 220, 'ext']]
+  };
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function buildUnits() {
+    var rnd = mulberry32(20261104);
+    var out = [];
+    for (var p = 1; p <= PISOS; p++) {
+      LETRAS.forEach(function (letra) {
+        var t = TIPOS[letra];
+        var sup = t.cub + t.balc * 0.5;
+        var ppm = 1950 * (1 + 0.012 * (p - 1)) * (t.frente ? 1.04 : 1);
+        var r = rnd();
+        var pVend = 0.52 - p * 0.04;
+        out.push({
+          id: (p + letra).toLowerCase(), nombre: p + letra, piso: p, letra: letra,
+          amb: t.amb, dorm: t.dorm, banos: t.banos, cub: t.cub, balc: t.balc, orient: t.orient,
+          precio: Math.round(sup * ppm / 500) * 500,
+          estado: r < pVend ? 'vend' : (r < pVend + 0.14 ? 'res' : 'disp')
+        });
+      });
+    }
+    return out;
+  }
+
+  function buildCasas() {
+    var rnd = mulberry32(777);
+    var sups = [300, 280, 260, 300, 320, 280, 260, 300, 280, 330];
+    var out = [];
+    for (var i = 0; i < 20; i++) {
+      var n = i + 1;
+      var modelo = (i % 5 === 4) ? 'lote' : (i % 2 === 0 ? 'patio' : 'compacta');
+      var m = MODELOS[modelo];
+      var sup = sups[i % 10];
+      var r = rnd();
+      out.push({
+        id: 'c' + n, n: n, fila: i < 10 ? 'norte' : 'sur', sup: sup, modelo: modelo,
+        modeloNombre: m.nombre, dorm: m.dorm, banos: m.banos, cub: m.cub, modalidad: m.modalidad,
+        precio: Math.round((sup * 95 + m.cub * 1150) / 500) * 500,
+        estado: r < 0.32 ? 'vend' : (r < 0.46 ? 'res' : 'disp')
+      });
+    }
+    return out;
+  }
+
+  function loadOverrides() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      var parsed = raw ? JSON.parse(raw) : {};
+      return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : {};
+    } catch (e) { return {}; }
+  }
+  function saveOverrides(o) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(o)); } catch (e) { /* sin almacenamiento: los cambios duran hasta recargar */ }
+  }
+  function validPrice(n) { return typeof n === 'number' && isFinite(n) && n >= 1000 && n <= 20000000; }
+  function applyOverrides(list, overrides) {
+    list.forEach(function (item) {
+      var o = overrides[item.id];
+      if (!o || typeof o !== 'object') return;
+      if (STATES.indexOf(o.estado) !== -1) item.estado = o.estado;
+      if (validPrice(o.precio)) item.precio = Math.round(o.precio);
+    });
+  }
+
+  var overrides = loadOverrides();
+  var UNITS, CASAS;
+  function rebuild() {
+    UNITS = buildUnits(); CASAS = buildCasas();
+    applyOverrides(UNITS, overrides); applyOverrides(CASAS, overrides);
+  }
+  rebuild();
+
+  var firstCasaDisp = CASAS.filter(function (c) { return c.estado === 'disp' && c.modelo === 'patio'; })[0] || CASAS[0];
+  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {} };
+
+  function $(sel) { return document.querySelector(sel); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function fmtUSD(n) { return 'USD ' + Math.round(n).toLocaleString('es-AR'); }
+  function unitById(id) { for (var i = 0; i < UNITS.length; i++) if (UNITS[i].id === id) return UNITS[i]; return null; }
+  function casaById(id) { for (var i = 0; i < CASAS.length; i++) if (CASAS[i].id === id) return CASAS[i]; return null; }
+  function matchesUnit(u) { return (S.amb === 'todos' || u.amb === Number(S.amb)) && (!S.soloDisp || u.estado === 'disp'); }
+  function matchesCasa(c) { return (S.modelo === 'todos' || c.modelo === S.modelo) && (!S.soloDisp || c.estado === 'disp'); }
+  function code(prefix, id) {
+    if (!S.codes[id]) {
+      var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '';
+      for (var i = 0; i < 4; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+      S.codes[id] = prefix + '-' + s;
+    }
+    return S.codes[id];
+  }
+  function pill(estado, labels) { return '<span class="state-pill"><i class="dot ' + estado + '"></i>' + labels[estado] + '</span>'; }
+  function fact(k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
+
+  /* ---------- Encabezado, contadores y filtros ---------- */
+  function renderHeader() {
+    var edif = S.view === 'edificio';
+    $('#proj-title').textContent = edif ? 'Torre Algarrobo' : 'Barrio Los Talas';
+    $('#proj-sub').textContent = edif
+      ? '9 pisos · 36 departamentos de 1 a 3 ambientes · entrega estimada dic. 2028'
+      : '20 lotes · Casa Patio, Casa Compacta y lotes con servicios';
+    var list = edif ? UNITS : CASAS;
+    var labels = edif ? STATE_LABEL : STATE_LOTE;
+    var c = { disp: 0, res: 0, vend: 0 };
+    list.forEach(function (x) { c[x.estado]++; });
+    var precios = list.filter(function (x) { return x.estado === 'disp'; }).map(function (x) { return x.precio; });
+    var desde = precios.length ? fmtUSD(Math.min.apply(null, precios)) : 'Sin stock';
+    var h = '';
+    STATES.forEach(function (k) {
+      h += '<div class="stat"><b>' + c[k] + '</b><span><i class="dot ' + k + '"></i>' + labels[k] + 's</span></div>';
+    });
+    h += '<div class="stat"><b class="stat-price">' + desde + '</b><span>Precio desde</span></div>';
+    $('#stats').innerHTML = h;
+    document.querySelectorAll('.tab').forEach(function (t) { t.setAttribute('aria-selected', String(t.dataset.view === S.view)); });
+    $('#view-edificio').hidden = !edif;
+    $('#view-casas').hidden = edif;
+    $('#dev-toggle').checked = S.dev;
+    $('#dev-reset').hidden = !S.dev;
+  }
+
+  function chip(filter, value, label, pressed) {
+    return '<button class="chip" type="button" data-filter="' + filter + '" data-value="' + value + '" aria-pressed="' + pressed + '">' + label + '</button>';
+  }
+  function renderFilters() {
+    var h = '';
+    if (S.view === 'edificio') {
+      h += '<span class="lbl">Ambientes</span>';
+      [['todos', 'Todos'], ['1', '1'], ['2', '2'], ['3', '3']].forEach(function (o) { h += chip('amb', o[0], o[1], S.amb === o[0]); });
+    } else {
+      h += '<span class="lbl">Modelo</span>';
+      [['todos', 'Todos'], ['patio', 'Casa Patio'], ['compacta', 'Casa Compacta'], ['lote', 'Lote']].forEach(function (o) { h += chip('modelo', o[0], o[1], S.modelo === o[0]); });
+    }
+    h += '<span class="sep" aria-hidden="true"></span>' + chip('disp', '1', 'Solo disponibles', S.soloDisp);
+    $('#filters').innerHTML = h;
+  }
+
+  /* ---------- Edificio ---------- */
+  function tree(cx, base, r) {
+    return '<rect class="trunk" x="' + (cx - 3) + '" y="' + (base - r - 4) + '" width="6" height="' + (r + 4) + '"/>' +
+      '<circle class="tree2" cx="' + (cx - r * 0.35) + '" cy="' + (base - r - 8) + '" r="' + (r * 0.72) + '"/>' +
+      '<circle class="tree" cx="' + (cx + r * 0.25) + '" cy="' + (base - r - 16) + '" r="' + (r * 0.82) + '"/>';
+  }
+  function renderFacade() {
+    var X0 = 46, W = 176, D = 46, DY = 26, G = 492, PB = 56, FH = 42;
+    var top = G - PB - FH * PISOS;
+    var s = '<svg viewBox="0 0 300 548" role="group" aria-label="Fachada de Torre Algarrobo. Elegí un piso.">';
+    s += '<rect class="ground" x="0" y="' + G + '" width="300" height="56"/>';
+    s += '<line class="walk" x1="0" y1="' + (G + 18) + '" x2="300" y2="' + (G + 18) + '"/>';
+    s += '<polygon class="side" points="' + (X0 + W) + ',' + top + ' ' + (X0 + W + D) + ',' + (top - DY) + ' ' + (X0 + W + D) + ',' + (G - DY) + ' ' + (X0 + W) + ',' + G + '"/>';
+    s += '<polygon class="roof" points="' + X0 + ',' + top + ' ' + (X0 + D) + ',' + (top - DY) + ' ' + (X0 + W + D) + ',' + (top - DY) + ' ' + (X0 + W) + ',' + top + '"/>';
+    s += '<rect class="tank" x="' + (X0 + 92) + '" y="' + (top - DY - 10) + '" width="40" height="18"/>';
+    s += '<rect class="face" x="' + X0 + '" y="' + top + '" width="' + W + '" height="' + (G - top) + '"/>';
+    var pbY = G - PB;
+    s += '<rect class="glass" x="' + (X0 + 12) + '" y="' + (pbY + 14) + '" width="52" height="' + (PB - 22) + '"/>';
+    s += '<rect class="glass" x="' + (X0 + W - 64) + '" y="' + (pbY + 14) + '" width="52" height="' + (PB - 22) + '"/>';
+    s += '<rect class="door" x="' + (X0 + W / 2 - 14) + '" y="' + (pbY + 16) + '" width="28" height="' + (PB - 16) + '"/>';
+    s += '<text class="f-num" x="' + (X0 - 8) + '" y="' + (pbY + PB / 2 + 5) + '" text-anchor="end">PB</text>';
+    s += '<line class="slab" x1="' + X0 + '" y1="' + pbY + '" x2="' + (X0 + W) + '" y2="' + pbY + '"/>';
+    function skew(x) { return -(x - (X0 + W)) * DY / D; }
+    for (var p = 1; p <= PISOS; p++) {
+      var y = G - PB - FH * p;
+      var us = UNITS.filter(function (u) { return u.piso === p; });
+      var disp = us.filter(function (u) { return u.estado === 'disp'; }).length;
+      var sel = S.piso === p;
+      s += '<g class="floor' + (sel ? ' sel' : '') + '" data-piso="' + p + '" tabindex="0" role="button" aria-pressed="' + sel + '" aria-label="Piso ' + p + ': ' + disp + ' de 4 unidades disponibles">';
+      s += '<rect class="band" x="' + (X0 - 34) + '" y="' + y + '" width="' + (W + 34) + '" height="' + FH + '"/>';
+      us.forEach(function (u, i) {
+        s += '<rect class="win s-' + u.estado + (matchesUnit(u) ? '' : ' dim') + '" x="' + (X0 + 10 + i * 41) + '" y="' + (y + 9) + '" width="33" height="' + (FH - 18) + '" rx="1.5"/>';
+      });
+      for (var j = 0; j < 2; j++) {
+        var xa = X0 + W + 8 + j * 20, xb = xa + 12;
+        s += '<polygon class="sidewin" points="' + xa + ',' + (y + 10 + skew(xa)) + ' ' + xb + ',' + (y + 10 + skew(xb)) + ' ' + xb + ',' + (y + FH - 10 + skew(xb)) + ' ' + xa + ',' + (y + FH - 10 + skew(xa)) + '"/>';
+      }
+      s += '<line class="slab" x1="' + X0 + '" y1="' + y + '" x2="' + (X0 + W) + '" y2="' + y + '"/>';
+      s += '<text class="f-num" x="' + (X0 - 8) + '" y="' + (y + FH / 2 + 5) + '" text-anchor="end">' + p + '</text>';
+      s += '</g>';
+    }
+    s += tree(282, G + 4, 18);
+    s += '<circle class="tree2" cx="18" cy="' + (G - 4) + '" r="9"/><circle class="tree" cx="30" cy="' + (G - 2) + '" r="7"/>';
+    s += '</svg>';
+    $('#facade').innerHTML = s;
+  }
+
+  function renderPlan() {
+    var p = S.piso;
+    var us = UNITS.filter(function (u) { return u.piso === p; });
+    var disp = us.filter(function (u) { return u.estado === 'disp'; }).length;
+    $('#plan-title').textContent = 'Planta del piso ' + p;
+    $('#plan-sub').textContent = disp + ' de 4 unidades disponibles · tocá una unidad para ver su ficha';
+    var s = '<svg viewBox="0 0 600 410" role="group" aria-label="Planta del piso ' + p + '">';
+    s += '<text class="orient" x="300" y="16" text-anchor="middle">FRENTE · NORTE</text>';
+    s += '<text class="orient" x="300" y="406" text-anchor="middle">CONTRAFRENTE · SUR</text>';
+    s += '<rect class="floorbg" x="20" y="40" width="560" height="340"/>';
+    s += '<rect class="corridor" x="20" y="185" width="560" height="50"/>';
+    s += '<text class="core-t" x="150" y="215" text-anchor="middle">Pasillo común</text>';
+    s += '<rect class="core" x="282" y="190" width="56" height="40"/><text class="core-t" x="310" y="214" text-anchor="middle">Asc.</text>';
+    var ordered = us.slice().sort(function (a, b) { return (a.id === S.unidad) - (b.id === S.unidad); });
+    ordered.forEach(function (u) {
+      var r = RECTS[u.letra], b = BALC[u.letra];
+      var x = r[0], y = r[1], w = r[2], h = r[3];
+      var sel = S.unidad === u.id;
+      s += '<g class="unit s-' + u.estado + (sel ? ' sel' : '') + (matchesUnit(u) ? '' : ' dim') + '" data-id="' + u.id + '" tabindex="0" role="button" aria-pressed="' + sel + '" aria-label="Unidad ' + u.nombre + ', ' + u.amb + ' ambientes, ' + u.cub + ' metros cuadrados, ' + STATE_LABEL[u.estado] + '">';
+      s += '<rect class="balc" x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '"/>';
+      s += '<rect class="u-bg" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
+      s += '<rect class="u-fill" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
+      s += '<rect class="u-shape" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
+      s += '<text class="u-label" x="' + (x + 16) + '" y="' + (y + 40) + '">' + u.nombre + '</text>';
+      if (u.estado !== 'vend') s += '<text class="u-price" x="' + (x + w - 16) + '" y="' + (y + 36) + '" text-anchor="end">' + fmtUSD(u.precio) + '</text>';
+      s += '<text class="u-meta" x="' + (x + 16) + '" y="' + (y + 64) + '">' + u.amb + ' amb · ' + u.cub + ' m² + balcón ' + u.balc + ' m²</text>';
+      s += '<circle class="sdot s-' + u.estado + '" cx="' + (x + 22) + '" cy="' + (y + h - 21) + '" r="5"/>';
+      s += '<text class="u-state" x="' + (x + 33) + '" y="' + (y + h - 16) + '">' + STATE_LABEL[u.estado] + '</text>';
+      s += '</g>';
+    });
+    s += '<rect class="outline" x="20" y="40" width="560" height="340"/>';
+    s += '</svg>';
+    $('#plan').innerHTML = s;
+  }
+
+  function miniPlan(rooms, label) {
+    var s = '<svg viewBox="-6 -6 332 232" role="img" aria-label="' + esc(label) + '">';
+    rooms.forEach(function (r) {
+      s += '<rect class="room' + (r[5] ? ' ' + r[5] : '') + '" x="' + r[1] + '" y="' + r[2] + '" width="' + r[3] + '" height="' + r[4] + '"/>';
+      s += '<text class="room-t" x="' + (r[1] + r[3] / 2) + '" y="' + (r[2] + r[4] / 2 + 4) + '" text-anchor="middle">' + r[0] + '</text>';
+    });
+    return s + '</svg>';
+  }
+
+  function tours(list) {
+    return '<div class="tours">' + list.map(function (t) { return '<a href="' + t[1] + '" target="_blank" rel="noopener">' + t[0] + ' ↗</a>'; }).join('') + '</div>';
+  }
+
+  function actBox(item, isCasa) {
+    var a = S.act;
+    if (!a || a.id !== item.id) return '';
+    var nombre = isCasa ? 'el lote ' + item.n + ' de Barrio Los Talas' : 'la unidad ' + item.nombre + ' de Torre Algarrobo';
+    if (a.kind === 'visita') {
+      var dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      return '<form class="box" data-form="visita" novalidate>' +
+        '<div class="field"><label for="f-nombre">Nombre</label><input id="f-nombre" name="nombre" autocomplete="name" value="' + esc(a.nombre || '') + '"></div>' +
+        '<div class="field"><label for="f-tel">Teléfono</label><input id="f-tel" name="tel" type="tel" autocomplete="tel" inputmode="tel" value="' + esc(a.tel || '') + '"></div>' +
+        '<div class="field"><label for="f-dia">Día preferido</label><select id="f-dia" name="dia">' + dias.map(function (d) { return '<option' + (a.dia === d ? ' selected' : '') + '>' + d + '</option>'; }).join('') + '</select></div>' +
+        (a.err ? '<p class="form-err" role="alert">' + esc(a.err) + '</p>' : '') +
+        '<div><button class="btn primary" type="submit">Pedir visita</button></div></form>';
+    }
+    if (a.kind === 'visita-ok') {
+      return '<div class="box ok"><p><b>Pedido registrado, ' + esc(a.nombre) + '.</b></p><p class="small">En la versión real, el pedido llega al equipo comercial con ' + nombre + ', el día ' + esc(a.dia.toLowerCase()) + ' y el código ' + code(isCasa ? 'L' + item.n : 'T' + item.nombre, item.id) + ', y queda cargado como oportunidad. En esta demo no se envía nada.</p></div>';
+    }
+    if (a.kind === 'whatsapp') {
+      var c = code(isCasa ? 'L' + item.n : 'T' + item.nombre, item.id);
+      return '<div class="box"><p class="small muted">Mensaje que se abre en WhatsApp:</p>' +
+        '<p class="wa-msg" id="wa-msg">Hola, quiero consultar por ' + nombre + '. Código ' + c + '.</p>' +
+        '<div><button class="btn" type="button" data-action="copy-wa">Copiar mensaje</button></div>' +
+        '<p class="small muted">El código indica de qué anuncio y de qué unidad vino la consulta. Así se mide qué canal trae interesados reales.</p>' +
+        (a.msg ? '<p class="small" role="status">' + esc(a.msg) + '</p>' : '') + '</div>';
+    }
+    if (a.kind === 'link') {
+      var tag = isCasa ? '#lote-' + item.n : '#u-' + item.id;
+      return '<div class="box"><p class="small">El enlace de esta página ahora termina en <b>' + tag + '</b>. Quien lo abra entra directo a esta ficha.</p></div>';
+    }
+    return '';
+  }
+
+  function devPanel(item, labels) {
+    return '<div class="dev"><p class="eyebrow">Modo desarrolladora · ' + (item.nombre || 'Lote ' + item.n) + '</p>' +
+      '<fieldset><legend>Estado</legend>' + STATES.map(function (k) {
+        return '<label class="radio" for="dev-est-' + k + '"><input type="radio" name="dev-estado" id="dev-est-' + k + '" value="' + k + '"' + (item.estado === k ? ' checked' : '') + '> ' + labels[k] + '</label>';
+      }).join('') + '</fieldset>' +
+      '<div class="field"><label for="dev-precio">Precio de lista (USD)</label><input id="dev-precio" type="number" inputmode="numeric" min="1000" step="500" value="' + item.precio + '"></div>' +
+      '<div><button class="btn primary" type="button" data-action="dev-save">Guardar cambios</button></div>' +
+      (S.devMsg ? '<p class="small" role="status">' + esc(S.devMsg) + '</p>' : '') + '</div>';
+  }
+
+  function renderFicha() {
+    var u = unitById(S.unidad) || UNITS[0];
+    var vend = u.estado === 'vend';
+    var ppm = Math.round(u.precio / (u.cub + u.balc * 0.5));
+    var h = '<div class="unit-head"><div><p class="eyebrow">Piso ' + u.piso + ' · ' + u.orient + '</p><div class="unit-id">' + u.nombre + '</div></div>' + pill(u.estado, STATE_LABEL) + '</div>';
+    if (vend) {
+      h += '<div class="price">Vendida</div><p class="small muted">Esta unidad ya no está a la venta.</p>';
+    } else {
+      h += '<div class="price">' + fmtUSD(u.precio) + '</div><p class="small muted">' + fmtUSD(ppm) + '/m² · precio de lista ficticio' + (u.estado === 'res' ? ' · reservada: podés anotarte por si se libera' : '') + '</p>';
+    }
+    h += '<dl class="facts">' + fact('Ambientes', u.amb) + fact('Dormitorios', u.dorm || 'Monoambiente') + fact('Sup. cubierta', u.cub + ' m²') +
+      fact('Balcón', u.balc + ' m²') + fact('Baños', u.banos) + fact('Orientación', u.orient) + '</dl>';
+    h += '<figure class="mini-plan">' + miniPlan(PLANOS[u.letra], 'Plano de la unidad ' + u.nombre) + '<figcaption>Plano ilustrativo de la tipología ' + u.letra + ', sin escala.</figcaption></figure>';
+    h += '<div class="actions">';
+    if (vend) h += '<button class="btn primary" type="button" data-action="similares">Ver similares disponibles</button>';
+    else h += '<button class="btn primary" type="button" data-action="visita">' + (u.estado === 'res' ? 'Anotarme por si se libera' : 'Agendar visita') + '</button><button class="btn" type="button" data-action="whatsapp">Consultar por WhatsApp</button>';
+    h += '<button class="btn" type="button" data-action="link">Link a esta unidad</button></div>';
+    h += '<div class="act-box" aria-live="polite">' + actBox(u, false) + '</div>';
+    h += tours(TOURS_EDIF);
+    if (S.dev) h += devPanel(u, STATE_LABEL);
+    $('#ficha').innerHTML = h;
+  }
+
+  function renderList() {
+    var rows = UNITS.filter(matchesUnit).sort(function (a, b) { return b.piso - a.piso || a.letra.localeCompare(b.letra); });
+    $('#list-title').textContent = 'Unidades (' + rows.length + ' de ' + UNITS.length + ')';
+    if (!rows.length) { $('#list').innerHTML = '<p class="empty">Ninguna unidad coincide con los filtros. Probá con otra cantidad de ambientes.</p>'; return; }
+    var h = '<table><thead><tr><th>Unidad</th><th>Amb.</th><th class="num">Sup. cub.</th><th>Orientación</th><th class="num">Precio</th><th>Estado</th></tr></thead><tbody>';
+    rows.forEach(function (u) {
+      h += '<tr data-id="' + u.id + '" tabindex="0"' + (u.id === S.unidad ? ' class="sel" aria-current="true"' : '') + '><td><b>' + u.nombre + '</b></td><td>' + u.amb + '</td><td class="num">' + u.cub + ' m²</td><td>' + u.orient + '</td><td class="num">' + (u.estado === 'vend' ? '—' : fmtUSD(u.precio)) + '</td><td><span class="state-cell"><i class="dot ' + u.estado + '"></i>' + STATE_LABEL[u.estado] + '</span></td></tr>';
+    });
+    $('#list').innerHTML = h + '</tbody></table>';
+  }
+
+  /* ---------- Barrio ---------- */
+  function renderMaster() {
+    var s = '<svg viewBox="0 0 1000 600" role="group" aria-label="Plano de Barrio Los Talas. Elegí un lote.">';
+    s += '<rect class="mp-bg" x="0" y="0" width="1000" height="600" rx="6"/>';
+    s += '<rect class="street" x="0" y="270" width="1000" height="60"/>';
+    s += '<line class="street-line" x1="160" y1="300" x2="420" y2="300"/><line class="street-line" x1="600" y1="300" x2="980" y2="300"/>';
+    s += '<text class="street-t" x="510" y="305" text-anchor="middle">Calle de los Talas</text>';
+    s += '<text class="street-t" x="24" y="305">Ingreso →</text>';
+    var ordered = CASAS.slice().sort(function (a, b) { return (a.id === S.casa) - (b.id === S.casa); });
+    ordered.forEach(function (c) {
+      var idx = c.n - 1, row = idx < 10 ? 0 : 1, col = idx % 10;
+      var x = 30 + col * 94, y = row === 0 ? 40 : 340, w = 88, h = 220;
+      var sel = S.casa === c.id;
+      s += '<g class="lot-g s-' + c.estado + (sel ? ' sel' : '') + (matchesCasa(c) ? '' : ' dim') + '" data-casa="' + c.id + '" tabindex="0" role="button" aria-pressed="' + sel + '" aria-label="Lote ' + c.n + ', ' + c.modeloNombre + ', ' + c.sup + ' metros cuadrados, ' + STATE_LOTE[c.estado] + '">';
+      s += '<rect class="lot-bg" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
+      s += '<rect class="lot-fill" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
+      if (c.modelo !== 'lote') {
+        var hw = c.modelo === 'patio' ? 64 : 56, hh = c.modelo === 'patio' ? 96 : 72;
+        var hx = x + (w - hw) / 2, hy = row === 0 ? y + h - hh - 14 : y + 14;
+        s += '<rect class="house" x="' + hx + '" y="' + hy + '" width="' + hw + '" height="' + hh + '"/>';
+        if (c.modelo === 'patio') s += '<rect class="patio-in" x="' + (hx + hw / 2 - 12) + '" y="' + (hy + hh / 2 - 14) + '" width="24" height="28"/>';
+      } else {
+        s += '<rect class="house-empty" x="' + (x + 12) + '" y="' + (row === 0 ? y + h - 96 : y + 14) + '" width="' + (w - 24) + '" height="82"/>';
+      }
+      s += '<rect class="lot-line" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
+      var ty = row === 0 ? y + 30 : y + h - 36;
+      s += '<text class="lot-n" x="' + (x + w / 2) + '" y="' + ty + '" text-anchor="middle">' + c.n + '</text>';
+      s += '<text class="lot-s" x="' + (x + w / 2) + '" y="' + (ty + 19) + '" text-anchor="middle">' + STATE_LOTE[c.estado] + '</text>';
+      s += '</g>';
+    });
+    s += '<text class="mp-note" x="30" y="588">Plano ilustrativo, sin escala</text>';
+    s += '<text class="mp-note" x="970" y="588" text-anchor="end">N ↑</text>';
+    s += '</svg>';
+    $('#master').innerHTML = s;
+  }
+
+  function renderFichaCasa() {
+    var c = casaById(S.casa) || CASAS[0];
+    var vend = c.estado === 'vend';
+    var h = '<div class="unit-head"><div><p class="eyebrow">Fila ' + c.fila + ' · lote de ' + c.sup + ' m²</p><div class="unit-id">Lote ' + c.n + '</div><p class="modelo">' + c.modeloNombre + '</p></div>' + pill(c.estado, STATE_LOTE) + '</div>';
+    if (vend) h += '<div class="price">Vendido</div><p class="small muted">Este lote ya no está a la venta.</p>';
+    else h += '<div class="price">' + fmtUSD(c.precio) + '</div><p class="small muted">' + c.modalidad + ' · precio ficticio' + (c.estado === 'res' ? ' · reservado: podés anotarte por si se libera' : '') + '</p>';
+    h += '<dl class="facts">' + fact('Superficie del lote', c.sup + ' m²') + fact('Sup. cubierta', c.cub ? c.cub + ' m²' : 'A construir') +
+      fact('Dormitorios', c.dorm || '—') + fact('Baños', c.banos || '—') + fact('Modalidad', c.modalidad) + fact('Frente', c.fila === 'norte' ? 'Al sur, sobre la calle' : 'Al norte, sobre la calle') + '</dl>';
+    h += '<figure class="mini-plan">' + miniPlan(PLANOS_CASA[c.modelo], 'Plano de ' + c.modeloNombre) + '<figcaption>' + (c.modelo === 'lote' ? 'Lote sin construir: el comprador elige proyecto.' : 'Plano ilustrativo del modelo ' + c.modeloNombre + ', sin escala.') + '</figcaption></figure>';
+    h += '<div class="actions">';
+    if (vend) h += '<button class="btn primary" type="button" data-action="similares">Ver similares disponibles</button>';
+    else h += '<button class="btn primary" type="button" data-action="visita">' + (c.estado === 'res' ? 'Anotarme por si se libera' : 'Agendar visita') + '</button><button class="btn" type="button" data-action="whatsapp">Consultar por WhatsApp</button>';
+    h += '<button class="btn" type="button" data-action="link">Link a este lote</button></div>';
+    h += '<div class="act-box" aria-live="polite">' + actBox(c, true) + '</div>';
+    h += tours(TOURS_CASA);
+    if (S.dev) h += devPanel(c, STATE_LOTE);
+    $('#ficha-casa').innerHTML = h;
+  }
+
+  function renderListCasas() {
+    var rows = CASAS.filter(matchesCasa);
+    $('#list-casas-title').textContent = 'Lotes (' + rows.length + ' de ' + CASAS.length + ')';
+    if (!rows.length) { $('#list-casas').innerHTML = '<p class="empty">Ningún lote coincide con los filtros. Probá con otro modelo.</p>'; return; }
+    var h = '<table><thead><tr><th>Lote</th><th>Modelo</th><th class="num">Lote</th><th class="num">Cubierta</th><th class="num">Precio</th><th>Estado</th></tr></thead><tbody>';
+    rows.forEach(function (c) {
+      h += '<tr data-casa="' + c.id + '" tabindex="0"' + (c.id === S.casa ? ' class="sel" aria-current="true"' : '') + '><td><b>' + c.n + '</b></td><td>' + c.modeloNombre + '</td><td class="num">' + c.sup + ' m²</td><td class="num">' + (c.cub ? c.cub + ' m²' : '—') + '</td><td class="num">' + (c.estado === 'vend' ? '—' : fmtUSD(c.precio)) + '</td><td><span class="state-cell"><i class="dot ' + c.estado + '"></i>' + STATE_LOTE[c.estado] + '</span></td></tr>';
+    });
+    $('#list-casas').innerHTML = h + '</tbody></table>';
+  }
+
+  function renderAll() {
+    renderHeader();
+    renderFilters();
+    if (S.view === 'edificio') {
+      $('#ficha-casa').innerHTML = '';
+      renderFacade(); renderPlan(); renderFicha(); renderList();
+    } else {
+      $('#ficha').innerHTML = '';
+      renderMaster(); renderFichaCasa(); renderListCasas();
+    }
+  }
+
+  /* ---------- Navegación por enlace ---------- */
+  function applyHash() {
+    var h = (location.hash || '').replace(/^#/, '').toLowerCase();
+    if (h === 'casas') { S.view = 'casas'; return; }
+    if (h === 'edificio' || h === '') { S.view = 'edificio'; return; }
+    var m = /^u-(\d[a-d])$/.exec(h);
+    if (m) { var u = unitById(m[1]); if (u) { S.view = 'edificio'; S.unidad = u.id; S.piso = u.piso; } return; }
+    m = /^lote-(\d{1,2})$/.exec(h);
+    if (m) { var c = casaById('c' + Number(m[1])); if (c) { S.view = 'casas'; S.casa = c.id; } }
+  }
+
+  /* ---------- Interacción ---------- */
+  var narrow = window.matchMedia ? window.matchMedia('(max-width: 1080px)') : { matches: false };
+  var reduced = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  function showFicha(id) {
+    if (!narrow.matches) return;
+    var el = document.getElementById(id);
+    if (el && el.scrollIntoView) el.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'start' });
+  }
+  function refocus(selector) {
+    var el = document.querySelector(selector);
+    if (el && el.focus) { try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } }
+  }
+  function currentItem() { return S.view === 'edificio' ? unitById(S.unidad) : casaById(S.casa); }
+
+  function selectUnit(id, fromTag) {
+    var u = unitById(id); if (!u) return;
+    S.unidad = u.id; S.piso = u.piso; S.act = null; S.devMsg = '';
+    renderAll();
+    refocus((fromTag === 'tr' ? 'tr' : 'g') + '[data-id="' + u.id + '"]');
+    showFicha('ficha');
+  }
+  function selectFloor(p) {
+    S.piso = p; S.act = null; S.devMsg = '';
+    var us = UNITS.filter(function (u) { return u.piso === p; });
+    var pick = us.filter(function (u) { return matchesUnit(u) && u.estado === 'disp'; })[0] || us.filter(matchesUnit)[0] || us[0];
+    S.unidad = pick.id;
+    renderAll();
+    refocus('g[data-piso="' + p + '"]');
+  }
+  function selectCasa(id, fromTag) {
+    var c = casaById(id); if (!c) return;
+    S.casa = c.id; S.act = null; S.devMsg = '';
+    renderAll();
+    refocus((fromTag === 'tr' ? 'tr' : 'g') + '[data-casa="' + c.id + '"]');
+    showFicha('ficha-casa');
+  }
+
+  function copyWa(btn) {
+    var p = document.getElementById('wa-msg');
+    if (!p) return;
+    var text = p.textContent;
+    function fallback() {
+      try {
+        var r = document.createRange(); r.selectNodeContents(p);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      } catch (e) { /* sin selección disponible */ }
+      S.act.msg = 'Seleccioné el mensaje: copialo con Ctrl+C o mantené apretado en el celular.';
+      renderAll();
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { S.act.msg = 'Mensaje copiado.'; renderAll(); }, fallback);
+    } catch (e) { fallback(); }
+  }
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-action], [data-filter], [data-piso], [data-id], [data-casa], .tab');
+    if (!el) return;
+    if (el.classList.contains('tab')) {
+      S.act = null; S.devMsg = '';
+      if (location.hash.replace('#', '') === el.dataset.view) { S.view = el.dataset.view; renderAll(); }
+      else location.hash = el.dataset.view;
+      return;
+    }
+    if (el.dataset.filter) {
+      var f = el.dataset.filter, v = el.dataset.value;
+      if (f === 'amb') S.amb = v;
+      else if (f === 'modelo') S.modelo = v;
+      else if (f === 'disp') S.soloDisp = !S.soloDisp;
+      renderAll();
+      refocus('[data-filter="' + f + '"][data-value="' + v + '"]');
+      return;
+    }
+    if (el.dataset.piso) { selectFloor(Number(el.dataset.piso)); return; }
+    if (el.dataset.id) { selectUnit(el.dataset.id, el.tagName.toLowerCase()); return; }
+    if (el.dataset.casa) { selectCasa(el.dataset.casa, el.tagName.toLowerCase()); return; }
+
+    var action = el.dataset.action;
+    var item = currentItem();
+    if (!item && action !== 'dev-reset') return;
+    if (action === 'visita') { S.act = { kind: 'visita', id: item.id, dia: 'Lunes' }; renderAll(); refocus('#f-nombre'); }
+    else if (action === 'whatsapp') { S.act = { kind: 'whatsapp', id: item.id }; renderAll(); }
+    else if (action === 'copy-wa') { copyWa(el); }
+    else if (action === 'link') {
+      S.act = { kind: 'link', id: item.id };
+      renderAll();
+      location.hash = S.view === 'edificio' ? 'u-' + item.id : 'lote-' + item.n;
+    }
+    else if (action === 'similares') {
+      S.soloDisp = true;
+      if (S.view === 'edificio') S.amb = String(item.amb); else S.modelo = item.modelo;
+      S.act = null;
+      renderAll();
+      var listEl = document.getElementById(S.view === 'edificio' ? 'list' : 'list-casas');
+      if (listEl && listEl.scrollIntoView) listEl.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'center' });
+    }
+    else if (action === 'dev-save') {
+      var checked = document.querySelector('input[name="dev-estado"]:checked');
+      var precio = Number(document.getElementById('dev-precio').value);
+      if (!validPrice(precio)) { S.devMsg = 'Ingresá un precio entre USD 1.000 y USD 20.000.000.'; renderAll(); refocus('#dev-precio'); return; }
+      if (checked && STATES.indexOf(checked.value) !== -1) item.estado = checked.value;
+      item.precio = Math.round(precio);
+      overrides[item.id] = { estado: item.estado, precio: item.precio };
+      saveOverrides(overrides);
+      S.devMsg = 'Guardado. La vista, la lista y los contadores ya muestran el cambio.';
+      renderAll();
+    }
+    else if (action === 'dev-reset') {
+      overrides = {}; saveOverrides(overrides); rebuild();
+      S.devMsg = ''; S.act = null;
+      renderAll();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var el = e.target.closest && e.target.closest('g[role="button"], tr[data-id], tr[data-casa]');
+    if (!el || el !== e.target) return;
+    e.preventDefault();
+    el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+
+  document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form.matches('[data-form="visita"]')) return;
+    e.preventDefault();
+    var nombre = form.querySelector('#f-nombre').value.trim();
+    var tel = form.querySelector('#f-tel').value.trim();
+    var dia = form.querySelector('#f-dia').value;
+    var digits = tel.replace(/\D/g, '');
+    if (nombre.length < 2 || digits.length < 8) {
+      S.act = { kind: 'visita', id: S.act.id, nombre: nombre, tel: tel, dia: dia, err: 'Completá tu nombre y un teléfono de al menos 8 dígitos.' };
+      renderAll();
+      refocus(nombre.length < 2 ? '#f-nombre' : '#f-tel');
+      return;
+    }
+    S.act = { kind: 'visita-ok', id: S.act.id, nombre: nombre, dia: dia };
+    renderAll();
+  });
+
+  document.getElementById('dev-toggle').addEventListener('change', function (e) {
+    S.dev = e.target.checked; S.devMsg = '';
+    renderAll();
+  });
+
+  window.addEventListener('hashchange', function () { applyHash(); renderAll(); });
+
+  applyHash();
+  renderAll();
+})();
+</script>
