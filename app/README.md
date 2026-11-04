@@ -13,6 +13,7 @@ No es 3D en tiempo real: son **imágenes fijas** por escena (día y noche), **vi
 | `/p/[slug]/buildings/[id]` | Lleva al piso con más unidades disponibles. |
 | `/p/[slug]/buildings/[id]/floors/[floorId]` | Planta del piso (render cenital o plano), unidades pintadas por estado, selector de pisos y ficha. Link profundo: `?unit=u-7b&vista=2d`. |
 | `/p/[slug]/units` | Buscador con filtros por estado, dormitorios, piso y precio. |
+| `/p/[slug]/gallery/[section]` | Galería a pantalla completa (hoy: `amenities`, con hall de entrada y terraza). |
 | `POST /api/leads` | Consulta: validación con Zod, campo trampa, límite por IP; devuelve el link de WhatsApp si el proyecto tiene número. |
 
 Con `ROOT_DOMAIN` configurado, `{slug}.ROOT_DOMAIN` sirve el proyecto sin el prefijo `/p/{slug}` (`src/proxy.ts`).
@@ -52,6 +53,8 @@ node scripts/content/photo-hotspots.mjs > src/data/seed/torre-algarrobo/fotos.js
 ```
 
 La foto de noche puede tener otro encuadre que la de día: cada una lleva sus propios polígonos. Para sumar una vista, se mide en `photos.params.json`, se regenera `fotos.json` y se agrega en `SCENE_DEFS` (`src/data/seed/torre-algarrobo/index.ts`).
+
+**Interiores, amenities, planta y video de giro:** imágenes y video ilustrativos generados con IA (ElevenLabs: GPT Image para las fotos y Kling 3 Pro para el giro Frente → Esquina). La vuelta del giro es el mismo video invertido con ffmpeg. Las imágenes base que usa la IA están en `scripts/content/base/`.
 
 **Renders base y planta:** `scripts/content/` genera, desde el modelo 3D del showroom estático (`../showroom/showroom.html`), las vistas base para la IA, sus transiciones en video y la planta tipo (render cenital y plano 2D con el mismo encuadre, con la máscara de cada unidad):
 

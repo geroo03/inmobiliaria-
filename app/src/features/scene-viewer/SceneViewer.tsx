@@ -7,7 +7,7 @@ import type { FloorAvailability, Hotspot, Scene, SceneTransition } from '@/types
 import { mediaUrl } from '@/lib/media';
 import { fitTransform, polygonPoints, toScreen } from '@/lib/geometry';
 import { useElementSize, useMediaQuery } from '@/components/useElementSize';
-import { ChevronLeft, ChevronRight, Moon, Search, Sun } from '@/components/icons';
+import { ChevronLeft, ChevronRight, Moon, Search, Sparkle, Sun } from '@/components/icons';
 import { currentScene, viewerReducer, type TransitionGraph, type ViewerEvent, type ViewerState } from './reducer';
 import { buildTransitionGraph, neighbors } from './graph';
 
@@ -176,7 +176,10 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
       {/* Barra superior */}
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3 sm:p-4">
         <Link href={base || '/'} className="pill pointer-events-auto max-w-[45vw] truncate">{projectName}</Link>
-        <Link href={`${base}/units`} className="pill pill-brand pointer-events-auto"><Search className="size-4" /><span className="hidden sm:inline">Buscar unidades</span></Link>
+        <div className="pointer-events-auto flex gap-2">
+          <Link href={`${base}/units`} className="pill pill-brand"><Search className="size-4" /><span className="hidden sm:inline">Buscar unidades</span></Link>
+          <Link href={`${base}/gallery/amenities`} className="pill" aria-label="Amenities"><Sparkle className="size-4" /><span className="hidden md:inline">Amenities</span></Link>
+        </div>
         <div className="pill pointer-events-auto gap-1 p-1" role="group" aria-label="Momento del día">
           <button type="button" onClick={() => night && toggleNight()} aria-pressed={!night} className={`flex items-center gap-1 rounded-full px-3 py-1.5 ${!night ? 'bg-ink text-white' : ''}`}><Sun className="size-4" /><span className="hidden sm:inline">Día</span></button>
           <button type="button" onClick={() => !night && toggleNight()} aria-pressed={night} className={`flex items-center gap-1 rounded-full px-3 py-1.5 ${night ? 'bg-ink text-white' : ''}`}><Moon className="size-4" /><span className="hidden sm:inline">Noche</span></button>

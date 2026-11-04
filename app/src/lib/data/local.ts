@@ -26,6 +26,9 @@ export function createLocalRepository(projects: SeedProject[] = [torreAlgarrobo]
     async getTransitions(projectId) {
       return get(projectId)?.transitions ?? [];
     },
+    async getGallerySections(projectId) {
+      return get(projectId)?.galleries ?? [];
+    },
     async getDefaultBuildingId(projectId) {
       return get(projectId)?.building.id ?? null;
     },

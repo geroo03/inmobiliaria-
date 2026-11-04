@@ -35,7 +35,10 @@ html, body { background: #0B1418; color: var(--color-ink); }
   color: white;
 }
 
-:focus-visible { outline: 3px solid #4FD1C5; outline-offset: 2px; }
+/* En la capa base, para que las utilidades de cada componente (p. ej. outline-none) puedan cambiarlo. */
+@layer base {
+  :focus-visible { outline: 3px solid #4FD1C5; outline-offset: 2px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
@@ -44,3 +47,5 @@ html, body { background: #0B1418; color: var(--color-ink); }
 /* Fundido entre escenas cuando no hay video de transición. */
 @keyframes scene-fade-out { from { opacity: 1; } to { opacity: 0; } }
 .scene-fade-out { animation: scene-fade-out .7s ease forwards; pointer-events: none; }
+@keyframes scene-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.scene-fade-in { animation: scene-fade-in .5s ease; }

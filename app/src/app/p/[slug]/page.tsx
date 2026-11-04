@@ -25,6 +25,7 @@ export default async function Landing({ params }: { params: Promise<{ slug: stri
         <div className="flex flex-wrap items-center gap-3">
           <Link href={`${base}/explore/${entry?.id ?? ''}`} className="pill pill-brand px-7 py-3 text-base">Ingresar</Link>
           <Link href={`${base}/units`} className="pill px-6 py-3 text-base">Buscar unidades</Link>
+          <Link href={`${base}/gallery/amenities`} className="pill px-6 py-3 text-base">Amenities</Link>
         </div>
         <p className="text-xs text-white/70">{project.disclaimer}</p>
       </div>

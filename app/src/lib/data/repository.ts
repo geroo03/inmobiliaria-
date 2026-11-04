@@ -1,6 +1,7 @@
 import type {
   BuildingDetail,
   FloorAvailability,
+  GallerySection,
   NewLead,
   Project,
   PublicUnit,
@@ -20,6 +21,7 @@ export interface ShowroomRepository {
   /** Edificio con sus pisos, unidades y tipologías; null si no pertenece al proyecto. */
   getBuildingDetail(projectId: string, buildingId: string): Promise<BuildingDetail | null>;
   getDefaultBuildingId(projectId: string): Promise<string | null>;
+  getGallerySections(projectId: string): Promise<GallerySection[]>;
   getFloorAvailability(projectId: string, buildingId: string): Promise<FloorAvailability[]>;
   listUnits(projectId: string): Promise<UnitListItem[]>;
   /** La unidad si existe y pertenece al proyecto; si no, null. */

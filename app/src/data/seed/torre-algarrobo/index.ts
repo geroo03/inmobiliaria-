@@ -7,6 +7,7 @@
 import type {
   Building,
   Floor,
+  GallerySection,
   Hotspot,
   Point,
   Polygon,
@@ -54,16 +55,17 @@ interface TypologySpec {
   images: { url: string; caption: string }[];
 }
 
-const apartmentImages = [
-  { url: media('tipologias/living.webp'), caption: 'Living' },
-  { url: media('tipologias/dormitorio.webp'), caption: 'Dormitorio' },
+/** Interiores propios de cada tipología (imágenes ilustrativas), más el baño compartido. */
+const interiors = (l: 'a' | 'b' | 'c', bedroom: string) => [
+  { url: media(`tipologias/${l}-living.webp`), caption: 'Living comedor y cocina' },
+  { url: media(`tipologias/${l}-dormitorio.webp`), caption: bedroom },
   { url: media('tipologias/bano.webp'), caption: 'Baño' },
 ];
 
 const SPECS: Record<Letter, TypologySpec> = {
-  A: { rooms: 3, bedrooms: 2, bathrooms: 1, covered: 68, balcony: 9, orientation: 'Norte · frente', front: true, images: apartmentImages },
-  B: { rooms: 2, bedrooms: 1, bathrooms: 1, covered: 46, balcony: 6, orientation: 'Norte · frente', front: true, images: apartmentImages },
-  C: { rooms: 2, bedrooms: 1, bathrooms: 1, covered: 44, balcony: 5, orientation: 'Sur · contrafrente', front: false, images: apartmentImages },
+  A: { rooms: 3, bedrooms: 2, bathrooms: 1, covered: 68, balcony: 9, orientation: 'Norte · frente', front: true, images: interiors('a', 'Dormitorio principal') },
+  B: { rooms: 2, bedrooms: 1, bathrooms: 1, covered: 46, balcony: 6, orientation: 'Norte · frente', front: true, images: interiors('b', 'Dormitorio') },
+  C: { rooms: 2, bedrooms: 1, bathrooms: 1, covered: 44, balcony: 5, orientation: 'Sur · contrafrente', front: false, images: interiors('c', 'Dormitorio') },
   D: {
     rooms: 1, bedrooms: 0, bathrooms: 1, covered: 33, balcony: 4, orientation: 'Sur · contrafrente', front: false,
     images: [
@@ -198,8 +200,7 @@ function photoHotspots(sceneId: string, key: PhotoKey, variant: 'dia' | 'noche')
 const SCENE_DEFS: { id: string; name: string; day: PhotoKey; night: PhotoKey | null }[] = [
   { id: 'frente', name: 'Frente', day: 'frente-dia', night: 'frente-noche' },
   { id: 'esquina', name: 'Esquina', day: 'esquina-dia', night: 'esquina-noche' },
-  // Sin foto de noche: de noche se ve la de día.
-  { id: 'lateral', name: 'Lateral', day: 'lateral-dia', night: null },
+  { id: 'lateral', name: 'Lateral', day: 'lateral-dia', night: 'lateral-noche' },
 ];
 
 const scenes: Scene[] = SCENE_DEFS.map((d) => {
@@ -246,5 +247,16 @@ const transitions: SceneTransition[] =
         ];
       });
 
-export const torreAlgarrobo = { project, building, floors, typologies, units, scenes, transitions };
+const galleries: GallerySection[] = [
+  {
+    slug: 'amenities',
+    title: 'Amenities',
+    items: [
+      { url: media('amenities/hall.webp'), caption: 'Hall de entrada' },
+      { url: media('amenities/terraza.webp'), caption: 'Terraza con parrilla' },
+    ],
+  },
+];
+
+export const torreAlgarrobo = { project, building, floors, typologies, units, scenes, transitions, galleries };
 export type SeedProject = typeof torreAlgarrobo;

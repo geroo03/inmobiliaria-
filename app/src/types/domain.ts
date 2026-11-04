@@ -137,6 +137,13 @@ export interface FloorAvailability {
   total: number;
 }
 
+/** Sección de galería del proyecto: amenities, unidad modelo u otras. */
+export interface GallerySection {
+  slug: string;
+  title: string;
+  items: { url: string; caption: string }[];
+}
+
 export interface NewLead {
   projectId: string;
   unitId: string | null;

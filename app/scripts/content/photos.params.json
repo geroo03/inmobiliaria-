@@ -185,6 +185,43 @@
       ],
       "ground": 900,
       "top": 60
+    },
+    "lateral-noche": {
+      "file": "lateral-noche.webp",
+      "width": 1536,
+      "height": 1024,
+      "front": {
+        "left": 694,
+        "right": 910,
+        "slope": -10
+      },
+      "side": {
+        "x": 536,
+        "d": [
+          [
+            146,
+            -12
+          ],
+          [
+            794,
+            4
+          ]
+        ],
+        "fromLevel": 3
+      },
+      "slabs": [
+        794,
+        706,
+        626,
+        546,
+        466,
+        390,
+        314,
+        234,
+        146
+      ],
+      "ground": 900,
+      "top": 60
     }
   }
 }
