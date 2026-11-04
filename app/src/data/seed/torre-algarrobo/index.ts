@@ -231,9 +231,9 @@ const scenes: Scene[] = SCENE_DEFS.map((d) => {
  * Videos de giro de día (generados con IA). La vuelta es el mismo video invertido.
  * Los pares que no están acá se pasan con un fundido; de noche, siempre fundido.
  */
-const DAY_VIDEOS = new Set(['frente>esquina']);
+const DAY_VIDEOS = new Set(['frente>esquina', 'esquina>lateral', 'lateral>frente']);
 /** Cuadros extraídos de cada video (scripts/content/orbit-frames.sh), para girar arrastrando. */
-const ORBIT_FRAMES: Record<string, number> = { 'frente>esquina': 71 };
+const ORBIT_FRAMES: Record<string, number> = { 'frente>esquina': 71, 'esquina>lateral': 71, 'lateral>frente': 71 };
 
 function videosFor(from: string, to: string) {
   const forward = DAY_VIDEOS.has(`${from}>${to}`), backward = DAY_VIDEOS.has(`${to}>${from}`);
