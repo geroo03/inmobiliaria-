@@ -16,7 +16,7 @@
       },
       {
         "ambiente": "Baño",
-        "src": ""
+        "src": "img/casa-patio/bano.webp"
       }
     ],
     "tipologia-b": [
@@ -34,7 +34,7 @@
       },
       {
         "ambiente": "Baño",
-        "src": ""
+        "src": "img/casa-patio/bano.webp"
       }
     ],
     "tipologia-c": [
@@ -52,7 +52,7 @@
       },
       {
         "ambiente": "Baño",
-        "src": ""
+        "src": "img/casa-patio/bano.webp"
       }
     ],
     "tipologia-d": [
@@ -70,7 +70,7 @@
       },
       {
         "ambiente": "Baño",
-        "src": ""
+        "src": "img/casa-patio/bano.webp"
       }
     ],
     "casa-patio": [
@@ -98,15 +98,15 @@
       },
       {
         "ambiente": "Living",
-        "src": ""
+        "src": "img/casa-patio/living.jpg"
       },
       {
         "ambiente": "Dormitorio",
-        "src": ""
+        "src": "img/casa-patio/dormitorio.webp"
       },
       {
         "ambiente": "Baño",
-        "src": ""
+        "src": "img/casa-patio/bano.webp"
       }
     ],
     "lote": [
