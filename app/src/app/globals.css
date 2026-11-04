@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-ink: #16252A;
+  --color-muted: #5B6B71;
+  --color-line: #DCE3E5;
+  --color-paper: #F3F5F4;
+}
+
+:root {
+  --brand: #164056;
+  color-scheme: light;
+}
+
+html, body { background: #0B1418; color: var(--color-ink); }
+
+/* Botón píldora como los del visor de referencia: blanco translúcido sobre la imagen. */
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / .92);
+  color: var(--color-ink);
+  padding: .55rem 1rem;
+  font-weight: 600;
+  font-size: .875rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .12), 0 4px 16px rgb(0 0 0 / .12);
+  backdrop-filter: blur(6px);
+}
+
+@utility pill-brand {
+  background: var(--brand);
+  color: white;
+}
+
+:focus-visible { outline: 3px solid #4FD1C5; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
+}
