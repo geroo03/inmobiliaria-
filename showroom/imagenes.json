@@ -112,11 +112,11 @@
     "lote": [
       {
         "ambiente": "Vista del lote",
-        "src": ""
+        "src": "img/lote/vista.webp"
       },
       {
         "ambiente": "Entorno del barrio",
-        "src": ""
+        "src": "img/lote/entorno.webp"
       }
     ]
   },
@@ -145,8 +145,51 @@
           "x": 0.81,
           "y": 0.5
         }
+      ],
+      "fondo": "#020925"
+    },
+    "tipologia-a": {
+      "src": "img/departamento/maqueta-a.webp",
+      "fondo": "#021424",
+      "puntos": [
+        {
+          "ambiente": "Living",
+          "x": 0.32,
+          "y": 0.34
+        },
+        {
+          "ambiente": "Dormitorio",
+          "x": 0.7,
+          "y": 0.31
+        },
+        {
+          "ambiente": "Baño",
+          "x": 0.63,
+          "y": 0.7
+        }
+      ]
+    },
+    "tipologia-d": {
+      "src": "img/monoambiente/maqueta.webp",
+      "fondo": "#021125",
+      "puntos": [
+        {
+          "ambiente": "Ambiente único",
+          "x": 0.47,
+          "y": 0.56
+        },
+        {
+          "ambiente": "Kitchenette",
+          "x": 0.66,
+          "y": 0.32
+        },
+        {
+          "ambiente": "Baño",
+          "x": 0.41,
+          "y": 0.17
+        }
       ]
     }
   },
-  "_instrucciones_maqueta": "En maquetas va la imagen isométrica de cada modelo y sus puntos clickeables."
+  "_instrucciones_maqueta": "En maquetas va la imagen isométrica de cada modelo, el color de fondo de la imagen (fondo) y sus puntos clickeables."
 }

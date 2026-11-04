@@ -707,7 +707,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
       var pts = (Array.isArray(mq.puntos) ? mq.puntos : []).slice(0, 12).filter(function (pt) {
         return pt && typeof pt.ambiente === 'string' && typeof pt.x === 'number' && typeof pt.y === 'number' && pt.x >= 0 && pt.x <= 1 && pt.y >= 0 && pt.y <= 1;
       }).map(function (pt) { return { ambiente: pt.ambiente.trim().slice(0, 40), x: pt.x, y: pt.y }; });
-      MAQUETAS[k] = { src: cleanSrc(mq.src), puntos: pts };
+      MAQUETAS[k] = { src: cleanSrc(mq.src), puntos: pts, fondo: /^#[0-9A-Fa-f]{6}$/.test(mq.fondo || '') ? mq.fondo : '' };
     });
     return true;
   }
@@ -1527,7 +1527,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
       tabs.forEach(function (t, j) { if (VT_ROOM[t.label]) h += '<button class="vt-hot" type="button" data-action="vt-tab" data-i="' + j + '" hidden><i></i>' + esc(t.label) + '</button>'; });
       h += '<span class="vt-badge">Maqueta ilustrativa · arrastrá para girar</span>';
     } else if (tab.maqImg) {
-      h += '<div class="vt-maq"><div class="vt-maq-box"><img src="' + esc(tab.maqImg.src) + '" alt="Maqueta isométrica de ' + esc(name) + ' (imagen ilustrativa)">';
+      h += '<div class="vt-maq"' + (tab.maqImg.fondo ? ' data-fondo="' + tab.maqImg.fondo + '"' : '') + '><div class="vt-maq-box"><img src="' + esc(tab.maqImg.src) + '" alt="Maqueta isométrica de ' + esc(name) + ' (imagen ilustrativa)">';
       tab.maqImg.puntos.forEach(function (pt) {
         var label = VT_LABEL[pt.ambiente] || pt.ambiente, j = -1;
         tabs.forEach(function (t, k2) { if (t.label === label && !t.maqImg && !t.maqueta) j = k2; });
@@ -1559,6 +1559,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (S.vtMsg) h += '<p class="vt-legal" role="status">' + esc(S.vtMsg) + '</p>';
     h += '<p class="vt-legal">Imágenes, maqueta y precios ilustrativos de un proyecto ficticio. Corredor responsable: [Nombre y apellido], Mat. CPI Córdoba N.° [pendiente].</p></aside></div>';
     vitrinaEl.innerHTML = h;
+    vitrinaEl.querySelectorAll('.vt-maq[data-fondo]').forEach(function (m) { m.style.background = m.dataset.fondo; });
     vitrinaEl.querySelectorAll('.vt-hot-pct').forEach(function (b) {
       b.style.left = (Number(b.dataset.x) * 100) + '%';
       b.style.top = (Number(b.dataset.y) * 100) + '%';
