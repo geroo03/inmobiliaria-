@@ -27,6 +27,15 @@
   --trunk: #7A6650;
   --ground: #CCD3CB;
   --street: #D6DCD5;
+  --floor: #FBFBF8;
+  --wall: var(--ink);
+  --furn: #5B6B70;
+  --grass: #6B9B63;
+  --grass-bg: #DCE9D6;
+  --deck: #B89A72;
+  --deck-bg: #EADCC6;
+  --glass-line: #7FAFC2;
+  --scrim: rgba(14, 24, 27, .55);
   --display: 'Bricolage Grotesque', 'Public Sans', system-ui, sans-serif;
   --body: 'Public Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --radius: 10px;
@@ -38,6 +47,7 @@
     --st-disp: #4BBA7F; --st-res: #E1A83C; --st-vend: #76838A;
     --facade: #26373B; --facade-side: #1A292D; --roof: #35494D; --glass: #435B61;
     --tree: #4F7F4A; --tree-2: #3D6939; --trunk: #5E4E3D; --ground: #1F2D2B; --street: #1B282B;
+    --floor: #1A2B2F; --furn: #8FA09C; --grass: #5E8F57; --grass-bg: #1C2E25; --deck: #8A7454; --deck-bg: #33291D; --glass-line: #6FA3B5;
     color-scheme: dark;
   }
 }
@@ -47,6 +57,7 @@
   --st-disp: #4BBA7F; --st-res: #E1A83C; --st-vend: #76838A;
   --facade: #26373B; --facade-side: #1A292D; --roof: #35494D; --glass: #435B61;
   --tree: #4F7F4A; --tree-2: #3D6939; --trunk: #5E4E3D; --ground: #1F2D2B; --street: #1B282B;
+  --floor: #1A2B2F; --furn: #8FA09C; --grass: #5E8F57; --grass-bg: #1C2E25; --deck: #8A7454; --deck-bg: #33291D; --glass-line: #6FA3B5;
   color-scheme: dark;
 }
 
@@ -182,15 +193,61 @@ svg text { font-family: var(--body); }
 .lot-n { font-family: var(--display); font-weight: 800; font-size: 22px; fill: var(--ink); }
 .lot-s { font-size: 12px; font-weight: 600; fill: var(--ink); }
 .mp-note { font-size: 13px; fill: var(--muted); }
+.mp-walk { fill: var(--ground); }
+.mp-bound { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 8 5; }
+.mp-path { fill: var(--surface-2); stroke: var(--line); stroke-width: 1; }
+.roof-l { fill: none; stroke: var(--ink); stroke-width: 1; opacity: .5; }
 
-/* Plano chico */
-.mini-plan { margin: 4px 0 14px; }
-.mini-plan svg { width: 100%; height: auto; display: block; background: var(--surface-2); border-radius: 8px; }
-.mini-plan figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
-.room { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
-.room.ext { fill: var(--surface-2); stroke-dasharray: 4 3; }
-.room.patio { fill: var(--tree); fill-opacity: .25; }
-.room-t { font-size: 12px; fill: var(--ink); }
+/* Planos de arquitecto */
+.mini-plan { margin: 4px 0 14px; display: grid; gap: 8px; }
+.mini-plan svg { width: 100%; height: auto; max-height: 360px; display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.mini-plan figcaption { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; justify-content: space-between; }
+.pl-wall { fill: var(--wall); }
+.pl-floor, .pl-cut { fill: var(--floor); }
+.pl-winl { stroke: var(--wall); stroke-width: 1; }
+.pl-wing { stroke: var(--glass-line); stroke-width: 2.5; }
+.pl-leaf { stroke: var(--ink); stroke-width: 1.6; }
+.pl-arc { fill: none; stroke: var(--ink); stroke-width: .8; stroke-dasharray: 3 2; }
+.pl-fur { fill: var(--floor); stroke: var(--furn); stroke-width: 1; }
+.pl-furl { fill: none; stroke: var(--furn); stroke-width: .8; }
+.pl-furt { font-size: 9px; fill: var(--furn); }
+.pl-rn { font-size: 13px; font-weight: 700; fill: var(--ink); }
+.pl-rd { font-size: 11px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.pl-grass { fill: url(#grass); }
+.pl-deck { fill: url(#deck); }
+.pl-path { fill: var(--surface-2); stroke: var(--furn); stroke-width: .6; }
+.pl-street { fill: var(--street); }
+.pl-rail { stroke: var(--furn); stroke-width: 1.2; stroke-dasharray: 2 2; }
+.pl-lot { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 8 5; }
+.pl-dim { stroke: var(--muted); stroke-width: .8; }
+.pl-north { fill: var(--ink); }
+.pl-north-c { fill: var(--surface); stroke: var(--ink); stroke-width: 1; }
+.pl-cap { font-size: 11px; fill: var(--muted); }
+.pl-big .pl-rn { font-size: 30px; }
+.pl-big .pl-rd, .pl-big .pl-cap { font-size: 24px; }
+
+/* Carrusel de imágenes */
+.gal { margin: 14px 0 4px; border-radius: 10px; overflow: hidden; background: var(--surface-2); }
+.gal-frame { position: relative; aspect-ratio: 4 / 3; max-width: 100%; touch-action: pan-y; }
+.gal-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.gal-ph { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 2px; color: var(--muted);
+  background: repeating-linear-gradient(135deg, var(--surface-2) 0 14px, var(--surface) 14px 28px); }
+.gal-ph b { font-family: var(--display); font-size: 24px; color: var(--ink); }
+.gal-ph span { font-size: 13px; }
+.gal-badge { position: absolute; left: 10px; top: 10px; background: var(--surface); color: var(--ink); font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); }
+.gal-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 22px/1 var(--body); cursor: pointer; display: grid; place-items: center; padding: 0 0 3px; }
+.gal-prev { left: 8px; }
+.gal-next { right: 8px; }
+.gal-foot { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; gap: 8px; padding: 18px 12px 8px; font-size: 13px; font-weight: 600; color: #F8F9F6; background: linear-gradient(transparent, rgba(10, 18, 20, .62)); }
+
+/* Plano en grande */
+.modal { position: fixed; inset: 0; z-index: 50; background: var(--scrim); display: grid; place-items: center;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.modal-box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; width: min(1000px, 100%); max-height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.modal-head h2 { font-family: var(--display); font-size: 19px; margin: 0; }
+.modal-body { overflow: auto; padding: 12px 16px 16px; }
+.modal-body svg { display: block; width: 100%; height: auto; max-height: calc(100vh - 150px); }
 
 /* Ficha */
 .ficha { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
@@ -255,6 +312,15 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
     <rect class="hatch-bg" width="8" height="8"/>
     <line class="hatch-line" x1="0" y1="0" x2="0" y2="8"/>
+  </pattern>
+  <pattern id="grass" width="14" height="12" patternUnits="userSpaceOnUse">
+    <rect width="14" height="12" style="fill: var(--grass-bg)"/>
+    <path d="M2 9 l1.5 -4 M4 9 l-1 -3.5 M9 4 l1.5 -3.5 M11 4 l-1 -3" style="stroke: var(--grass); fill: none" stroke-width="1"/>
+  </pattern>
+  <pattern id="deck" width="40" height="7" patternUnits="userSpaceOnUse">
+    <rect width="40" height="7" style="fill: var(--deck-bg)"/>
+    <line x1="0" y1="7" x2="40" y2="7" style="stroke: var(--deck)" stroke-width="1"/>
+    <line x1="28" y1="0" x2="28" y2="7" style="stroke: var(--deck)" stroke-width=".6"/>
   </pattern>
 </defs></svg>
 
@@ -334,6 +400,16 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   </footer>
 </div>
 
+<div class="modal" id="plan-modal" role="dialog" aria-modal="true" aria-labelledby="plan-modal-title" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="plan-modal-title">Plano</h2>
+      <button class="btn small-btn" type="button" id="plan-close" data-action="plan-close">Cerrar</button>
+    </div>
+    <div class="modal-body" id="plan-modal-body"></div>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
@@ -363,27 +439,187 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   var RECTS = { A: [20, 40, 320, 145], B: [340, 40, 240, 145], D: [20, 235, 240, 145], C: [260, 235, 320, 145] };
   var BALC = { A: [60, 28, 240, 12], B: [370, 28, 180, 12], D: [50, 380, 180, 12], C: [300, 380, 240, 12] };
 
-  var PLANOS = {
-    A: [['Balcón', 40, 0, 240, 24, 'ext'], ['Estar · comedor', 0, 24, 180, 110], ['Cocina', 180, 24, 70, 70], ['Lav.', 250, 24, 70, 70],
-        ['Hall', 180, 94, 140, 40], ['Dorm. 1', 0, 134, 120, 86], ['Baño', 120, 134, 70, 86], ['Dorm. 2', 190, 134, 130, 86]],
-    B: [['Balcón', 60, 0, 200, 24, 'ext'], ['Estar · comedor', 0, 24, 190, 110], ['Cocina', 190, 24, 130, 60], ['Hall', 190, 84, 130, 50],
-        ['Dormitorio', 0, 134, 190, 86], ['Baño', 190, 134, 130, 86]],
-    C: [['Balcón', 60, 0, 200, 24, 'ext'], ['Estar · cocina integrada', 0, 24, 200, 116], ['Dormitorio', 200, 24, 120, 116],
-        ['Baño', 0, 140, 110, 80], ['Ingreso', 110, 140, 210, 80]],
-    D: [['Balcón', 80, 0, 160, 24, 'ext'], ['Ambiente único', 0, 24, 220, 130], ['Kitchenette', 220, 24, 100, 130],
-        ['Baño', 0, 154, 120, 66], ['Ingreso', 120, 154, 200, 66]]
+  /* Planos de arquitecto. Todo en metros: rectángulos [x, y, ancho, largo] medidos desde la esquina noroeste.
+     Los muros salen solos: se pinta el volumen construido y encima cada ambiente; lo que queda entre ambientes es muro
+     (0,30 m los exteriores y 0,15 m los tabiques). Medidas ficticias, coherentes con la superficie cubierta de cada modelo. */
+  var PLAN_MODELS = {
+    'tipologia-a': {
+      blocks: [[0, 0, 8.2, 8.3]],
+      rooms: [
+        { n: 'Estar · comedor · cocina', r: [.30, .30, 4.25, 3.90], l: [2.75, 2.55] },
+        { n: 'Dorm. 1', r: [4.70, .30, 3.20, 3.90], l: [6.30, 2.65] },
+        { n: 'Dorm. 2', r: [.30, 4.35, 2.90, 3.65], l: [1.30, 5.05], stack: true },
+        { n: 'Hall', r: [3.35, 4.35, 1.20, 3.65], rot: true, l: [3.95, 5.90] },
+        { n: 'Baño', r: [4.70, 4.35, 3.20, 1.90], l: [6.00, 5.32] },
+        { n: 'Lavadero', r: [4.70, 6.40, 3.20, 1.60], l: [6.30, 7.45] }
+      ],
+      bridges: [[3.35, 4.20, 1.20, .15]],
+      doors: [{ x: 3.50, y: 8.00, w: .90, wall: 'h', t: .30, swing: -1 }, { x: 3.20, y: 4.60, w: .80, wall: 'v', t: .15, swing: -1 },
+        { x: 4.55, y: 4.60, w: .70, wall: 'v', t: .15, swing: 1 }, { x: 4.55, y: 6.80, w: .80, wall: 'v', t: .15, swing: 1 },
+        { x: 4.55, y: 3.15, w: .80, wall: 'v', t: .15, swing: 1 }],
+      sliders: [{ x: 1.10, y: 0, w: 2.60 }],
+      windows: [{ x: 5.50, y: 0, len: 1.60, wall: 'h' }, { x: 0, y: 1.10, len: 1.00, wall: 'v' }, { x: 0, y: 5.40, len: 1.30, wall: 'v' }],
+      outside: [{ k: 'deck', r: [.30, -1.80, 5.00, 1.80], n: 'Balcón', l: [2.80, -1.00], area: true, rail: 'tlr' }],
+      paths: [{ r: [2.90, 8.30, 2.10, .80], n: 'Pasillo del edificio', l: [3.95, 9.45] }],
+      furn: [['counter', .30, .30, .60, 2.40], ['hob', .35, .45, .50, .60], ['sink', .40, 1.25, .42, .75], ['table', 2.20, .95, 1.40, .80],
+        ['sofa', 1.30, 3.20, 2.00, .85, 'b'], ['bed', 5.60, .30, 1.40, 1.90, 't'], ['night', 5.12, .35], ['night', 7.06, .35],
+        ['wardrobe', 5.60, 3.60, 2.30, .60], ['bed', .30, 6.85, 1.90, .90, 'l'], ['wardrobe', 2.60, 5.60, .60, 1.80],
+        ['shower', 7.00, 4.35, .90, .90], ['wc', 6.55, 4.35, 't'], ['vanity', 5.70, 5.80, .90, .45],
+        ['washer', 7.28, 6.45], ['counter', 5.80, 6.40, 1.40, .60], ['sink', 6.25, 6.48, .60, .42]],
+      dims: { w: [0, 8.2, 10.0], h: [0, 8.3, 8.75] }, north: [7.5, -1.1], view: [-0.8, -2.4, 9.9, 13.5], caption: [-0.6, 10.85]
+    },
+    'tipologia-b': {
+      blocks: [[0, 0, 6.2, 7.4]],
+      rooms: [
+        { n: 'Estar · comedor|y cocina', r: [.30, .30, 5.60, 3.40], l: [1.75, 1.05] },
+        { n: 'Hall', r: [.30, 3.85, 1.10, 3.25], rot: true, l: [.85, 5.00] },
+        { n: 'Baño y lav.', r: [1.55, 3.85, 1.70, 3.25], l: [2.40, 5.60], stack: true },
+        { n: 'Dormitorio', r: [3.40, 3.85, 2.50, 3.25], l: [5.10, 4.20], stack: true }
+      ],
+      bridges: [[.30, 3.70, 1.10, .15]],
+      doors: [{ x: .40, y: 7.10, w: .90, wall: 'h', t: .30, swing: -1 }, { x: 1.40, y: 4.40, w: .70, wall: 'v', t: .15, swing: 1 },
+        { x: 3.60, y: 3.70, w: .80, wall: 'h', t: .15, swing: 1 }],
+      sliders: [{ x: 1.20, y: 0, w: 2.40 }],
+      windows: [{ x: 5.90, y: .90, len: 1.30, wall: 'v' }, { x: 5.90, y: 4.50, len: 1.50, wall: 'v' }, { x: 4.10, y: 0, len: 1.10, wall: 'h' }],
+      outside: [{ k: 'deck', r: [1.00, -1.50, 4.00, 1.50], n: 'Balcón', l: [3.00, -.80], area: true, rail: 'tlr' }],
+      paths: [{ r: [0, 7.40, 1.80, .80], n: 'Pasillo del edificio', l: [1.20, 8.55] }],
+      furn: [['counter', 5.30, .30, .60, 2.40], ['hob', 5.35, .45, .50, .60], ['sink', 5.39, 1.25, .42, .75], ['table', 3.40, 1.00, 1.40, .80],
+        ['sofa', 1.60, 2.75, 2.00, .85, 'b'], ['vanity', 1.60, 3.85, .75, .42], ['shower', 2.40, 3.85, .85, .85], ['wc', 3.25, 5.10, 'r'],
+        ['washer', 1.62, 6.45], ['bed', 4.00, 5.00, 1.90, 1.40, 'r'], ['night', 5.46, 6.48], ['wardrobe', 3.40, 4.75, .60, 1.70]],
+      dims: { w: [0, 6.2, 9.0], h: [0, 7.4, 6.65] }, north: [5.7, -1.0], view: [-0.8, -2.1, 7.9, 12.1], caption: [-0.6, 9.75]
+    },
+    'tipologia-c': {
+      blocks: [[0, 0, 6.2, 7.1]],
+      rooms: [
+        { n: 'Hall', r: [.30, .30, 1.10, 3.25], rot: true, l: [.85, 2.38] },
+        { n: 'Baño y lav.', r: [1.55, .30, 1.70, 3.25], l: [2.40, 1.80], stack: true },
+        { n: 'Dormitorio', r: [3.40, .30, 2.50, 3.25], l: [5.10, 2.55], stack: true },
+        { n: 'Estar · comedor|y cocina', r: [.30, 3.70, 5.60, 3.10], l: [1.75, 5.15] }
+      ],
+      bridges: [[.30, 3.55, 1.10, .15]],
+      doors: [{ x: .40, y: 0, w: .90, wall: 'h', t: .30, swing: 1 }, { x: 1.40, y: 2.40, w: .70, wall: 'v', t: .15, swing: 1 },
+        { x: 3.60, y: 3.55, w: .80, wall: 'h', t: .15, swing: -1 }],
+      sliders: [{ x: 1.20, y: 6.80, w: 2.40 }],
+      windows: [{ x: 5.90, y: 4.20, len: 1.30, wall: 'v' }, { x: 5.90, y: .90, len: 1.50, wall: 'v' }, { x: 4.10, y: 6.80, len: 1.10, wall: 'h' }],
+      outside: [{ k: 'deck', r: [1.00, 7.10, 3.35, 1.50], n: 'Balcón', l: [2.70, 7.90], area: true, rail: 'blr' }],
+      paths: [{ r: [0, -.80, 1.80, .80], n: 'Pasillo del edificio', l: [1.20, -1.00] }],
+      furn: [['washer', 1.62, .36], ['wc', 3.25, 1.30, 'r'], ['shower', 2.40, 2.70, .85, .85], ['vanity', 1.60, 3.13, .75, .42],
+        ['bed', 4.00, .80, 1.90, 1.40, 'r'], ['night', 5.46, .35], ['wardrobe', 3.40, .45, .60, 1.70],
+        ['counter', 5.30, 4.20, .60, 2.30], ['hob', 5.35, 4.35, .50, .60], ['sink', 5.39, 5.15, .42, .75], ['table', 3.40, 5.35, 1.40, .80],
+        ['sofa', 1.60, 3.85, 2.00, .85, 't']],
+      dims: { w: [0, 6.2, 9.10], h: [0, 7.1, 6.65] }, north: [5.5, 8.0], view: [-0.8, -1.5, 7.9, 11.6], caption: [-0.6, 9.85]
+    },
+    'tipologia-d': {
+      blocks: [[0, 0, 5.0, 6.6]],
+      rooms: [
+        { n: 'Baño', r: [.30, .30, 1.80, 2.10], l: [1.45, 1.35], stack: true },
+        { n: 'Kitchenette|e ingreso', r: [2.25, .30, 2.45, 2.10], l: [3.20, 1.55], stack: true },
+        { n: 'Ambiente único', r: [.30, 2.55, 4.40, 3.75], l: [2.00, 3.05] }
+      ],
+      bridges: [[2.25, 2.40, 2.45, .15]],
+      doors: [{ x: 2.50, y: 0, w: .90, wall: 'h', t: .30, swing: 1 }, { x: 2.10, y: .40, w: .70, wall: 'v', t: .15, swing: -1 }],
+      sliders: [{ x: 1.20, y: 6.30, w: 2.40 }],
+      windows: [{ x: 0, y: 3.20, len: 1.40, wall: 'v' }, { x: 0, y: .70, len: .60, wall: 'v' }],
+      outside: [{ k: 'deck', r: [.80, 6.60, 2.70, 1.50], n: 'Balcón', l: [2.15, 7.40], area: true, rail: 'blr' }],
+      paths: [{ r: [2.20, -.80, 1.50, .80], n: 'Pasillo del edificio', l: [2.95, -1.00] }],
+      furn: [['counter', 4.10, .30, .60, 2.10], ['hob', 4.15, .45, .50, .60], ['sink', 4.19, 1.25, .42, .70], ['shower', .30, .30, .85, .85],
+        ['wc', .70, 2.40, 'b'], ['bed', 2.80, 4.40, 1.90, 1.40, 'r'], ['night', 4.26, 3.93], ['sofa', .45, 3.80, .85, 1.80, 'l'],
+        ['table', 1.70, 4.95, .80, .80]],
+      dims: { w: [0, 5.0, 8.65], h: [0, 6.6, 5.45] }, north: [4.4, 7.4], view: [-0.8, -1.5, 6.8, 11.0], caption: [-0.6, 9.30]
+    },
+    'casa-compacta': {
+      blocks: [[0, 0, 8.6, 10.0]],
+      rooms: [
+        { n: 'Estar · comedor · cocina', r: [.30, .30, 8.00, 4.30], l: [2.00, 1.25] },
+        { n: 'Dorm. 1', r: [.30, 4.75, 3.25, 4.95], l: [1.55, 5.30] },
+        { n: 'Ingreso', r: [3.70, 4.75, 1.20, 4.95], rot: true, l: [4.30, 6.80] },
+        { n: 'Baño', r: [5.05, 4.75, 3.25, 1.95], l: [6.45, 5.95] },
+        { n: 'Dorm. 2', r: [5.05, 6.85, 3.25, 2.85], l: [6.65, 8.95] }
+      ],
+      bridges: [[3.70, 4.60, 1.20, .15]],
+      doors: [{ x: 3.85, y: 9.70, w: .90, wall: 'h', t: .30, swing: -1 }, { x: 3.55, y: 5.00, w: .80, wall: 'v', t: .15, swing: -1 },
+        { x: 4.90, y: 5.05, w: .70, wall: 'v', t: .15, swing: 1 }, { x: 4.90, y: 7.05, w: .80, wall: 'v', t: .15, swing: 1 }],
+      sliders: [{ x: 1.20, y: 0, w: 2.40 }],
+      windows: [{ x: 6.00, y: 0, len: 1.40, wall: 'h' }, { x: 0, y: 1.40, len: 1.60, wall: 'v' }, { x: 1.00, y: 9.70, len: 1.60, wall: 'h' },
+        { x: 5.90, y: 9.70, len: 1.60, wall: 'h' }, { x: 8.30, y: 5.20, len: .60, wall: 'v' }],
+      outside: [{ k: 'grass', r: [-0.7, -6.0, 10.0, 6.0], n: 'Jardín', l: [7.2, -3.4] },
+        { k: 'deck', r: [0, -2.6, 5.2, 2.6], n: 'Galería', l: [2.6, -1.55], area: true }],
+      paths: [{ r: [3.70, 10.0, 1.20, .90], n: 'Acceso', l: [4.30, 11.25] }],
+      furn: [['counter', 5.20, .30, 3.10, .60], ['counter', 7.70, .90, .60, 1.55], ['hob', 5.40, .35, .60, .50], ['sink', 6.35, .39, .75, .42],
+        ['washer', 7.72, 1.75], ['text', 8.00, 2.50, 'lav.'], ['table', 4.70, 2.15, 1.60, .90], ['sofa', .80, 3.55, 2.30, .85, 'b'],
+        ['coffee', 1.45, 2.55, 1.00, .55], ['bed', .30, 6.70, 1.90, 1.40, 'l'], ['night', .32, 6.22], ['night', .32, 8.16],
+        ['wardrobe', 2.95, 6.10, .60, 1.80], ['bed', 6.40, 7.75, 1.90, .90, 'r'], ['wardrobe', 6.05, 6.85, 2.25, .60],
+        ['shower', 7.40, 4.75, .90, .90], ['wc', 6.75, 4.75, 't'], ['vanity', 7.85, 5.80, .45, .90]],
+      dims: { w: [0, 8.6, 11.75], h: [0, 10.0, 9.15] }, north: [8.45, -5.35], view: [-1.0, -6.4, 11.4, 19.1], caption: [-0.8, 12.45]
+    },
+    'casa-patio': {
+      blocks: [[0, 0, 4.8, 5.7], [7.2, 0, 4.8, 5.7], [0, 5.7, 12.0, 5.3]],
+      rooms: [
+        { n: 'Estar · comedor · cocina', r: [.30, .30, 4.20, 5.55], l: [2.40, .85] },
+        { n: 'Pasillo', r: [7.50, .30, 1.00, 5.55], rot: true, l: [8.00, 3.07] },
+        { n: 'Dorm. 3', r: [8.65, .30, 3.05, 3.05], l: [10.20, 2.60] },
+        { n: 'Baño 2', r: [8.65, 3.50, 3.05, 2.35], l: [10.40, 4.85] },
+        { n: 'Circulación', r: [.30, 6.00, 11.40, 1.10], l: [6.00, 6.45] },
+        { n: 'Dorm. ppal.', r: [.30, 7.25, 4.20, 3.45], l: [2.10, 7.70] },
+        { n: 'Ingreso', r: [4.65, 7.25, 1.50, 3.45], rot: true, l: [5.40, 8.50] },
+        { n: 'Baño', r: [6.30, 7.25, 2.10, 3.45], l: [7.35, 8.90], stack: true },
+        { n: 'Dorm. 2', r: [8.55, 7.25, 3.15, 3.45], l: [10.60, 7.70], stack: true }
+      ],
+      bridges: [[1.40, 5.85, 1.80, .15], [7.50, 5.85, 1.00, .15], [4.65, 7.10, 1.50, .15]],
+      doors: [{ x: 4.95, y: 10.70, w: .90, wall: 'h', t: .30, swing: -1 }, { x: 3.40, y: 7.10, w: .80, wall: 'h', t: .15, swing: 1 },
+        { x: 6.50, y: 7.10, w: .70, wall: 'h', t: .15, swing: 1 }, { x: 8.80, y: 7.10, w: .80, wall: 'h', t: .15, swing: 1 },
+        { x: 8.50, y: .70, w: .80, wall: 'v', t: .15, swing: 1 }, { x: 8.50, y: 4.00, w: .70, wall: 'v', t: .15, swing: 1 }],
+      sliders: [{ x: 1.00, y: 0, w: 2.40 }],
+      windows: [{ x: 0, y: 1.40, len: 1.60, wall: 'v' }, { x: 4.50, y: 1.80, len: 2.20, wall: 'v' }, { x: 7.20, y: 1.20, len: 3.00, wall: 'v' },
+        { x: 5.20, y: 5.70, len: 1.60, wall: 'h' }, { x: 9.40, y: 0, len: 1.40, wall: 'h' }, { x: 11.70, y: 1.00, len: 1.20, wall: 'v' },
+        { x: 11.70, y: 4.40, len: .60, wall: 'v' }, { x: 1.40, y: 10.70, len: 1.80, wall: 'h' }, { x: 7.00, y: 10.70, len: .60, wall: 'h' },
+        { x: 9.30, y: 10.70, len: 1.60, wall: 'h' }],
+      outside: [{ k: 'grass', r: [-0.7, -7.0, 13.4, 7.0], n: 'Jardín', l: [10.0, -4.6] },
+        { k: 'deck', r: [0, -2.4, 12.0, 2.4], n: 'Galería', l: [6.0, -1.35], area: true },
+        { k: 'grass', r: [4.8, 0, 2.4, 5.7], n: 'Patio', l: [6.0, 2.70], area: true, stack: true }],
+      paths: [{ r: [4.65, 11.0, 1.50, .90], n: 'Acceso', l: [5.40, 12.25] }],
+      furn: [['counter', .30, 3.30, .60, 2.55], ['hob', .35, 3.45, .50, .60], ['sink', .39, 4.30, .42, .75], ['table', 1.80, 3.70, 1.60, .90],
+        ['sofa', 1.10, 1.70, 2.20, .85, 'b'], ['bed', 9.60, .30, 1.40, 1.90, 't'], ['night', 11.06, .35],
+        ['shower', 10.80, 3.50, .90, .90], ['wc', 10.20, 3.50, 't'], ['vanity', 9.80, 5.40, 1.00, .45],
+        ['bed', .30, 8.30, 1.90, 1.40, 'l'], ['night', .32, 7.83], ['night', .32, 9.76], ['wardrobe', 3.90, 8.20, .60, 2.00],
+        ['vanity', 6.40, 10.25, .90, .45], ['shower', 7.50, 9.80, .90, .90], ['wc', 8.40, 8.60, 'r'],
+        ['bed', 9.80, 8.70, 1.90, .90, 'r'], ['wardrobe', 8.70, 10.10, 2.00, .60]],
+      dims: { w: [0, 12.0, 12.75], h: [0, 11.0, 12.55] }, north: [11.3, -6.3], view: [-1.0, -7.4, 14.4, 21.1], caption: [-0.8, 13.45]
+    }
   };
+
+  /* Imágenes por modelo. Se leen de imagenes.json (publicado junto a la página); si no está, se usan estos marcadores. */
+  var IMG_DEFAULT = {
+    'tipologia-a': ['Fachada', 'Living', 'Dormitorio', 'Baño'],
+    'tipologia-b': ['Fachada', 'Living', 'Dormitorio', 'Baño'],
+    'tipologia-c': ['Fachada', 'Living', 'Dormitorio', 'Baño'],
+    'tipologia-d': ['Fachada', 'Ambiente único', 'Kitchenette', 'Baño'],
+    'casa-patio': ['Fachada', 'Living', 'Dormitorio', 'Baño'],
+    'casa-compacta': ['Fachada', 'Living', 'Dormitorio', 'Baño'],
+    'lote': ['Vista del lote', 'Entorno del barrio']
+  };
+  var IMAGES = {};
+  Object.keys(IMG_DEFAULT).forEach(function (k) { IMAGES[k] = IMG_DEFAULT[k].map(function (a) { return { ambiente: a, src: '' }; }); });
+  var IMG_PATH = /^img\/[A-Za-z0-9_\-\/]+\.(jpe?g|png|webp|avif)$/i;
+  function applyImageJson(data) {
+    var modelos = data && typeof data === 'object' ? data.modelos : null;
+    if (!modelos || typeof modelos !== 'object') return false;
+    Object.keys(IMG_DEFAULT).forEach(function (k) {
+      var list = modelos[k];
+      if (!Array.isArray(list) || !list.length) return;
+      var clean = list.slice(0, 12).filter(function (it) { return it && typeof it.ambiente === 'string' && it.ambiente.trim(); }).map(function (it) {
+        var src = typeof it.src === 'string' ? it.src.trim() : '';
+        return { ambiente: it.ambiente.trim().slice(0, 40), src: (IMG_PATH.test(src) && src.indexOf('..') === -1) ? src : '' };
+      });
+      if (clean.length) IMAGES[k] = clean;
+    });
+    return true;
+  }
+
   var MODELOS = {
     patio: { nombre: 'Casa Patio', dorm: 3, banos: 2, cub: 118, modalidad: 'Casa llave en mano' },
     compacta: { nombre: 'Casa Compacta', dorm: 2, banos: 1, cub: 86, modalidad: 'Casa llave en mano' },
     lote: { nombre: 'Lote sin construir', dorm: 0, banos: 0, cub: 0, modalidad: 'Lote con servicios' }
-  };
-  var PLANOS_CASA = {
-    patio: [['Estar · comedor', 0, 0, 150, 90], ['Cocina', 150, 0, 80, 90], ['Dorm. ppal.', 230, 0, 90, 110], ['Patio', 90, 90, 140, 70, 'patio'],
-            ['Dorm. 2', 0, 90, 90, 130], ['Baño', 230, 110, 90, 50], ['Dorm. 3', 90, 160, 140, 60], ['Baño 2', 230, 160, 90, 60]],
-    compacta: [['Estar · comedor · cocina', 0, 0, 200, 110], ['Dorm. 1', 200, 0, 120, 110], ['Baño', 200, 110, 70, 50], ['Lav.', 270, 110, 50, 50],
-               ['Dorm. 2', 0, 110, 120, 110], ['Jardín', 120, 110, 80, 110, 'patio'], ['Galería', 200, 160, 120, 60, 'patio']],
-    lote: [['Lote listo para construir', 0, 0, 320, 220, 'ext']]
   };
 
   function mulberry32(a) {
@@ -465,7 +701,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   rebuild();
 
   var firstCasaDisp = CASAS.filter(function (c) { return c.estado === 'disp' && c.modelo === 'patio'; })[0] || CASAS[0];
-  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {} };
+  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0 };
 
   function $(sel) { return document.querySelector(sel); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -609,13 +845,228 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     $('#plan').innerHTML = s;
   }
 
-  function miniPlan(rooms, label) {
-    var s = '<svg viewBox="-6 -6 332 232" role="img" aria-label="' + esc(label) + '">';
-    rooms.forEach(function (r) {
-      s += '<rect class="room' + (r[5] ? ' ' + r[5] : '') + '" x="' + r[1] + '" y="' + r[2] + '" width="' + r[3] + '" height="' + r[4] + '"/>';
-      s += '<text class="room-t" x="' + (r[1] + r[3] / 2) + '" y="' + (r[2] + r[4] / 2 + 4) + '" text-anchor="middle">' + r[0] + '</text>';
-    });
+  /* ---------- Dibujo de planos ---------- */
+  var SC = 50; // píxeles por metro
+  function P(v) { return Math.round(v * SC * 10) / 10; }
+  function fmtM(n) { return n.toFixed(2).replace('.', ','); }
+  function fmtA(n) { return (Math.round(n * 10) / 10).toFixed(1).replace('.', ','); }
+  function R(x, y, w, h, cls, extra) { return '<rect class="' + cls + '" x="' + P(x) + '" y="' + P(y) + '" width="' + P(w) + '" height="' + P(h) + '"' + (extra || '') + '/>'; }
+  function L(x1, y1, x2, y2, cls) { return '<line class="' + cls + '" x1="' + P(x1) + '" y1="' + P(y1) + '" x2="' + P(x2) + '" y2="' + P(y2) + '"/>'; }
+  function TX(x, ypx, s, cls) { return '<text class="' + cls + '" x="' + P(x) + '" y="' + ypx + '" text-anchor="middle">' + s + '</text>'; }
+  function C(cx, cy, r, cls) { return '<circle class="' + cls + '" cx="' + P(cx) + '" cy="' + P(cy) + '" r="' + r + '"/>'; }
+  function E(cx, cy, rx, ry, cls) { return '<ellipse class="' + cls + '" cx="' + P(cx) + '" cy="' + P(cy) + '" rx="' + P(rx) + '" ry="' + P(ry) + '"/>'; }
+
+  function door(d) {
+    // Hueco en el muro, hoja abierta a 90° y arco de apertura.
+    var s = '';
+    if (d.wall === 'h') {
+      var yy = d.swing < 0 ? d.y : d.y + d.t, ye = yy + d.swing * d.w;
+      s += R(d.x, d.y, d.w, d.t, 'pl-cut') + L(d.x, yy, d.x, ye, 'pl-leaf');
+      s += '<path class="pl-arc" d="M' + P(d.x) + ' ' + P(ye) + ' A' + P(d.w) + ' ' + P(d.w) + ' 0 0 ' + (d.swing < 0 ? 1 : 0) + ' ' + P(d.x + d.w) + ' ' + P(yy) + '"/>';
+    } else {
+      var xx = d.swing < 0 ? d.x : d.x + d.t, xe = xx + d.swing * d.w;
+      s += R(d.x, d.y, d.t, d.w, 'pl-cut') + L(xx, d.y, xe, d.y, 'pl-leaf');
+      s += '<path class="pl-arc" d="M' + P(xe) + ' ' + P(d.y) + ' A' + P(d.w) + ' ' + P(d.w) + ' 0 0 ' + (d.swing < 0 ? 0 : 1) + ' ' + P(xx) + ' ' + P(d.y + d.w) + '"/>';
+    }
+    return s;
+  }
+  function windowSym(w) {
+    // Ventana: corte en el muro exterior (0,30), las dos caras y el vidrio al medio.
+    var T = 0.30;
+    if (w.wall === 'h') {
+      return R(w.x, w.y, w.len, T, 'pl-cut') + L(w.x, w.y, w.x + w.len, w.y, 'pl-winl') + L(w.x, w.y + T, w.x + w.len, w.y + T, 'pl-winl') + L(w.x, w.y + T / 2, w.x + w.len, w.y + T / 2, 'pl-wing');
+    }
+    return R(w.x, w.y, T, w.len, 'pl-cut') + L(w.x, w.y, w.x, w.y + w.len, 'pl-winl') + L(w.x + T, w.y, w.x + T, w.y + w.len, 'pl-winl') + L(w.x + T / 2, w.y, w.x + T / 2, w.y + w.len, 'pl-wing');
+  }
+  function slider(sd) {
+    // Ventanal corredizo: dos hojas superpuestas dentro del muro.
+    return R(sd.x, sd.y, sd.w, 0.30, 'pl-cut') + R(sd.x, sd.y + 0.06, sd.w * 0.55, 0.08, 'pl-fur') + R(sd.x + sd.w * 0.45, sd.y + 0.16, sd.w * 0.55, 0.08, 'pl-fur');
+  }
+
+  // Mobiliario en planta, en línea fina.
+  var FURN = {
+    counter: function (x, y, w, h) { return R(x, y, w, h, 'pl-fur'); },
+    hob: function (x, y, w, h) {
+      var s = R(x, y, w, h, 'pl-fur');
+      [[.27, .25], [.73, .25], [.27, .75], [.73, .75]].forEach(function (c) { s += C(x + w * c[0], y + h * c[1], 4.5, 'pl-furl'); });
+      return s;
+    },
+    sink: function (x, y, w, h) { return R(x, y, w, h, 'pl-fur', ' rx="4"') + C(x + w / 2, y + h / 2, 2.5, 'pl-furl'); },
+    table: function (x, y, w, h) {
+      var s = R(x, y, w, h, 'pl-fur', ' rx="2"'), i, n;
+      if (w >= h) {
+        n = Math.max(1, Math.floor((w - 0.1) / 0.65));
+        for (i = 0; i < n; i++) { var cx = x + (i + 0.5) * w / n - 0.20; s += R(cx, y - 0.48, .40, .40, 'pl-fur', ' rx="2"') + R(cx, y + h + 0.08, .40, .40, 'pl-fur', ' rx="2"'); }
+      } else {
+        n = Math.max(1, Math.floor((h - 0.1) / 0.65));
+        for (i = 0; i < n; i++) { var cy = y + (i + 0.5) * h / n - 0.20; s += R(x - 0.48, cy, .40, .40, 'pl-fur', ' rx="2"') + R(x + w + 0.08, cy, .40, .40, 'pl-fur', ' rx="2"'); }
+      }
+      return s;
+    },
+    sofa: function (x, y, w, h, back) {
+      var s = R(x, y, w, h, 'pl-fur', ' rx="3"'), b = 0.22, a = 0.20;
+      if (back === 'b') s += R(x, y + h - b, w, b, 'pl-fur') + R(x, y, a, h, 'pl-fur') + R(x + w - a, y, a, h, 'pl-fur') + L(x + w / 2, y, x + w / 2, y + h - b, 'pl-furl');
+      else if (back === 't') s += R(x, y, w, b, 'pl-fur') + R(x, y, a, h, 'pl-fur') + R(x + w - a, y, a, h, 'pl-fur') + L(x + w / 2, y + b, x + w / 2, y + h, 'pl-furl');
+      else if (back === 'l') s += R(x, y, b, h, 'pl-fur') + R(x, y, w, a, 'pl-fur') + R(x, y + h - a, w, a, 'pl-fur') + L(x + b, y + h / 2, x + w, y + h / 2, 'pl-furl');
+      else s += R(x + w - b, y, b, h, 'pl-fur') + R(x, y, w, a, 'pl-fur') + R(x, y + h - a, w, a, 'pl-fur') + L(x, y + h / 2, x + w - b, y + h / 2, 'pl-furl');
+      return s;
+    },
+    coffee: function (x, y, w, h) { return R(x, y, w, h, 'pl-fur', ' rx="3"'); },
+    bed: function (x, y, w, h, head) {
+      // Cama con almohadas del lado del respaldo y el doblez de la sábana.
+      var s = R(x, y, w, h, 'pl-fur', ' rx="2"'), i, n, gap;
+      if (head === 'l' || head === 'r') {
+        n = h > 1.1 ? 2 : 1; gap = (h - n * 0.55) / (n + 1);
+        for (i = 0; i < n; i++) s += R(head === 'l' ? x + 0.08 : x + w - 0.46, y + gap + i * (0.55 + gap), .38, .55, 'pl-fur', ' rx="3"');
+        var fx = head === 'l' ? x + w * 0.45 : x + w * 0.55;
+        s += L(fx, y, fx, y + h, 'pl-furl');
+      } else {
+        n = w > 1.1 ? 2 : 1; gap = (w - n * 0.55) / (n + 1);
+        for (i = 0; i < n; i++) s += R(x + gap + i * (0.55 + gap), head === 't' ? y + 0.08 : y + h - 0.46, .55, .38, 'pl-fur', ' rx="3"');
+        var fy = head === 't' ? y + h * 0.45 : y + h * 0.55;
+        s += L(x, fy, x + w, fy, 'pl-furl');
+      }
+      return s;
+    },
+    night: function (x, y) { return R(x, y, .42, .42, 'pl-fur'); },
+    wardrobe: function (x, y, w, h) {
+      var s = R(x, y, w, h, 'pl-fur');
+      if (w >= h) s += L(x + w / 3, y + .05, x + w / 3, y + h - .05, 'pl-furl') + L(x + 2 * w / 3, y + .05, x + 2 * w / 3, y + h - .05, 'pl-furl');
+      else s += L(x + .05, y + h / 3, x + w - .05, y + h / 3, 'pl-furl') + L(x + .05, y + 2 * h / 3, x + w - .05, y + 2 * h / 3, 'pl-furl');
+      return s;
+    },
+    shower: function (x, y, w, h) { return R(x, y, w, h, 'pl-fur') + L(x, y, x + w, y + h, 'pl-furl') + L(x + w, y, x, y + h, 'pl-furl') + C(x + w / 2, y + h / 2, 3, 'pl-furl'); },
+    wc: function (x, y, dir) {
+      // (x, y) es el punto del muro donde apoya la mochila.
+      if (dir === 't') return R(x - .20, y, .40, .18, 'pl-fur') + E(x, y + .45, .19, .27, 'pl-fur');
+      if (dir === 'b') return R(x - .20, y - .18, .40, .18, 'pl-fur') + E(x, y - .45, .19, .27, 'pl-fur');
+      if (dir === 'l') return R(x, y - .20, .18, .40, 'pl-fur') + E(x + .45, y, .27, .19, 'pl-fur');
+      return R(x - .18, y - .20, .18, .40, 'pl-fur') + E(x - .45, y, .27, .19, 'pl-fur');
+    },
+    vanity: function (x, y, w, h) { return R(x, y, w, h, 'pl-fur') + E(x + w / 2, y + h / 2, Math.min(.22, w * .3), Math.min(.14, h * .3), 'pl-furl'); },
+    washer: function (x, y) { return R(x, y, .56, .56, 'pl-fur') + C(x + .28, y + .28, 8, 'pl-furl'); },
+    text: function (x, y, s) { return TX(x, P(y), s, 'pl-furt'); }
+  };
+
+  function roomLabel(r) {
+    var x = r.r[0], y = r.r[1], w = r.r[2], h = r.r[3];
+    var dims = fmtM(w) + ' × ' + fmtM(h), area = fmtA(w * h) + ' m²';
+    if (r.rot) {
+      var cx = r.l[0], cy = r.l[1];
+      return '<g transform="rotate(-90 ' + P(cx) + ' ' + P(cy) + ')">' + TX(cx, P(cy) - 2, r.n, 'pl-rn') + TX(cx, P(cy) + 13, dims + ' · ' + area, 'pl-rd') + '</g>';
+    }
+    var names = r.n.split('|'), base = P(r.l[1]), s = '';
+    names.forEach(function (nm, i) { s += TX(r.l[0], base + i * 15, nm, 'pl-rn'); });
+    var yy = base + (names.length - 1) * 15 + 15;
+    if (r.stack) s += TX(r.l[0], yy, dims, 'pl-rd') + TX(r.l[0], yy + 13, area, 'pl-rd');
+    else s += TX(r.l[0], yy, dims + ' · ' + area, 'pl-rd');
+    return s;
+  }
+  function outsideLabel(o, big) {
+    var s = TX(o.l[0], P(o.l[1]), o.n, 'pl-rn'), w = o.r[2], h = o.r[3];
+    if (o.areaText) return s + TX(o.l[0], P(o.l[1]) + (big ? 34 : 15), o.areaText, 'pl-rd');
+    if (!o.area) return s;
+    var dims = fmtM(w) + ' × ' + fmtM(h), area = fmtA(w * h) + ' m²';
+    if (o.stack) return s + TX(o.l[0], P(o.l[1]) + 15, dims, 'pl-rd') + TX(o.l[0], P(o.l[1]) + 28, area, 'pl-rd');
+    return s + TX(o.l[0], P(o.l[1]) + 15, dims + ' · ' + area, 'pl-rd');
+  }
+  function rails(o) {
+    var x = o.r[0], y = o.r[1], w = o.r[2], h = o.r[3], s = '', e = o.rail || '';
+    if (e.indexOf('t') !== -1) s += L(x, y, x + w, y, 'pl-rail');
+    if (e.indexOf('b') !== -1) s += L(x, y + h, x + w, y + h, 'pl-rail');
+    if (e.indexOf('l') !== -1) s += L(x, y, x, y + h, 'pl-rail');
+    if (e.indexOf('r') !== -1) s += L(x + w, y, x + w, y + h, 'pl-rail');
+    return s;
+  }
+  function northSym(x, y, deg, k) {
+    // Flecha al norte; con el lote en la fila sur, la calle queda al norte y la flecha apunta hacia abajo.
+    var tipY = deg === 180 ? 26 : -19;
+    return '<g transform="translate(' + P(x) + ' ' + P(y) + ') scale(' + k + ')"><circle class="pl-north-c" r="15"/>' +
+      '<path class="pl-north" transform="rotate(' + deg + ')" d="M0 -12 L6 8 L0 4 L-6 8 Z"/>' +
+      '<text class="pl-rn" x="0" y="' + tipY + '" text-anchor="middle">N</text></g>';
+  }
+
+  function drawPlan(m, opts) {
+    var v = m.view, s = '';
+    s += '<svg' + (m.big ? ' class="pl-big"' : '') + ' viewBox="' + P(v[0]) + ' ' + P(v[1]) + ' ' + P(v[2]) + ' ' + P(v[3]) + '" role="img" aria-label="' + esc(opts.label) + '">';
+    (m.outside || []).forEach(function (o) { s += R(o.r[0], o.r[1], o.r[2], o.r[3], 'pl-' + o.k) + rails(o); });
+    (m.paths || []).forEach(function (pth) { s += R(pth.r[0], pth.r[1], pth.r[2], pth.r[3], pth.k === 'street' ? 'pl-street' : 'pl-path'); });
+    if (m.lot) s += R(m.lot[0], m.lot[1], m.lot[2], m.lot[3], 'pl-lot');
+    (m.blocks || []).forEach(function (b) { s += R(b[0], b[1], b[2], b[3], 'pl-wall'); });
+    (m.rooms || []).forEach(function (r) { s += R(r.r[0], r.r[1], r.r[2], r.r[3], 'pl-floor'); });
+    (m.bridges || []).forEach(function (b) { s += R(b[0], b[1], b[2], b[3], 'pl-floor'); });
+    (m.furn || []).forEach(function (f) { s += FURN[f[0]].apply(null, f.slice(1)); });
+    (m.windows || []).forEach(function (w) { s += windowSym(w); });
+    (m.sliders || []).forEach(function (sd) { s += slider(sd); });
+    (m.doors || []).forEach(function (d) { s += door(d); });
+    (m.rooms || []).forEach(function (r) { s += roomLabel(r); });
+    (m.outside || []).forEach(function (o) { if (o.n) s += outsideLabel(o, m.big); });
+    (m.paths || []).forEach(function (pth) { s += TX(pth.l[0], P(pth.l[1]), pth.n, 'pl-rd'); });
+    var dw = m.dims.w, dh = m.dims.h;
+    s += L(dw[0], dw[2], dw[1], dw[2], 'pl-dim') + L(dw[0], dw[2] - .15, dw[0], dw[2] + .15, 'pl-dim') + L(dw[1], dw[2] - .15, dw[1], dw[2] + .15, 'pl-dim');
+    s += TX((dw[0] + dw[1]) / 2, P(dw[2]) - 6, fmtM(dw[1] - dw[0]), 'pl-rd');
+    s += L(dh[2], dh[0], dh[2], dh[1], 'pl-dim') + L(dh[2] - .15, dh[0], dh[2] + .15, dh[0], 'pl-dim') + L(dh[2] - .15, dh[1], dh[2] + .15, dh[1], 'pl-dim');
+    var hx = P(dh[2]) + 14, hy = P((dh[0] + dh[1]) / 2);
+    s += '<text class="pl-rd" x="' + hx + '" y="' + hy + '" text-anchor="middle" transform="rotate(90 ' + hx + ' ' + hy + ')">' + fmtM(dh[1] - dh[0]) + '</text>';
+    s += northSym(m.north[0], m.north[1], opts.north || 0, m.big ? 2.2 : 1);
+    s += '<text class="pl-cap" x="' + P(m.caption[0]) + '" y="' + P(m.caption[1]) + '">' + esc(opts.caption) + '</text>';
     return s + '</svg>';
+  }
+
+  function lotePlanModel(c) {
+    var f = 10, d = Math.round(c.sup / f * 100) / 100;
+    return {
+      big: true,
+      lot: [0, 0, f, d],
+      outside: [{ k: 'grass', r: [0, 0, f, d], n: 'Lote listo para construir', l: [f / 2, d / 2], areaText: fmtM(f) + ' × ' + fmtM(d) + ' · ' + c.sup + ' m²' }],
+      paths: [{ r: [-1.2, d, f + 2.4, 1.2], n: 'Vereda', l: [f / 2, d + .75] }, { k: 'street', r: [-1.2, d + 1.2, f + 2.4, 2.2], n: 'Calle de los Talas', l: [f / 2, d + 2.45] }],
+      dims: { w: [0, f, d + 4.3], h: [0, d, f + .6] }, north: [f - 1.3, 2.2], view: [-1.4, -0.8, f + 3.0, d + 7.0], caption: [-1.2, d + 5.8]
+    };
+  }
+
+  function planFor(item, isCasa) {
+    if (!isCasa) {
+      return {
+        model: PLAN_MODELS['tipologia-' + item.letra.toLowerCase()], north: 0,
+        title: 'Tipología ' + item.letra + ' · unidad ' + item.nombre,
+        caption: 'Plano ilustrativo, sin escala · ' + item.cub + ' m² cubiertos + balcón ' + item.balc + ' m²'
+      };
+    }
+    var north = item.fila === 'norte' ? 0 : 180;
+    if (item.modelo === 'lote') return { model: lotePlanModel(item), north: north, title: 'Lote ' + item.n + ' · sin construir', caption: 'Plano ilustrativo, sin escala · lote de ' + item.sup + ' m²' };
+    return { model: PLAN_MODELS['casa-' + item.modelo], north: north, title: item.modeloNombre + ' · lote ' + item.n, caption: 'Plano ilustrativo, sin escala · cubierta ' + item.cub + ' m²' };
+  }
+  function planSvg(item, isCasa) {
+    var pf = planFor(item, isCasa);
+    return drawPlan(pf.model, { north: pf.north, label: 'Plano de ' + pf.title, caption: pf.caption });
+  }
+  function planFigure(item, isCasa) {
+    return '<figure class="mini-plan">' + planSvg(item, isCasa) +
+      '<figcaption><span>Plano ilustrativo, sin escala. Medidas ficticias.</span><button class="btn small-btn" type="button" data-action="plan-open">Ver plano grande</button></figcaption></figure>';
+  }
+
+  /* ---------- Carrusel de imágenes ---------- */
+  function modelKey(item, isCasa) { return isCasa ? (item.modelo === 'lote' ? 'lote' : 'casa-' + item.modelo) : 'tipologia-' + item.letra.toLowerCase(); }
+  function gallery(key) {
+    var list = IMAGES[key] || [];
+    if (!list.length) return '';
+    var i = ((S.slide % list.length) + list.length) % list.length, it = list[i];
+    var h = '<div class="gal"><div class="gal-frame" role="group" aria-roledescription="carrusel" aria-label="' + esc(it.ambiente) + ', imagen ' + (i + 1) + ' de ' + list.length + '">';
+    if (it.src) h += '<img src="' + esc(it.src) + '" alt="' + esc(it.ambiente) + ' (imagen ilustrativa)">';
+    h += '<div class="gal-ph"' + (it.src ? ' hidden' : '') + '><b>' + esc(it.ambiente) + '</b><span>Foto pendiente</span></div>';
+    h += '<span class="gal-badge">Imagen ilustrativa</span>';
+    if (list.length > 1) h += '<button class="gal-nav gal-prev" type="button" data-action="gal-prev" aria-label="Imagen anterior">‹</button><button class="gal-nav gal-next" type="button" data-action="gal-next" aria-label="Imagen siguiente">›</button>';
+    h += '<div class="gal-foot"><span>' + esc(it.ambiente) + '</span><span>' + (i + 1) + ' / ' + list.length + '</span></div></div></div>';
+    return h;
+  }
+  function wireGalleryImages() {
+    document.querySelectorAll('.gal-frame img').forEach(function (img) {
+      img.addEventListener('error', function () {
+        var ph = img.parentNode.querySelector('.gal-ph');
+        if (ph) ph.hidden = false;
+        img.remove();
+      }, { once: true });
+    });
   }
 
   function tours(list) {
@@ -668,14 +1119,15 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     var vend = u.estado === 'vend';
     var ppm = Math.round(u.precio / (u.cub + u.balc * 0.5));
     var h = '<div class="unit-head"><div><p class="eyebrow">Piso ' + u.piso + ' · ' + u.orient + '</p><div class="unit-id">' + u.nombre + '</div></div>' + pill(u.estado, STATE_LABEL) + '</div>';
+    h += gallery(modelKey(u, false));
     if (vend) {
-      h += '<div class="price">Vendida</div><p class="small muted">Esta unidad ya no está a la venta.</p>';
+      h += '<p class="small muted">Esta unidad ya no está a la venta.</p>';
     } else {
       h += '<div class="price">' + fmtUSD(u.precio) + '</div><p class="small muted">' + fmtUSD(ppm) + '/m² · precio de lista ficticio' + (u.estado === 'res' ? ' · reservada: podés anotarte por si se libera' : '') + '</p>';
     }
     h += '<dl class="facts">' + fact('Ambientes', u.amb) + fact('Dormitorios', u.dorm || 'Monoambiente') + fact('Sup. cubierta', u.cub + ' m²') +
       fact('Balcón', u.balc + ' m²') + fact('Baños', u.banos) + fact('Orientación', u.orient) + '</dl>';
-    h += '<figure class="mini-plan">' + miniPlan(PLANOS[u.letra], 'Plano de la unidad ' + u.nombre) + '<figcaption>Plano ilustrativo de la tipología ' + u.letra + ', sin escala.</figcaption></figure>';
+    h += planFigure(u, false);
     h += '<div class="actions">';
     if (vend) h += '<button class="btn primary" type="button" data-action="similares">Ver similares disponibles</button>';
     else h += '<button class="btn primary" type="button" data-action="visita">' + (u.estado === 'res' ? 'Anotarme por si se libera' : 'Agendar visita') + '</button><button class="btn" type="button" data-action="whatsapp">Consultar por WhatsApp</button>';
@@ -699,36 +1151,57 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
 
   /* ---------- Barrio ---------- */
   function renderMaster() {
-    var s = '<svg viewBox="0 0 1000 600" role="group" aria-label="Plano de Barrio Los Talas. Elegí un lote.">';
-    s += '<rect class="mp-bg" x="0" y="0" width="1000" height="600" rx="6"/>';
+    // Masterplan: dos filas de lotes sobre la calle, avenida de acceso al oeste, veredas con arbolado y el norte arriba.
+    var s = '<svg viewBox="0 0 1000 640" role="group" aria-label="Plano de Barrio Los Talas. Elegí un lote.">';
+    s += '<rect class="mp-bg" x="0" y="0" width="1000" height="640" rx="6"/>';
+    s += '<rect class="street" x="0" y="0" width="32" height="640"/>';
+    s += '<rect class="mp-walk" x="32" y="0" width="8" height="640"/>';
+    s += '<rect class="mp-walk" x="40" y="262" width="960" height="8"/><rect class="mp-walk" x="40" y="330" width="960" height="8"/>';
     s += '<rect class="street" x="0" y="270" width="1000" height="60"/>';
-    s += '<line class="street-line" x1="160" y1="300" x2="420" y2="300"/><line class="street-line" x1="600" y1="300" x2="980" y2="300"/>';
-    s += '<text class="street-t" x="510" y="305" text-anchor="middle">Calle de los Talas</text>';
-    s += '<text class="street-t" x="24" y="305">Ingreso →</text>';
+    s += '<line class="street-line" x1="60" y1="300" x2="420" y2="300"/><line class="street-line" x1="620" y1="300" x2="990" y2="300"/>';
+    s += '<line class="street-line" x1="16" y1="20" x2="16" y2="220"/><line class="street-line" x1="16" y1="380" x2="16" y2="620"/>';
+    s += '<text class="street-t" x="520" y="305" text-anchor="middle">Calle de los Talas</text>';
+    s += '<text class="street-t" x="16" y="300" text-anchor="middle" transform="rotate(-90 16 300)">Av. de acceso</text>';
+    s += '<rect class="mp-bound" x="44" y="30" width="950" height="540"/>';
+    for (var t = 0; t <= 10; t++) {
+      var tx = 47 + t * 94;
+      [266, 334].forEach(function (ty) { s += '<circle class="tree2" cx="' + tx + '" cy="' + ty + '" r="7"/><circle class="tree" cx="' + (tx + 1.5) + '" cy="' + (ty - 1.5) + '" r="4.5"/>'; });
+    }
     var ordered = CASAS.slice().sort(function (a, b) { return (a.id === S.casa) - (b.id === S.casa); });
     ordered.forEach(function (c) {
       var idx = c.n - 1, row = idx < 10 ? 0 : 1, col = idx % 10;
-      var x = 30 + col * 94, y = row === 0 ? 40 : 340, w = 88, h = 220;
+      var x = 50 + col * 94, y = row === 0 ? 40 : 340, w = 88, h = 220;
       var sel = S.casa === c.id;
       s += '<g class="lot-g s-' + c.estado + (sel ? ' sel' : '') + (matchesCasa(c) ? '' : ' dim') + '" data-casa="' + c.id + '" tabindex="0" role="button" aria-pressed="' + sel + '" aria-label="Lote ' + c.n + ', ' + c.modeloNombre + ', ' + c.sup + ' metros cuadrados, ' + STATE_LOTE[c.estado] + '">';
       s += '<rect class="lot-bg" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
       s += '<rect class="lot-fill" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
       if (c.modelo !== 'lote') {
         var hw = c.modelo === 'patio' ? 64 : 56, hh = c.modelo === 'patio' ? 96 : 72;
-        var hx = x + (w - hw) / 2, hy = row === 0 ? y + h - hh - 14 : y + 14;
+        var hx = x + (w - hw) / 2, hy = row === 0 ? y + h - hh - 18 : y + 18, cx = hx + hw / 2;
+        // Senda de acceso desde la vereda hasta la puerta.
+        s += row === 0 ? '<rect class="mp-path" x="' + (cx - 5) + '" y="' + (hy + hh) + '" width="10" height="18"/>' : '<rect class="mp-path" x="' + (cx - 5) + '" y="' + y + '" width="10" height="18"/>';
         s += '<rect class="house" x="' + hx + '" y="' + hy + '" width="' + hw + '" height="' + hh + '"/>';
-        if (c.modelo === 'patio') s += '<rect class="patio-in" x="' + (hx + hw / 2 - 12) + '" y="' + (hy + hh / 2 - 14) + '" width="24" height="28"/>';
+        if (c.modelo === 'patio') {
+          var px = cx - 12, py = hy + hh / 2 - 14;
+          s += '<rect class="patio-in" x="' + px + '" y="' + py + '" width="24" height="28"/>';
+          s += '<path class="roof-l" d="M' + hx + ' ' + hy + ' L' + px + ' ' + py + ' M' + (hx + hw) + ' ' + hy + ' L' + (px + 24) + ' ' + py +
+            ' M' + hx + ' ' + (hy + hh) + ' L' + px + ' ' + (py + 28) + ' M' + (hx + hw) + ' ' + (hy + hh) + ' L' + (px + 24) + ' ' + (py + 28) + '"/>';
+        } else {
+          var r1 = hy + hw / 2, r2 = hy + hh - hw / 2;
+          s += '<path class="roof-l" d="M' + hx + ' ' + hy + ' L' + cx + ' ' + r1 + ' L' + (hx + hw) + ' ' + hy + ' M' + cx + ' ' + r1 + ' L' + cx + ' ' + r2 +
+            ' M' + hx + ' ' + (hy + hh) + ' L' + cx + ' ' + r2 + ' L' + (hx + hw) + ' ' + (hy + hh) + '"/>';
+        }
       } else {
-        s += '<rect class="house-empty" x="' + (x + 12) + '" y="' + (row === 0 ? y + h - 96 : y + 14) + '" width="' + (w - 24) + '" height="82"/>';
+        s += '<rect class="house-empty" x="' + (x + 12) + '" y="' + (row === 0 ? y + h - 100 : y + 18) + '" width="' + (w - 24) + '" height="82"/>';
       }
       s += '<rect class="lot-line" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/>';
-      var ty = row === 0 ? y + 30 : y + h - 36;
-      s += '<text class="lot-n" x="' + (x + w / 2) + '" y="' + ty + '" text-anchor="middle">' + c.n + '</text>';
-      s += '<text class="lot-s" x="' + (x + w / 2) + '" y="' + (ty + 19) + '" text-anchor="middle">' + STATE_LOTE[c.estado] + '</text>';
+      var ty2 = row === 0 ? y + 30 : y + h - 36;
+      s += '<text class="lot-n" x="' + (x + w / 2) + '" y="' + ty2 + '" text-anchor="middle">' + c.n + '</text>';
+      s += '<text class="lot-s" x="' + (x + w / 2) + '" y="' + (ty2 + 19) + '" text-anchor="middle">' + STATE_LOTE[c.estado] + '</text>';
       s += '</g>';
     });
-    s += '<text class="mp-note" x="30" y="588">Plano ilustrativo, sin escala</text>';
-    s += '<text class="mp-note" x="970" y="588" text-anchor="end">N ↑</text>';
+    s += '<text class="mp-note" x="50" y="606">Plano ilustrativo, sin escala</text>';
+    s += '<g transform="translate(964 604)"><circle class="pl-north-c" r="16"/><path class="pl-north" d="M0 -13 L6.5 8 L0 4 L-6.5 8 Z"/><text class="mp-note" x="-24" y="5" text-anchor="end">Norte</text></g>';
     s += '</svg>';
     $('#master').innerHTML = s;
   }
@@ -737,11 +1210,12 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     var c = casaById(S.casa) || CASAS[0];
     var vend = c.estado === 'vend';
     var h = '<div class="unit-head"><div><p class="eyebrow">Fila ' + c.fila + ' · lote de ' + c.sup + ' m²</p><div class="unit-id">Lote ' + c.n + '</div><p class="modelo">' + c.modeloNombre + '</p></div>' + pill(c.estado, STATE_LOTE) + '</div>';
-    if (vend) h += '<div class="price">Vendido</div><p class="small muted">Este lote ya no está a la venta.</p>';
+    h += gallery(modelKey(c, true));
+    if (vend) h += '<p class="small muted">Este lote ya no está a la venta.</p>';
     else h += '<div class="price">' + fmtUSD(c.precio) + '</div><p class="small muted">' + c.modalidad + ' · precio ficticio' + (c.estado === 'res' ? ' · reservado: podés anotarte por si se libera' : '') + '</p>';
     h += '<dl class="facts">' + fact('Superficie del lote', c.sup + ' m²') + fact('Sup. cubierta', c.cub ? c.cub + ' m²' : 'A construir') +
       fact('Dormitorios', c.dorm || '—') + fact('Baños', c.banos || '—') + fact('Modalidad', c.modalidad) + fact('Frente', c.fila === 'norte' ? 'Al sur, sobre la calle' : 'Al norte, sobre la calle') + '</dl>';
-    h += '<figure class="mini-plan">' + miniPlan(PLANOS_CASA[c.modelo], 'Plano de ' + c.modeloNombre) + '<figcaption>' + (c.modelo === 'lote' ? 'Lote sin construir: el comprador elige proyecto.' : 'Plano ilustrativo del modelo ' + c.modeloNombre + ', sin escala.') + '</figcaption></figure>';
+    h += planFigure(c, true);
     h += '<div class="actions">';
     if (vend) h += '<button class="btn primary" type="button" data-action="similares">Ver similares disponibles</button>';
     else h += '<button class="btn primary" type="button" data-action="visita">' + (c.estado === 'res' ? 'Anotarme por si se libera' : 'Agendar visita') + '</button><button class="btn" type="button" data-action="whatsapp">Consultar por WhatsApp</button>';
@@ -773,6 +1247,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
       $('#ficha').innerHTML = '';
       renderMaster(); renderFichaCasa(); renderListCasas();
     }
+    wireGalleryImages();
   }
 
   /* ---------- Navegación por enlace ---------- */
@@ -781,9 +1256,9 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (h === 'casas') { S.view = 'casas'; return; }
     if (h === 'edificio' || h === '') { S.view = 'edificio'; return; }
     var m = /^u-(\d[a-d])$/.exec(h);
-    if (m) { var u = unitById(m[1]); if (u) { S.view = 'edificio'; S.unidad = u.id; S.piso = u.piso; } return; }
+    if (m) { var u = unitById(m[1]); if (u) { S.view = 'edificio'; S.unidad = u.id; S.piso = u.piso; S.slide = 0; } return; }
     m = /^lote-(\d{1,2})$/.exec(h);
-    if (m) { var c = casaById('c' + Number(m[1])); if (c) { S.view = 'casas'; S.casa = c.id; } }
+    if (m) { var c = casaById('c' + Number(m[1])); if (c) { S.view = 'casas'; S.casa = c.id; S.slide = 0; } }
   }
 
   /* ---------- Interacción ---------- */
@@ -802,13 +1277,13 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
 
   function selectUnit(id, fromTag) {
     var u = unitById(id); if (!u) return;
-    S.unidad = u.id; S.piso = u.piso; S.act = null; S.devMsg = '';
+    S.unidad = u.id; S.piso = u.piso; S.act = null; S.devMsg = ''; S.slide = 0;
     renderAll();
     refocus((fromTag === 'tr' ? 'tr' : 'g') + '[data-id="' + u.id + '"]');
     showFicha('ficha');
   }
   function selectFloor(p) {
-    S.piso = p; S.act = null; S.devMsg = '';
+    S.piso = p; S.act = null; S.devMsg = ''; S.slide = 0;
     var us = UNITS.filter(function (u) { return u.piso === p; });
     var pick = us.filter(function (u) { return matchesUnit(u) && u.estado === 'disp'; })[0] || us.filter(matchesUnit)[0] || us[0];
     S.unidad = pick.id;
@@ -817,7 +1292,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   }
   function selectCasa(id, fromTag) {
     var c = casaById(id); if (!c) return;
-    S.casa = c.id; S.act = null; S.devMsg = '';
+    S.casa = c.id; S.act = null; S.devMsg = ''; S.slide = 0;
     renderAll();
     refocus((fromTag === 'tr' ? 'tr' : 'g') + '[data-casa="' + c.id + '"]');
     showFicha('ficha-casa');
@@ -844,7 +1319,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     var el = e.target.closest('[data-action], [data-filter], [data-piso], [data-id], [data-casa], .tab');
     if (!el) return;
     if (el.classList.contains('tab')) {
-      S.act = null; S.devMsg = '';
+      S.act = null; S.devMsg = ''; S.slide = 0;
       if (location.hash.replace('#', '') === el.dataset.view) { S.view = el.dataset.view; renderAll(); }
       else location.hash = el.dataset.view;
       return;
@@ -863,8 +1338,16 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (el.dataset.casa) { selectCasa(el.dataset.casa, el.tagName.toLowerCase()); return; }
 
     var action = el.dataset.action;
+    if (action === 'plan-close') { closePlan(); return; }
     var item = currentItem();
     if (!item && action !== 'dev-reset') return;
+    if (action === 'plan-open') { openPlan(item, el); return; }
+    if (action === 'gal-prev' || action === 'gal-next') {
+      S.slide += action === 'gal-next' ? 1 : -1;
+      renderAll();
+      refocus('[data-action="' + action + '"]');
+      return;
+    }
     if (action === 'visita') { S.act = { kind: 'visita', id: item.id, dia: 'Lunes' }; renderAll(); refocus('#f-nombre'); }
     else if (action === 'whatsapp') { S.act = { kind: 'whatsapp', id: item.id }; renderAll(); }
     else if (action === 'copy-wa') { copyWa(el); }
@@ -899,7 +1382,47 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     }
   });
 
+  /* ---------- Plano en grande ---------- */
+  var modal = document.getElementById('plan-modal');
+  var lastTrigger = null;
+  function openPlan(item, trigger) {
+    var isCasa = S.view !== 'edificio';
+    var pf = planFor(item, isCasa);
+    document.getElementById('plan-modal-title').textContent = 'Plano · ' + pf.title;
+    document.getElementById('plan-modal-body').innerHTML = planSvg(item, isCasa);
+    lastTrigger = trigger;
+    modal.hidden = false;
+    document.getElementById('plan-close').focus();
+  }
+  function closePlan() {
+    if (modal.hidden) return;
+    modal.hidden = true;
+    document.getElementById('plan-modal-body').innerHTML = '';
+    var back = document.querySelector('[data-action="plan-open"]');
+    if (back) back.focus(); else if (lastTrigger && lastTrigger.focus) lastTrigger.focus();
+  }
+  modal.addEventListener('click', function (e) { if (e.target === modal) closePlan(); });
   document.addEventListener('keydown', function (e) {
+    if (modal.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closePlan(); }
+    else if (e.key === 'Tab') { e.preventDefault(); document.getElementById('plan-close').focus(); }
+  });
+
+  /* ---------- Deslizar el carrusel en el celular ---------- */
+  var swipeX = null;
+  document.addEventListener('pointerdown', function (e) {
+    swipeX = (e.target.closest && e.target.closest('.gal-frame') && !e.target.closest('button')) ? e.clientX : null;
+  });
+  document.addEventListener('pointerup', function (e) {
+    if (swipeX === null) return;
+    var dx = e.clientX - swipeX; swipeX = null;
+    if (Math.abs(dx) < 40) return;
+    S.slide += dx < 0 ? 1 : -1;
+    renderAll();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!modal.hidden) return;
     if (e.key !== 'Enter' && e.key !== ' ') return;
     var el = e.target.closest && e.target.closest('g[role="button"], tr[data-id], tr[data-casa]');
     if (!el || el !== e.target) return;
@@ -934,5 +1457,12 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
 
   applyHash();
   renderAll();
+
+  // Rutas de las fotos: se leen de imagenes.json, publicado junto a la página. Sin ese archivo quedan los marcadores.
+  try {
+    fetch('imagenes.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) { if (data && applyImageJson(data)) renderAll(); })
+      .catch(function () { /* sin imagenes.json: se muestran los marcadores */ });
+  } catch (e) { /* fetch no disponible */ }
 })();
 </script>

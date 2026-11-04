@@ -1,0 +1,45 @@
+{
+  "_instrucciones": "Subí cada foto a la carpeta img/ del showroom y escribí su ruta en src, por ejemplo img/tipologia-a/living.jpg. Formatos: jpg, png, webp o avif. Si src queda vacío, se muestra un marcador con el nombre del ambiente. Todas las imágenes llevan el rótulo «Imagen ilustrativa».",
+  "modelos": {
+    "tipologia-a": [
+      { "ambiente": "Fachada", "src": "" },
+      { "ambiente": "Living", "src": "" },
+      { "ambiente": "Dormitorio", "src": "" },
+      { "ambiente": "Baño", "src": "" }
+    ],
+    "tipologia-b": [
+      { "ambiente": "Fachada", "src": "" },
+      { "ambiente": "Living", "src": "" },
+      { "ambiente": "Dormitorio", "src": "" },
+      { "ambiente": "Baño", "src": "" }
+    ],
+    "tipologia-c": [
+      { "ambiente": "Fachada", "src": "" },
+      { "ambiente": "Living", "src": "" },
+      { "ambiente": "Dormitorio", "src": "" },
+      { "ambiente": "Baño", "src": "" }
+    ],
+    "tipologia-d": [
+      { "ambiente": "Fachada", "src": "" },
+      { "ambiente": "Ambiente único", "src": "" },
+      { "ambiente": "Kitchenette", "src": "" },
+      { "ambiente": "Baño", "src": "" }
+    ],
+    "casa-patio": [
+      { "ambiente": "Fachada", "src": "" },
+      { "ambiente": "Living", "src": "" },
+      { "ambiente": "Dormitorio", "src": "" },
+      { "ambiente": "Baño", "src": "" }
+    ],
+    "casa-compacta": [
+      { "ambiente": "Fachada", "src": "" },
+      { "ambiente": "Living", "src": "" },
+      { "ambiente": "Dormitorio", "src": "" },
+      { "ambiente": "Baño", "src": "" }
+    ],
+    "lote": [
+      { "ambiente": "Vista del lote", "src": "" },
+      { "ambiente": "Entorno del barrio", "src": "" }
+    ]
+  }
+}
