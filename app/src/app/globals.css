@@ -49,3 +49,26 @@ html, body { background: #0B1418; color: var(--color-ink); }
 .scene-fade-out { animation: scene-fade-out .7s ease forwards; pointer-events: none; }
 @keyframes scene-fade-in { from { opacity: 0; } to { opacity: 1; } }
 .scene-fade-in { animation: scene-fade-in .5s ease; }
+
+/* Atardecer: la foto de día se dora, se apaga y deja ver la de noche. Amanecer: al revés. */
+@keyframes sky-dusk {
+  0% { opacity: 1; filter: none; }
+  35% { opacity: 1; filter: sepia(.45) saturate(1.45) hue-rotate(-12deg) brightness(1); }
+  70% { opacity: .85; filter: sepia(.35) saturate(1.2) hue-rotate(-20deg) brightness(.55); }
+  100% { opacity: 0; filter: saturate(.8) brightness(.3); }
+}
+@keyframes sky-dawn {
+  0% { opacity: 1; filter: none; }
+  40% { opacity: .9; filter: brightness(1.35) saturate(1.1); }
+  100% { opacity: 0; filter: brightness(1.8) saturate(.9); }
+}
+@keyframes sky-glow {
+  0% { opacity: 0; }
+  45% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.sky-dusk { animation: sky-dusk ease-in-out forwards; pointer-events: none; }
+.sky-dawn { animation: sky-dawn ease-in-out forwards; pointer-events: none; }
+.sky-glow-dusk, .sky-glow-dawn { animation: sky-glow ease-in-out forwards; mix-blend-mode: soft-light; }
+.sky-glow-dusk { background: linear-gradient(to bottom, #3b2a6b 0%, #c2507a 35%, #ff9a3c 60%, #ffcf7a 100%); }
+.sky-glow-dawn { background: linear-gradient(to bottom, #8fb8e8 0%, #ffd9a8 55%, #fff1d6 100%); }

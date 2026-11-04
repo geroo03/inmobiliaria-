@@ -91,6 +91,14 @@ const typologies: Typology[] = LETTERS.map((l) => {
   };
 });
 
+/** Contorno del edificio en el render de la planta (medido sobre la imagen; ver scripts/content/floors.mjs). */
+const BUILDING_OUTLINE: Polygon = [
+  [0.0565, 0.1429], [0.0893, 0.1429], [0.0893, 0.0813], [0.3869, 0.0813], [0.3869, 0.1429], [0.619, 0.1429],
+  [0.619, 0.0933], [0.8571, 0.0933], [0.8571, 0.1429], [0.9435, 0.1429], [0.9435, 0.847], [0.628, 0.847],
+  [0.628, 0.908], [0.4286, 0.908], [0.4286, 0.847], [0.2798, 0.847], [0.2798, 0.908], [0.119, 0.908],
+  [0.119, 0.847], [0.0565, 0.847],
+];
+
 const FLOORS = 8; // planta baja + 8 pisos, como en las fotos
 const floors: Floor[] = Array.from({ length: FLOORS }, (_, i) => ({
   id: `piso-${i + 1}`,
@@ -99,6 +107,8 @@ const floors: Floor[] = Array.from({ length: FLOORS }, (_, i) => ({
   level: i + 1,
   image3dUrl: media('pisos/planta-3d.webp'),
   image2dUrl: media('pisos/planta-2d.svg'),
+  outline: BUILDING_OUTLINE,
+  groundImageUrl: media('pisos/suelo.webp'),
   width: floorMeta.width,
   height: floorMeta.height,
 }));
@@ -222,14 +232,19 @@ const scenes: Scene[] = SCENE_DEFS.map((d) => {
  * Los pares que no están acá se pasan con un fundido; de noche, siempre fundido.
  */
 const DAY_VIDEOS = new Set(['frente>esquina']);
+/** Cuadros extraídos de cada video (scripts/content/orbit-frames.sh), para girar arrastrando. */
+const ORBIT_FRAMES: Record<string, number> = { 'frente>esquina': 71 };
 
 function videosFor(from: string, to: string) {
   const forward = DAY_VIDEOS.has(`${from}>${to}`), backward = DAY_VIDEOS.has(`${to}>${from}`);
-  if (!forward && !backward) return { videoDayUrl: null, videoDayMobileUrl: null };
+  const count = ORBIT_FRAMES[`${from}>${to}`];
+  const frames = count ? { path: media(`orbita/${from}__${to}`), count } : null;
+  if (!forward && !backward) return { videoDayUrl: null, videoDayMobileUrl: null, frames };
   const name = forward ? `${from}__${to}` : `${to}__${from}-reversa`;
   return {
     videoDayUrl: media(`transiciones/${name}-1080.mp4`),
     videoDayMobileUrl: media(`transiciones/${name}-720.mp4`),
+    frames,
   };
 }
 

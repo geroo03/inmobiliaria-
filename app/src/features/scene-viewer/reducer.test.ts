@@ -40,8 +40,8 @@ describe('viewerReducer', () => {
 });
 
 const T: SceneTransition[] = [
-  { fromSceneId: 'a', toSceneId: 'b', direction: 'right', videoDayUrl: 'd.mp4', videoDayMobileUrl: 'd-720.mp4', videoNightUrl: 'n.mp4', videoNightMobileUrl: null },
-  { fromSceneId: 'b', toSceneId: 'a', direction: 'left', videoDayUrl: 'r.mp4', videoDayMobileUrl: null, videoNightUrl: null, videoNightMobileUrl: null },
+  { fromSceneId: 'a', toSceneId: 'b', direction: 'right', videoDayUrl: 'd.mp4', videoDayMobileUrl: 'd-720.mp4', videoNightUrl: 'n.mp4', videoNightMobileUrl: null, frames: null },
+  { fromSceneId: 'b', toSceneId: 'a', direction: 'left', videoDayUrl: 'r.mp4', videoDayMobileUrl: null, videoNightUrl: null, videoNightMobileUrl: null, frames: null },
 ];
 const resolve = (p: string) => `/media/${p}`;
 

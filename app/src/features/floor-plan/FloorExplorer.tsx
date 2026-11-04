@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Building, Floor, FloorAvailability, PublicUnit, Typology } from '@/types/domain';
+import type { Building, Floor, FloorAvailability, Polygon, PublicUnit, Typology } from '@/types/domain';
 import { mediaUrl } from '@/lib/media';
 import { fitTransform, polygonPoints, toScreen } from '@/lib/geometry';
 import { useElementSize } from '@/components/useElementSize';
@@ -82,8 +82,12 @@ export function FloorExplorer(props: Props) {
       <div className="relative min-h-0 flex-1">
         {/* Planta: contain, para que se vea el piso entero. Deja lugar al panel y al selector de pisos. */}
         <div ref={planRef} className={`absolute inset-0 bottom-14 right-20 sm:right-24 ${selected ? 'md:left-[400px]' : 'md:left-4'} left-2`}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- la planta cambia entre 3D y 2D sin recargar */}
-          <img src={imageUrl} alt={`Planta del piso ${floor.level} (${view === '2d' ? 'plano técnico' : 'vista cenital'}, ilustrativa)`} className="absolute inset-0 h-full w-full object-contain" draggable={false} />
+          {view === '3d' && floor.outline && fit.scale > 0 ? (
+            <HeightView src={imageUrl} ground={floor.groundImageUrl ? mediaUrl(floor.groundImageUrl) : null} outline={floor.outline} level={floor.level} maxLevel={Math.max(...floors.map((f) => f.level))} rect={{ left: fit.offsetX, top: fit.offsetY, width: floor.width * fit.scale, height: floor.height * fit.scale }} alt={`Planta del piso ${floor.level} (vista cenital, ilustrativa)`} />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element -- la planta cambia entre 3D y 2D sin recargar
+            <img src={imageUrl} alt={`Planta del piso ${floor.level} (${view === '2d' ? 'plano técnico' : 'vista cenital'}, ilustrativa)`} className="absolute inset-0 h-full w-full object-contain" draggable={false} />
+          )}
           <svg className="absolute inset-0 h-full w-full" viewBox={`0 0 ${floor.width} ${floor.height}`} preserveAspectRatio="xMidYMid meet">
             {units.map((u) => {
               const isSel = u.id === selectedId, isHover = u.id === hoverId;
@@ -160,5 +164,30 @@ export function FloorExplorer(props: Props) {
         )}
       </div>
     </main>
+  );
+}
+
+/**
+ * Render del piso con sensación de altura: el edificio queda arriba, recortado por su contorno y
+ * con sombra, y el suelo de abajo (una foto aérea) se ve cerca en los pisos bajos y lejos, más
+ * chico y con bruma, en los altos. El suelo siempre cubre todo el cuadro.
+ */
+function HeightView({ src, ground, outline, level, maxLevel, rect, alt }: { src: string; ground: string | null; outline: Polygon; level: number; maxLevel: number; rect: { left: number; top: number; width: number; height: number }; alt: string }) {
+  const k = maxLevel > 1 ? (level - 1) / (maxLevel - 1) : 0; // 0 en el piso 1, 1 en el último
+  const groundStyle = { transform: `scale(${(1.75 - 0.75 * k).toFixed(3)})`, filter: `blur(${(0.2 + 1.3 * k).toFixed(2)}px) saturate(${(1 - 0.2 * k).toFixed(2)})` };
+  const clip = `polygon(${outline.map(([x, y]) => `${(x * 100).toFixed(2)}% ${(y * 100).toFixed(2)}%`).join(', ')})`;
+  const off = 3 + 22 * k, blur = 5 + 18 * k;
+  const shadow = `drop-shadow(${(off * 0.7).toFixed(1)}px ${off.toFixed(1)}px ${blur.toFixed(1)}px rgba(0,0,0,${(0.3 + 0.15 * k).toFixed(2)}))`;
+  return (
+    <div className="absolute overflow-hidden rounded-sm bg-[#6f8b5e]" style={rect}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- suelo visto desde arriba */}
+      <img src={ground ?? src} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover transition-[transform,filter] duration-700 ease-out" style={groundStyle} draggable={false} />
+      <div aria-hidden className="absolute inset-0 bg-white transition-opacity duration-700" style={{ opacity: 0.1 * k }} />
+      <div className="absolute inset-0 transition-[filter] duration-700" style={{ filter: shadow }}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- el edificio, recortado por su contorno */}
+        <img src={src} alt={alt} className="absolute inset-0 h-full w-full" style={{ clipPath: clip }} draggable={false} />
+      </div>
+      <span className="absolute bottom-2 left-2 rounded-full bg-black/50 px-2 py-0.5 text-[11px] text-white">Vista desde el piso {level}</span>
+    </div>
   );
 }

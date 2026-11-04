@@ -63,6 +63,11 @@ export interface SceneTransition {
   videoDayMobileUrl: string | null;
   videoNightUrl: string | null;
   videoNightMobileUrl: string | null;
+  /**
+   * Cuadros del video de día para girar arrastrando: `${path}/{1280|720}/{000..count-1}.webp`.
+   * Sirven también para el sentido contrario (se recorren al revés).
+   */
+  frames: { path: string; count: number } | null;
 }
 
 export type BuildingStatus = 'selling' | 'sold_out' | 'coming_soon' | 'not_for_sale';
@@ -82,6 +87,13 @@ export interface Floor {
   image3dUrl: string;
   /** Plano técnico con el mismo encuadre que el render. */
   image2dUrl: string | null;
+  /**
+   * Contorno del edificio (con balcones) sobre el render, en 0–1. Separa el edificio del suelo
+   * para mostrar el suelo más lejos cuanto más alto es el piso.
+   */
+  outline: Polygon | null;
+  /** Foto aérea del suelo de alrededor, vista desde arriba; se aleja cuanto más alto es el piso. */
+  groundImageUrl: string | null;
   width: number;
   height: number;
 }

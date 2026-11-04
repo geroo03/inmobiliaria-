@@ -10,9 +10,15 @@ import { useElementSize, useMediaQuery } from '@/components/useElementSize';
 import { ChevronLeft, ChevronRight, Moon, Search, Sparkle, Sun } from '@/components/icons';
 import { currentScene, viewerReducer, type TransitionGraph, type ViewerEvent, type ViewerState } from './reducer';
 import { buildTransitionGraph, neighbors } from './graph';
+import { mod, snapTarget } from './orbit';
+import { createOrbitRenderer, type OrbitRenderer } from './orbitRenderer';
 
 /** Si el video no arranca en este tiempo, se corta directo a la escena destino. */
 const VIDEO_START_TIMEOUT_MS = 4000;
+/** Píxeles que hay que arrastrar para empezar a girar (menos que eso es un clic). */
+const DRAG_THRESHOLD_PX = 6;
+/** Duración del atardecer o el amanecer, en milisegundos (coincide con el CSS). */
+const SKY_MS = 2800;
 
 interface Props {
   base: string;
@@ -43,6 +49,13 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
   // Video que terminó: queda en su último cuadro y se desvanece sobre la foto, por si la IA redibujó detalles.
   const [endedVideo, setEndedVideo] = useState<string | null>(null);
   const playing = state.kind === 'transitioning' && playingUrl === state.videoUrl;
+  const [sky, setSky] = useState<{ from: string; toNight: boolean } | null>(null);
+  // Giro libre arrastrando: mientras dura se dibuja en un canvas y se ocultan los pisos.
+  const [orbiting, setOrbiting] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rendererRef = useRef<OrbitRenderer | null>(null);
+  const dragRef = useRef<{ x: number; p0: number; p: number; active: boolean; samples: { t: number; p: number }[]; id: number } | null>(null);
+  const suppressClickUntil = useRef(0);
 
   const imageOf = useCallback(
     (id: string) => {
@@ -122,10 +135,73 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
   });
 
   const toggleNight = () => {
+    if (state.kind !== 'idle' || orbiting || sky) return;
     const n = !night;
-    if (state.kind === 'idle') setFadeFrom(imageOf(state.scene));
+    // La foto actual queda arriba y se va apagando (atardecer) o aclarando (amanecer) sobre la nueva.
+    if (!reducedMotion) setSky({ from: imageOf(state.scene), toNight: n });
     setNight(n);
     window.history.replaceState(null, '', `${base}/explore/${sceneId}${n ? '?noche=1' : ''}`);
+  };
+
+  const sceneIndex = scenes.findIndex((s) => s.id === sceneId);
+  const canOrbit = scenes.length > 1 && state.kind === 'idle' && !sky;
+
+  useEffect(() => {
+    const c = canvasRef.current;
+    if (!c) return;
+    rendererRef.current = createOrbitRenderer(c, { scenes, transitions, night, mobile });
+  }, [scenes, transitions, night, mobile]);
+
+  const animateTo = (from: number, target: number) => {
+    const r = rendererRef.current;
+    const dist = Math.abs(target - from);
+    const ms = reducedMotion ? 0 : 220 + dist * 900;
+    const start = performance.now();
+    const step = (now: number) => {
+      const k = ms === 0 ? 1 : Math.min(1, (now - start) / ms);
+      const e = 1 - Math.pow(1 - k, 3);
+      r?.draw(from + (target - from) * e);
+      if (k < 1) requestAnimationFrame(step);
+      else {
+        const id = scenes[mod(target, scenes.length)].id;
+        setState({ kind: 'idle', scene: id });
+        setOrbiting(false);
+      }
+    };
+    requestAnimationFrame(step);
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (!canOrbit || e.button !== 0) return;
+    if ((e.target as HTMLElement).closest('button, a')) return;
+    rendererRef.current?.preload(sceneIndex);
+    dragRef.current = { x: e.clientX, p0: sceneIndex, p: sceneIndex, active: false, samples: [], id: e.pointerId };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d || d.id !== e.pointerId) return;
+    const dx = e.clientX - d.x;
+    if (!d.active) {
+      if (Math.abs(dx) < DRAG_THRESHOLD_PX) return;
+      d.active = true;
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      setOrbiting(true);
+    }
+    // Arrastrar hacia la izquierda gira hacia la derecha, como mover el edificio con la mano.
+    const width = (e.currentTarget as HTMLElement).clientWidth || 1;
+    d.p = d.p0 - dx / (width * 0.9);
+    const now = performance.now();
+    d.samples = [...d.samples.filter((s) => now - s.t < 120), { t: now, p: d.p }];
+    rendererRef.current?.draw(d.p);
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    dragRef.current = null;
+    if (!d || !d.active || d.id !== e.pointerId) return;
+    suppressClickUntil.current = performance.now() + 120; // el clic que sigue al arrastre no abre un piso
+    const first = d.samples[0], last = d.samples[d.samples.length - 1];
+    const v = first && last && last.t > first.t ? ((last.p - first.p) / (last.t - first.t)) * 1000 : 0;
+    animateTo(d.p, snapTarget(d.p, v, d.p0));
   };
 
   const openHotspot = (h: Hotspot) => {
@@ -138,7 +214,16 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
 
   const transitioning = state.kind === 'transitioning';
   return (
-    <main className="relative h-dvh w-full select-none overflow-hidden bg-black text-ink">
+    <main
+      className={`relative h-dvh w-full touch-pan-y select-none overflow-hidden bg-black text-ink ${canOrbit ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onClickCapture={(e) => {
+        if (performance.now() < suppressClickUntil.current) { e.stopPropagation(); e.preventDefault(); }
+      }}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element -- capas que cambian sin recargar; el tamaño lo da object-cover */}
       <img src={imageOf(baseSceneId)} alt={`${projectName}: vista ${scene?.name ?? ''} (imagen ilustrativa)`} className="absolute inset-0 h-full w-full object-cover" draggable={false} />
       {fadeFrom && (
@@ -171,7 +256,25 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
         />
       )}
 
-      {scene && !transitioning && <HotspotLayer scene={scene} night={night} availability={availability} onOpen={openHotspot} />}
+      {sky && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element -- capa temporal del atardecer o amanecer */}
+          <img
+            src={sky.from}
+            alt=""
+            aria-hidden
+            className={`absolute inset-0 h-full w-full object-cover ${sky.toNight ? 'sky-dusk' : 'sky-dawn'}`}
+            style={{ animationDuration: `${SKY_MS}ms` }}
+            onAnimationEnd={() => setSky(null)}
+            draggable={false}
+          />
+          <div aria-hidden className={`pointer-events-none absolute inset-0 ${sky.toNight ? 'sky-glow-dusk' : 'sky-glow-dawn'}`} style={{ animationDuration: `${SKY_MS}ms` }} />
+          <p role="status" className="pill absolute left-1/2 top-20 -translate-x-1/2">{sky.toNight ? 'Anocheciendo…' : 'Amaneciendo…'}</p>
+        </>
+      )}
+      <canvas ref={canvasRef} aria-hidden className={`absolute inset-0 h-full w-full ${orbiting ? '' : 'invisible'}`} />
+
+      {scene && !transitioning && !orbiting && !sky && <HotspotLayer scene={scene} night={night} availability={availability} onOpen={openHotspot} />}
 
       {/* Barra superior */}
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3 sm:p-4">
@@ -188,19 +291,19 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
 
       {/* Rotar la vista */}
       {near.left && (
-        <button type="button" onClick={() => go(near.left)} disabled={transitioning} aria-label="Girar a la izquierda" className="pill absolute left-3 top-1/2 size-12 -translate-y-1/2 justify-center p-0 disabled:opacity-50 sm:left-5">
+        <button type="button" onClick={() => go(near.left)} disabled={transitioning || orbiting || !!sky} aria-label="Girar a la izquierda" className="pill absolute left-3 top-1/2 size-12 -translate-y-1/2 justify-center p-0 disabled:opacity-50 sm:left-5">
           <ChevronLeft className="size-6" />
         </button>
       )}
       {near.right && (
-        <button type="button" onClick={() => go(near.right)} disabled={transitioning} aria-label="Girar a la derecha" className="pill absolute right-3 top-1/2 size-12 -translate-y-1/2 justify-center p-0 disabled:opacity-50 sm:right-5">
+        <button type="button" onClick={() => go(near.right)} disabled={transitioning || orbiting || !!sky} aria-label="Girar a la derecha" className="pill absolute right-3 top-1/2 size-12 -translate-y-1/2 justify-center p-0 disabled:opacity-50 sm:right-5">
           <ChevronRight className="size-6" />
         </button>
       )}
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3 sm:p-4">
-        <p className="pill pointer-events-auto whitespace-nowrap text-xs sm:text-sm" aria-live="polite">{transitioning ? 'Girando…' : `Vista ${scene?.name ?? ''}`}</p>
-        <p className="rounded-full bg-black/45 px-3 py-1 text-[11px] text-white/85">Imágenes ilustrativas<span className="hidden sm:inline"> · tocá un piso para verlo</span></p>
+        <p className="pill pointer-events-auto whitespace-nowrap text-xs sm:text-sm" aria-live="polite">{transitioning || orbiting ? 'Girando…' : `Vista ${scene?.name ?? ''}`}</p>
+        <p className="rounded-full bg-black/45 px-3 py-1 text-[11px] text-white/85">{scenes.length > 1 ? 'Arrastrá para girar' : 'Imágenes ilustrativas'}<span className="hidden sm:inline"> · tocá un piso para verlo · imágenes ilustrativas</span></p>
       </div>
     </main>
   );
