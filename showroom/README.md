@@ -26,6 +26,8 @@ El panel «Sol y clima» cambia el cielo, la luz y las sombras:
 - **Clima:** despejado, nublado o lluvia. Es una simulación: la página no puede consultar el clima real porque el Artifact no permite llamar a servicios externos.
 - **De noche** se prenden el lobby y, en la vista de vidrio, parte de los departamentos.
 
+La escena usa texturas dibujadas en la propia página (revoque, pasto, asfalto, veredas, muro cortina y ventanas del barrio), cielo físico con `Sky.js` de Three.js 0.128 (si no carga, se usa un degradé), reflejos del cielo en vidrios y autos, mapeo de tonos ACES, árboles, autos, y las sierras al oeste con relieve. Es un modelo en tiempo real: se ve realista, pero no es un render fotográfico. Para eso harían falta renders hechos con Lumion, Twinmotion o D5, o fotos tomadas con dron.
+
 «Ver la vista desde el balcón» pone la cámara en el balcón de cada unidad, a la altura de su piso, para mirar alrededor arrastrando. El barrio y las sierras son ilustrativos.
 
 ## Fotos

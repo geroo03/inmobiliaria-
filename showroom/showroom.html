@@ -553,6 +553,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Sky.js"></script>
 <script>
 (function () {
   'use strict';
@@ -1496,6 +1497,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     V3.raf = requestAnimationFrame(v3Loop);
     V3.controls.update();
     animateWeather();
+    if (V3.mode === 'torre' && V3.pmrem) twEnvUpdate();
     V3.renderer.render(V3.scene, V3.camera);
     v3Hotspots();
   }
@@ -1512,6 +1514,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (!slot || !v3Ensure()) { v3Stop(); V3.hot = null; return; }
     if (mode === 'torre') {
       if (V3.key !== 'torre') torreBuild();
+      v3Tone(THREE.ACESFilmicToneMapping);
       applySun();
       if (S.vista && V3.vistaOn !== S.vista) twView(S.vista);
       V3.hot = null;
@@ -1527,6 +1530,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     var item = currentItem(), isCasa = S.view !== 'edificio';
     if (!item) { v3Stop(); return; }
     if (V3.key !== v3Key(item, isCasa, mode)) v3Build(item, isCasa, mode);
+    v3Tone(THREE.NoToneMapping);
     if (V3.roof) V3.roof.visible = !vtOpen && isCasa && item.modelo !== 'lote' && S.roof;
     V3.hot = vtOpen ? vtHotspotTargets() : null;
     v3Stop();
@@ -1673,7 +1677,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
      Torre de 9 pisos armada con la planta tipo: cada unidad es un volumen vidriado que se pinta por estado
      (disponible, reservada, vendida) o se ve como vidrio, con balcones, losas, núcleo y el entorno de la calle. */
   var TW = { units: [], hoverPiso: 0, wired: false, ray: null, down: null };
-  var TW_COL = { disp: 0x3FAE6E, res: 0xE0A33A, vend: 0x7E898F, glass: 0x9DB4C0 };
+  var TW_COL = { disp: 0x48C47C, res: 0xF0B040, vend: 0x8A959B, glass: 0xD2DEE4 };
   var TW_FOOT = { A: [0, 0, 6.4, 2.9], B: [6.4, 0, 4.8, 2.9], D: [0, 3.9, 4.8, 2.9], C: [4.8, 3.9, 6.4, 2.9] };
   var TW_BALC = { A: [.8, -1.5, 4.8, 1.5], B: [7.0, -1.5, 3.6, 1.5], D: [.6, 6.8, 3.6, 1.5], C: [5.8, 6.8, 4.8, 1.5] };
   var TW_W = 11.2, TW_D = 6.8, TW_PB = 4, TW_FH = 3;
@@ -1721,7 +1725,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   }
   function drawSky(top, hor) {
     var x = V3.skyCanvas.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 256);
-    gr.addColorStop(0, top.getStyle()); gr.addColorStop(1, hor.getStyle());
+    gr.addColorStop(0, top.getStyle()); gr.addColorStop(.5, hor.getStyle()); gr.addColorStop(1, hor.getStyle());
     x.fillStyle = gr; x.fillRect(0, 0, 2, 256);
     V3.skyTex.needsUpdate = true;
   }
@@ -1730,21 +1734,22 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     var t = SUN.live ? cbaNow() : { doy: SEASON_DOY[SUN.season], hour: SUN.hour };
     if (SUN.live) SUN.hour = t.hour;
     var p = sunPosition(t.doy, t.hour), rad = Math.PI / 180, w = SUN.weather, ca = Math.cos(p.alt * rad);
-    V3.sunLight.position.set(ca * Math.sin(p.az * rad) * 90, Math.max(Math.sin(p.alt * rad), .02) * 90, -ca * Math.cos(p.az * rad) * 90);
+    var dir = new THREE.Vector3(ca * Math.sin(p.az * rad), Math.sin(p.alt * rad), -ca * Math.cos(p.az * rad));
+    V3.sunLight.position.set(dir.x * 90, Math.max(dir.y, .02) * 90, dir.z * 90);
     var dayF = Math.max(0, Math.min(1, (p.alt + 2) / 10)), wF = w === 'despejado' ? 1 : (w === 'nublado' ? .35 : .2);
-    V3.sunLight.intensity = 1.25 * dayF * wF;
+    V3.sunLight.intensity = 2.1 * dayF * wF;
     V3.sunLight.castShadow = dayF > .05 && w !== 'lluvia';
     V3.sunLight.color.set(p.alt < 12 ? 0xFFC890 : 0xFFF3E4);
-    V3.hemi.intensity = .14 + .5 * dayF * (w === 'despejado' ? 1 : .85);
+    V3.hemi.intensity = .18 + .22 * dayF;
     V3.hemi.color.set(dayF < .2 ? 0x6C7FA6 : 0xFFF1E0);
     var sk = skyFor(p.alt, w);
-    drawSky(sk.top, sk.hor);
+    twSky(p, w, sk, dir);
     V3.scene.fog.color.copy(sk.hor).convertSRGBToLinear();
     V3.scene.fog.near = w === 'lluvia' ? 25 : (w === 'nublado' ? 90 : 160);
     V3.scene.fog.far = w === 'lluvia' ? 170 : (w === 'nublado' ? 450 : 700);
     V3.night = p.alt < -3;
     V3.lobbyMat.emissiveIntensity = V3.night ? 1.3 : .45;
-    V3.cityMats.forEach(function (m) { m.emissiveIntensity = V3.night ? .07 : 0; });
+    V3.cityMats.forEach(function (m) { m.emissiveIntensity = V3.night ? 1.1 : 0; });
     V3.rain.visible = w === 'lluvia';
     V3.clouds.visible = w !== 'despejado';
     V3.cloudMat.color.set(w === 'lluvia' ? 0x7C858B : 0xE9ECEE).convertSRGBToLinear();
@@ -1756,10 +1761,121 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   }
   setInterval(function () { if (SUN.live && !vitrinaEl.hidden && S.vtKind === 'torre') applySun(); }, 30000);
 
+  /* ---------- Realismo: texturas dibujadas en canvas, cielo físico y reflejos ---------- */
+  var TEXC = {};
+  function texCanvas(key, w, h, draw) {
+    if (TEXC[key]) return TEXC[key];
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    draw(c.getContext('2d'), w, h, mulberry32(w * 31 + h * 7 + key.charCodeAt(0) * 131 + key.length));
+    var t = new THREE.CanvasTexture(c);
+    t.encoding = THREE.sRGBEncoding; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.anisotropy = Math.min(8, V3.renderer.capabilities.getMaxAnisotropy());
+    return (TEXC[key] = t);
+  }
+  function speckle(x, w, h, rnd, base, cols, n, size) {
+    x.fillStyle = base; x.fillRect(0, 0, w, h);
+    for (var i = 0; i < n; i++) { var z = size * (.5 + rnd()); x.fillStyle = cols[Math.floor(rnd() * cols.length)]; x.fillRect(rnd() * w, rnd() * h, z, z); }
+  }
+  // Ventanas del barrio: un módulo de 12 x 12 m (4 pisos de 3 m, 8 ventanas por fila).
+  function cityWindows(x, s, rnd, lit) {
+    for (var fy = 0; fy < 4; fy++) for (var wx = 0; wx < 8; wx++) {
+      var px = wx * 64 + 11, py = fy * 128 + 30;
+      if (lit) {
+        x.fillStyle = rnd() < .42 ? ['#FFD08A', '#FFE3B5', '#F6B868', '#FFF1D6'][Math.floor(rnd() * 4)] : '#000';
+        x.fillRect(px, py, 42, 74);
+      } else {
+        var gr = x.createLinearGradient(0, py, 0, py + 74);
+        gr.addColorStop(0, '#7D909C'); gr.addColorStop(.5, '#4A5963'); gr.addColorStop(1, '#2E3940');
+        x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(px - 2, py - 2, 46, 80);
+        x.fillStyle = gr; x.fillRect(px, py, 42, 74);
+        x.fillStyle = 'rgba(255,255,255,.55)'; x.fillRect(px - 3, py + 74, 48, 4);
+        x.fillStyle = 'rgba(255,255,255,.25)'; x.fillRect(px + 20, py, 2, 74);
+      }
+    }
+  }
+  var TEX = {
+    plaster: function () { return texCanvas('plaster', 256, 256, function (x, w, h, rnd) {
+      speckle(x, w, h, rnd, '#F3EFE8', ['rgba(0,0,0,.035)', 'rgba(255,255,255,.6)', 'rgba(120,100,80,.05)'], 2600, 2);
+      x.fillStyle = 'rgba(0,0,0,.06)'; x.fillRect(0, h - 2, w, 2);
+    }); },
+    grass: function () { return texCanvas('grass', 256, 256, function (x, w, h, rnd) {
+      speckle(x, w, h, rnd, '#6C8A50', ['rgba(40,70,25,.28)', 'rgba(160,175,95,.22)', 'rgba(115,95,55,.18)', 'rgba(85,120,60,.3)'], 9000, 2.2);
+    }); },
+    asphalt: function () { return texCanvas('asphalt', 256, 256, function (x, w, h, rnd) {
+      speckle(x, w, h, rnd, '#4D5257', ['rgba(0,0,0,.2)', 'rgba(255,255,255,.07)', 'rgba(30,30,30,.15)'], 8000, 1.6);
+    }); },
+    sidewalk: function () { return texCanvas('sidewalk', 256, 256, function (x, w, h, rnd) {
+      speckle(x, w, h, rnd, '#D2CBBF', ['rgba(0,0,0,.05)', 'rgba(255,255,255,.35)'], 3000, 2);
+      x.fillStyle = 'rgba(0,0,0,.13)';
+      for (var i = 0; i < 4; i++) { x.fillRect(i * 64, 0, 2, h); x.fillRect(0, i * 64, w, 2); }
+    }); },
+    // Muro cortina de las unidades: un paño de 1,2 m de ancho por la altura del piso.
+    curtain: function () { return texCanvas('curtain', 128, 256, function (x, w, h) {
+      var gr = x.createLinearGradient(0, 0, w, h);
+      gr.addColorStop(0, '#E4ECF0'); gr.addColorStop(.45, '#B9CAD3'); gr.addColorStop(1, '#93A8B4');
+      x.fillStyle = gr; x.fillRect(0, 0, w, h);
+      x.fillStyle = 'rgba(255,255,255,.18)'; x.beginPath(); x.moveTo(30, 0); x.lineTo(70, 0); x.lineTo(20, h); x.lineTo(-20, h); x.fill();
+      x.fillStyle = '#EDEDEA'; x.fillRect(0, 0, 6, h); x.fillRect(w - 6, 0, 6, h); x.fillRect(0, 0, w, 7); x.fillRect(0, h - 26, w, 26);
+      x.fillStyle = '#DAD6CF'; x.fillRect(0, h - 22, w, 18);
+    }); },
+    curtainLit: function () { return texCanvas('curtainLit', 128, 256, function (x, w, h) {
+      x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
+      var gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#FFFFFF'); gr.addColorStop(1, '#BFBFBF');
+      x.fillStyle = gr; x.fillRect(6, 7, w - 12, h - 33);
+    }); },
+    cityWin: function () { return texCanvas('cityWin', 512, 512, function (x, w, h, rnd) {
+      speckle(x, w, h, rnd, '#F2EEE8', ['rgba(0,0,0,.04)', 'rgba(255,255,255,.5)'], 3000, 2);
+      cityWindows(x, w, rnd, false);
+    }); },
+    cityLit: function () { return texCanvas('cityLit', 512, 512, function (x, w, h, rnd) {
+      x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
+      cityWindows(x, w, rnd, true);
+    }); }
+  };
+  // Escala las coordenadas de textura de una caja para que el dibujo quede en metros reales (tu x tv por repetición).
+  function boxUV(geo, w, h, d, tu, tv) {
+    var uv = geo.attributes.uv, dims = [[d, h], [d, h], [w, d], [w, d], [w, h], [w, h]];
+    for (var i = 0; i < 24; i++) { var f = dims[Math.floor(i / 4)]; uv.setXY(i, uv.getX(i) * f[0] / tu, uv.getY(i) * f[1] / tv); }
+    uv.needsUpdate = true;
+    return geo;
+  }
+  function tbox(g, x, y0, z, w, h, d, m, tu, tv, noShadow) {
+    var b = box(g, x, y0, z, w, h, d, 0, { mat: m, noShadow: noShadow });
+    boxUV(b.geometry, w, h, d, tu, tv || tu);
+    return b;
+  }
+  function stdMat(color, o) {
+    var m = new THREE.MeshStandardMaterial(o || {});
+    m.color.set(color).convertSRGBToLinear();
+    return m;
+  }
+  function treeReal(g, cx, cz, s, rnd) {
+    cyl(g, cx, 0, cz, .13 * s, 2.3 * s, COL.trunk);
+    for (var k = 0; k < 4; k++) {
+      var m = new THREE.Mesh(V3.leafGeo, V3.leafMats[Math.floor(rnd() * V3.leafMats.length)]);
+      m.scale.setScalar((.8 + rnd() * .45) * s);
+      m.position.set(cx + (rnd() - .5) * 1.2 * s, (2.5 + rnd() * 1.1) * s, cz + (rnd() - .5) * 1.2 * s);
+      m.rotation.set(rnd() * 3, rnd() * 3, 0);
+      m.castShadow = true; m.receiveShadow = true; g.add(m);
+    }
+  }
+  function car3d(g, x, z, color, rot) {
+    var c = new THREE.Group(), paint = stdMat(color, { metalness: .55, roughness: .32 });
+    var body = new THREE.Mesh(new THREE.BoxGeometry(4.2, .62, 1.78), paint); body.position.y = .56;
+    var cab = new THREE.Mesh(new THREE.BoxGeometry(2.2, .55, 1.6), V3.carGlass); cab.position.set(-.25, 1.14, 0);
+    [body, cab].forEach(function (m) { m.castShadow = true; m.receiveShadow = true; c.add(m); });
+    [[1.35, .8], [1.35, -.8], [-1.35, .8], [-1.35, -.8]].forEach(function (p) {
+      var w = new THREE.Mesh(V3.wheelGeo, V3.wheelMat); w.rotation.x = Math.PI / 2; w.position.set(p[0], .33, p[1]); c.add(w);
+    });
+    c.position.set(x, 0, z); c.rotation.y = rot; g.add(c);
+  }
   function buildCity(scene) {
-    // Barrio alrededor (seeded, siempre igual) y las sierras al oeste, para que las vistas tengan algo que mirar.
-    var rnd = mulberry32(9131), pal = [0xE6DED2, 0xD8CFC2, 0xCFC6B8, 0xE9E4DC, 0xC9B49E, 0xBFA58A];
-    V3.cityMats = pal.map(function (c) { return new THREE.MeshStandardMaterial({ color: new THREE.Color(c).convertSRGBToLinear(), roughness: .9, emissive: new THREE.Color(0xF2B866).convertSRGBToLinear(), emissiveIntensity: 0 }); });
+    // Barrio alrededor (con semilla, siempre igual) y las sierras al oeste, para que las vistas tengan algo que mirar.
+    var rnd = mulberry32(9131), pal = [0xFFFFFF, 0xF1E9DD, 0xE6DCCD, 0xF5F1EA, 0xE9D6C0, 0xDCC7AE];
+    V3.cityMats = pal.map(function (c) {
+      return stdMat(c, { map: TEX.cityWin(), emissiveMap: TEX.cityLit(), emissive: new THREE.Color(0xFFFFFF), emissiveIntensity: 0, roughness: .75, metalness: .05 });
+    });
+    var roofMat = stdMat(0xB9B4AC, { roughness: .95 }), rects = [];
     var placed = 0, tries = 0;
     while (placed < 90 && tries < 600) {
       tries++;
@@ -1768,16 +1884,106 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
       if (r < 100) h = Math.min(h, 4 + rnd() * 8);                         // cerca, solo casas bajas: la cámara gira a ~76 m y 24 m de alto
       if (cz + d / 2 > -13 && cz - d / 2 < -1) continue;                  // la calle de enfrente queda libre
       if (Math.abs(cx) < 30 && cz > -2 && cz < 14) continue;               // la torre y sus vecinos
-      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), V3.cityMats[Math.floor(rnd() * pal.length)]);
+      h = Math.max(3, Math.round(h / 3) * 3);                              // pisos enteros de 3 m
+      var side = V3.cityMats[Math.floor(rnd() * pal.length)];
+      var m = new THREE.Mesh(boxUV(new THREE.BoxGeometry(w, h, d), w, h, d, 12, 12), [side, side, roofMat, roofMat, side, side]);
       m.position.set(cx, h / 2, cz); m.castShadow = true; m.receiveShadow = true;
-      scene.add(m); placed++;
+      scene.add(m); placed++; rects.push([cx - w / 2 - 1, cz - d / 2 - 1, cx + w / 2 + 1, cz + d / 2 + 1]);
     }
-    var mtn = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x7D8C99).convertSRGBToLinear(), roughness: 1, flatShading: true });
-    for (var i = 0; i < 10; i++) {
-      var cone = new THREE.Mesh(new THREE.ConeGeometry(70 + rnd() * 40, 45 + rnd() * 35, 6), mtn);
-      cone.position.set(-320 + rnd() * 50, 20, -300 + i * 65 + rnd() * 20);
-      scene.add(cone);
+    // Arbolado del barrio, en dos mallas instanciadas para que no pese.
+    var N = 160, trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(.14, .18, 2.4, 6), mat(COL.trunk), N);
+    var crown = new THREE.InstancedMesh(V3.leafGeo, stdMat(0xFFFFFF, { roughness: .95, flatShading: true }), N);
+    var o = new THREE.Object3D(), col = new THREE.Color(), greens = [0x4F7A3F, 0x5E8A47, 0x6B9550, 0x47703A, 0x7A9A55], n = 0;
+    for (var t = 0; t < 1200 && n < N; t++) {
+      var a2 = rnd() * Math.PI * 2, r2 = 18 + rnd() * 190, tx = Math.cos(a2) * r2, tz = Math.sin(a2) * r2;
+      if (tz > -11 && tz < -2) continue;
+      if (Math.abs(tx) < 22 && tz > -2 && tz < 10) continue;
+      if (rects.some(function (q) { return tx > q[0] && tx < q[2] && tz > q[1] && tz < q[3]; })) continue;
+      var sc = .8 + rnd() * .7;
+      o.position.set(tx, 1.2 * sc, tz); o.rotation.set(0, 0, 0); o.scale.set(sc, sc, sc); o.updateMatrix(); trunk.setMatrixAt(n, o.matrix);
+      o.position.set(tx, 3.2 * sc, tz); o.rotation.set(rnd() * 3, rnd() * 3, 0); o.scale.set(1.9 * sc, 1.6 * sc, 1.9 * sc); o.updateMatrix(); crown.setMatrixAt(n, o.matrix);
+      crown.setColorAt(n, col.set(greens[Math.floor(rnd() * greens.length)]).convertSRGBToLinear());
+      n++;
     }
+    trunk.count = crown.count = n;
+    crown.castShadow = trunk.castShadow = true; crown.receiveShadow = true;
+    scene.add(trunk); scene.add(crown);
+    buildSierras(scene, rnd);
+  }
+  function buildSierras(scene, rnd) {
+    // Sierras Chicas al oeste: una franja de relieve que sube hacia el oeste, con color por altura.
+    var W = 260, L = 1100, geo = new THREE.PlaneGeometry(W, L, 52, 160);
+    geo.rotateX(-Math.PI / 2);
+    var pos = geo.attributes.position, cols = [], low = new THREE.Color(0x6E7B57).convertSRGBToLinear(), high = new THREE.Color(0x8D949A).convertSRGBToLinear(), c = new THREE.Color();
+    for (var i = 0; i < pos.count; i++) {
+      var x = pos.getX(i), z = pos.getZ(i), t = (W / 2 - x) / W, e = t * t * (3 - 2 * t);
+      var h = 78 * e * (.62 + .38 * Math.sin(z * .011 + 1.3)) + 16 * Math.sin(z * .037 + x * .021) * e + 7 * Math.sin(z * .093 + x * .07) * e + rnd() * 2.5 * e - 1;
+      h = Math.max(-1, h);
+      pos.setY(i, h);
+      c.copy(low).lerp(high, Math.min(1, Math.max(0, h / 75)));
+      cols.push(c.r, c.g, c.b);
+    }
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+    geo.computeVertexNormals();
+    var m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 }));
+    m.position.set(-340, 0, 0);
+    scene.add(m);
+  }
+  function buildSky(scene) {
+    // Cielo despejado: modelo físico de cielo (Preetham). Nublado, lluvia o sin Sky.js: un domo con degradé.
+    V3.envScene = new THREE.Scene();
+    V3.sky = null;
+    if (THREE.Sky) {
+      V3.sky = new THREE.Sky(); V3.sky.scale.setScalar(800); V3.sky.frustumCulled = false; scene.add(V3.sky);
+      var u = V3.sky.material.uniforms;
+      u.turbidity.value = 3; u.rayleigh.value = 1.6; u.mieCoefficient.value = .005; u.mieDirectionalG.value = .8;
+      // El reflejo usa su propio material con los mismos valores, porque se dibuja sin mapeo de tonos.
+      V3.envSky = new THREE.Sky(); V3.envSky.material.uniforms = u; V3.envSky.scale.setScalar(800); V3.envSky.frustumCulled = false;
+      V3.envScene.add(V3.envSky);
+    }
+    V3.skyCanvas = document.createElement('canvas'); V3.skyCanvas.width = 2; V3.skyCanvas.height = 256;
+    V3.skyTex = new THREE.CanvasTexture(V3.skyCanvas); V3.skyTex.encoding = THREE.sRGBEncoding;
+    var dm = new THREE.MeshBasicMaterial({ map: V3.skyTex, side: THREE.BackSide, fog: false, depthWrite: false, toneMapped: false });
+    V3.dome = new THREE.Mesh(new THREE.SphereGeometry(850, 32, 16), dm); V3.dome.frustumCulled = false; scene.add(V3.dome);
+    V3.envDome = new THREE.Mesh(V3.dome.geometry, dm); V3.envScene.add(V3.envDome);
+    var sp = [], r2 = mulberry32(7);
+    for (var i = 0; i < 900; i++) { var th = r2() * Math.PI * 2, y = .06 + r2() * .94, rr = Math.sqrt(1 - y * y); sp.push(Math.cos(th) * rr * 780, y * 780, Math.sin(th) * rr * 780); }
+    var sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+    V3.stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xFFFFFF, size: 1.6, sizeAttenuation: false, fog: false, transparent: true, opacity: .8, depthWrite: false }));
+    V3.stars.frustumCulled = false;
+    scene.add(V3.stars);
+    V3.pmrem = V3.pmrem || new THREE.PMREMGenerator(V3.renderer);
+    V3.envDirty = true;
+  }
+  function twSky(p, w, sk, dir) {
+    // De noche, el cielo físico queda marrón: se usa el domo azul oscuro con estrellas.
+    var useSky = !!V3.sky && w === 'despejado' && p.alt > -4;
+    if (V3.sky) { V3.sky.visible = V3.envSky.visible = useSky; V3.sky.material.uniforms.sunPosition.value.copy(dir); }
+    V3.dome.visible = V3.envDome.visible = !useSky;
+    if (!useSky) drawSky(sk.top, sk.hor);
+    V3.stars.visible = w === 'despejado' && p.alt < -4;
+    V3.stars.material.opacity = Math.min(.85, (-4 - p.alt) / 8);
+    V3.envDirty = true;
+    // Exposición: el cielo físico pide menos exposición de día; de noche se abre para ver las luces.
+    var dayF = Math.max(0, Math.min(1, (p.alt + 2) / 10));
+    V3.renderer.toneMappingExposure = useSky ? .45 + .3 * (1 - dayF) : .9 + .25 * (1 - dayF);
+  }
+  function twEnvUpdate() {
+    var now = performance.now();
+    if (!V3.envDirty || now - (V3.envT || 0) < 160) return;
+    V3.envDirty = false; V3.envT = now;
+    var rt = V3.pmrem.fromScene(V3.envScene, 0, .1, 1000);
+    if (V3.envRT) V3.envRT.dispose();
+    V3.envRT = rt;
+    V3.scene.environment = rt.texture;
+  }
+  function v3Tone(tm) {
+    var r = V3.renderer;
+    if (r.toneMapping === tm) return;
+    r.toneMapping = tm;
+    if (tm === THREE.NoToneMapping) r.toneMappingExposure = 1;
+    // Three r128 no recompila los materiales solo por cambiar el mapeo de tonos.
+    V3.scene.traverse(function (o) { if (o.material) [].concat(o.material).forEach(function (m) { m.needsUpdate = true; }); });
   }
   function buildWeather(scene) {
     var N = 1400, pos = new Float32Array(N * 6), rnd = mulberry32(42);
@@ -1841,58 +2047,75 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   }
 
   function torreBuild() {
-    var scene = new THREE.Scene();
-    V3.skyCanvas = document.createElement('canvas'); V3.skyCanvas.width = 2; V3.skyCanvas.height = 256;
-    V3.skyTex = new THREE.CanvasTexture(V3.skyCanvas); V3.skyTex.encoding = THREE.sRGBEncoding;
-    scene.background = V3.skyTex;
+    var scene = new THREE.Scene(), rnd = mulberry32(5150);
+    buildSky(scene);
     scene.fog = new THREE.Fog(0xD9C2AE, 160, 700);
-    V3.hemi = new THREE.HemisphereLight(0xFFF1E0, 0x5A5148, .6);
+    V3.hemi = new THREE.HemisphereLight(0xFFF1E0, 0x5A5148, .3);
     scene.add(V3.hemi);
-    var sun = new THREE.DirectionalLight(0xFFD2A0, 1.15);
+    var sun = new THREE.DirectionalLight(0xFFD2A0, 2);
     sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
-    var sc = sun.shadow.camera; sc.left = -45; sc.right = 45; sc.top = 45; sc.bottom = -45; sc.near = 1; sc.far = 220; sun.shadow.bias = -.0005;
+    var sc = sun.shadow.camera; sc.left = -60; sc.right = 60; sc.top = 60; sc.bottom = -60; sc.near = 1; sc.far = 240; sun.shadow.bias = -.0004; sun.shadow.normalBias = .02;
     scene.add(sun); scene.add(sun.target);
     V3.sunLight = sun;
+    V3.leafGeo = V3.leafGeo || new THREE.IcosahedronGeometry(1, 1);
+    V3.leafMats = [0x4F7A3F, 0x5E8A47, 0x6B9550, 0x47703A].map(function (c) { return stdMat(c, { roughness: .95, flatShading: true }); });
+    V3.carGlass = stdMat(0x1E2830, { metalness: .6, roughness: .1 });
+    V3.wheelGeo = V3.wheelGeo || new THREE.CylinderGeometry(.33, .33, .22, 14);
+    V3.wheelMat = stdMat(0x1A1C1E, { roughness: .8 });
     buildCity(scene);
     buildWeather(scene);
-    var g = new THREE.Group(), glass = mat(COL.glass, { transparent: true, opacity: .35, roughness: .1 });
-    box(g, -400, -.12, -400, 800, .1, 800, 0x8D9A7C, { noShadow: true });
-    box(g, -300, -.06, -10, 600, .06, 7, 0x4E5458, { noShadow: true });
-    box(g, -300, -.02, -3, 600, .1, 3, 0xCFC9BD, { noShadow: true });
-    for (var tx = -10; tx <= 22; tx += 6) tree3d(g, tx, -1.6, .85);
-    box(g, -16, 0, -.4, 13, 13, 9, 0xD8CFC2);
-    box(g, 14, 0, -.4, 12, 19, 9, 0xCFC6B8);
+    var g = new THREE.Group();
+    var plaster = stdMat(0xF6F2EC, { map: TEX.plaster(), roughness: .9 });
+    var slab = stdMat(0xEFEAE2, { map: TEX.plaster(), roughness: .8 });
+    var balGlass = stdMat(0xC4D6DE, { transparent: true, opacity: .32, roughness: .05, metalness: .4 });
+    tbox(g, -400, -.12, -400, 800, .1, 800, stdMat(0xFFFFFF, { map: TEX.grass(), roughness: 1 }), 6, 6, true);
+    tbox(g, -300, -.06, -10, 600, .06, 7, stdMat(0xFFFFFF, { map: TEX.asphalt(), roughness: .92 }), 5, 5, true);
+    tbox(g, -300, -.02, -3, 600, .1, 3, stdMat(0xFFFFFF, { map: TEX.sidewalk(), roughness: .9 }), 2, 2, true);
+    tbox(g, -300, -.02, -12.2, 600, .1, 2.2, stdMat(0xFFFFFF, { map: TEX.sidewalk(), roughness: .9 }), 2, 2, true);
+    // Línea discontinua al medio de la calle.
+    var dash = new THREE.InstancedMesh(new THREE.BoxGeometry(3, .02, .14), stdMat(0xF2F0E8, { roughness: .6 }), 100), o3 = new THREE.Object3D();
+    for (var di = 0; di < 100; di++) { o3.position.set(-297 + di * 6, .005, -6.5); o3.updateMatrix(); dash.setMatrixAt(di, o3.matrix); }
+    g.add(dash);
+    [[-30, -8.2, 0xA32B2B, 0], [-12, -4.8, 0xE9E9E6, Math.PI], [9, -8.2, 0x2D3C4F, 0], [26, -4.8, 0x8C9196, Math.PI], [44, -8.2, 0x1C1E20, 0], [-48, -4.8, 0x5E6E4C, Math.PI]]
+      .forEach(function (cr) { car3d(g, cr[0], cr[1], cr[2], cr[3]); });
+    for (var tx = -10; tx <= 22; tx += 6) treeReal(g, tx, -1.6, .85, rnd);
+    for (var tx2 = -40; tx2 <= 50; tx2 += 7) if (tx2 < -12 || tx2 > 26) treeReal(g, tx2, -1.6, .8, rnd);
+    for (var tx3 = -40; tx3 <= 50; tx3 += 8) treeReal(g, tx3 + 3, -11.2, .8, rnd);
+    tbox(g, -16, 0, -.4, 13, 12, 9, V3.cityMats[1], 12, 12);
+    tbox(g, 14, 0, -.4, 12, 18, 9, V3.cityMats[3], 12, 12);
     // Planta baja: lobby vidriado con luz cálida.
-    box(g, 0, 0, .3, TW_W, TW_PB, TW_D - .3, COL.wall);
-    V3.lobbyMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xF6D9A8).convertSRGBToLinear(), emissive: new THREE.Color(0xF2B866).convertSRGBToLinear(), emissiveIntensity: .45, roughness: .3 });
+    tbox(g, 0, 0, .3, TW_W, TW_PB, TW_D - .3, plaster, 3);
+    V3.lobbyMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xF6D9A8).convertSRGBToLinear(), emissive: new THREE.Color(0xF2B866).convertSRGBToLinear(), emissiveIntensity: .45, roughness: .15, metalness: .2 });
     box(g, .6, .1, -.02, TW_W - 1.2, TW_PB - .5, .06, 0, { mat: V3.lobbyMat, noShadow: true });
     box(g, 4.6, 0, -.08, .9, TW_PB, .1, COL.deck);
     TW.units = [];
     for (var p = 1; p <= PISOS; p++) {
       var y0 = TW_PB + (p - 1) * TW_FH;
-      box(g, -.1, y0, -.1, TW_W + .2, .25, TW_D + .2, 0xF1ECE4);
-      box(g, 0, y0 + .25, 2.9, TW_W, TW_FH - .25, 1.0, COL.wall);
-      box(g, -.2, y0 + .25, -.15, .3, TW_FH - .25, TW_D + .3, COL.wall);
-      box(g, TW_W - .1, y0 + .25, -.15, .3, TW_FH - .25, TW_D + .3, COL.wall);
+      tbox(g, -.1, y0, -.1, TW_W + .2, .25, TW_D + .2, slab, 3);
+      tbox(g, 0, y0 + .25, 2.9, TW_W, TW_FH - .25, 1.0, plaster, 3);
+      tbox(g, -.2, y0 + .25, -.15, .3, TW_FH - .25, TW_D + .3, plaster, 3);
+      tbox(g, TW_W - .1, y0 + .25, -.15, .3, TW_FH - .25, TW_D + .3, plaster, 3);
       box(g, 6.25, y0 + .25, -.25, .3, TW_FH - .25, .3, COL.deck);
       box(g, 4.65, y0 + .25, TW_D - .05, .3, TW_FH - .25, .3, COL.deck);
       LETRAS.forEach(function (l) {
-        var f = TW_FOOT[l], u = unitById((p + l).toLowerCase());
-        var m = new THREE.Mesh(new THREE.BoxGeometry(f[2] - .12, TW_FH - .35, f[3] - .12), new THREE.MeshStandardMaterial({ transparent: true }));
-        m.position.set(f[0] + f[2] / 2, y0 + .25 + (TW_FH - .35) / 2, f[1] + f[3] / 2);
+        var f = TW_FOOT[l], u = unitById((p + l).toLowerCase()), uw = f[2] - .12, uh = TW_FH - .35, ud = f[3] - .12;
+        var m = new THREE.Mesh(boxUV(new THREE.BoxGeometry(uw, uh, ud), uw, uh, ud, 1.2, uh),
+          new THREE.MeshStandardMaterial({ transparent: true, map: TEX.curtain(), emissiveMap: TEX.curtainLit() }));
+        m.position.set(f[0] + f[2] / 2, y0 + .25 + uh / 2, f[1] + f[3] / 2);
         m.castShadow = true; m.receiveShadow = true;
         m.userData = { id: u.id, piso: p };
         g.add(m); TW.units.push(m);
         var b = TW_BALC[l], front = b[1] < 0;
-        box(g, b[0], y0, b[1], b[2], .2, b[3], 0xF1ECE4);
-        box(g, b[0], y0 + .2, front ? b[1] : b[1] + b[3] - .04, b[2], 1.0, .04, 0, { mat: glass, noShadow: true });
-        box(g, b[0], y0 + .2, b[1], .04, 1.0, b[3], 0, { mat: glass, noShadow: true });
-        box(g, b[0] + b[2] - .04, y0 + .2, b[1], .04, 1.0, b[3], 0, { mat: glass, noShadow: true });
+        tbox(g, b[0], y0, b[1], b[2], .2, b[3], slab, 3);
+        box(g, b[0], y0 + .2, front ? b[1] : b[1] + b[3] - .04, b[2], 1.0, .04, 0, { mat: balGlass, noShadow: true });
+        box(g, b[0], y0 + .2, b[1], .04, 1.0, b[3], 0, { mat: balGlass, noShadow: true });
+        box(g, b[0] + b[2] - .04, y0 + .2, b[1], .04, 1.0, b[3], 0, { mat: balGlass, noShadow: true });
+        box(g, b[0], y0 + 1.18, front ? b[1] : b[1] + b[3] - .06, b[2], .05, .08, 0xB9BDC0);
       });
     }
     var top = TW_PB + PISOS * TW_FH;
-    box(g, -.2, top, -.2, TW_W + .4, .4, TW_D + .4, 0xF1ECE4);
-    box(g, 3.5, top + .4, 2.6, 4, 2.2, 1.8, 0xE4DDD1);
+    tbox(g, -.2, top, -.2, TW_W + .4, .4, TW_D + .4, slab, 3);
+    tbox(g, 3.5, top + .4, 2.6, 4, 2.2, 1.8, plaster, 3);
     g.position.set(-TW_W / 2, 0, -TW_D / 2);
     scene.add(g);
     V3.scene = scene; V3.key = 'torre'; V3.roof = null; V3.plan = null; V3.mode = 'torre';
@@ -1905,14 +2128,14 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
       var u = unitById(m.userData.id), on = S.disp, sel = m.userData.piso === S.torrePiso, hov = m.userData.piso === TW.hoverPiso;
       var col = on ? TW_COL[u.estado] : TW_COL.glass, mt = m.material;
       mt.color.set(col).convertSRGBToLinear();
-      mt.opacity = on ? .94 : .82;
-      mt.metalness = on ? 0 : .35; mt.roughness = on ? .55 : .15;
+      mt.opacity = on ? .96 : .93;
+      mt.metalness = on ? .1 : .6; mt.roughness = on ? .4 : .07;
       if (on) { mt.emissive.set(col).convertSRGBToLinear(); mt.emissiveIntensity = (sel ? .6 : (hov ? .45 : .16)) + (V3.night ? .3 : 0); }
       else if (sel || hov) { mt.emissive.set(0x4FD1C5).convertSRGBToLinear(); mt.emissiveIntensity = sel ? .55 : .3; }
       else {
         // De noche, alrededor de 6 de cada 10 departamentos tienen la luz prendida.
         var lit = V3.night && (u.id.charCodeAt(0) * 7 + u.id.charCodeAt(1) * 13) % 10 < 6;
-        mt.emissive.set(0xF2B866).convertSRGBToLinear(); mt.emissiveIntensity = lit ? .85 : 0;
+        mt.emissive.set(0xF2B866).convertSRGBToLinear(); mt.emissiveIntensity = lit ? 1.1 : 0;
       }
     });
   }
