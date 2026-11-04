@@ -38,18 +38,10 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
   const [state, setState] = useState<ViewerState>({ kind: 'idle', scene: initialSceneId });
   // Video que ya está reproduciendo; se limpia al terminar cada transición.
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
-  const dispatch = useCallback(
-    (e: ViewerEvent) => {
-      if (e.type !== 'NAVIGATE') setPlayingUrl(null);
-      setState((s) => viewerReducer(s, e, graph));
-    },
-    [graph],
-  );
+  // Imagen anterior que se desvanece encima de la nueva cuando se cambia sin video (o el video falla).
+  const [fadeFrom, setFadeFrom] = useState<string | null>(null);
   const playing = state.kind === 'transitioning' && playingUrl === state.videoUrl;
 
-  const sceneId = currentScene(state);
-  const scene = sceneById.get(sceneId) ?? scenes[0];
-  const near = neighbors(transitions, sceneId);
   const imageOf = useCallback(
     (id: string) => {
       const s = sceneById.get(id);
@@ -58,6 +50,24 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
     },
     [sceneById, night],
   );
+
+  const dispatch = useCallback(
+    (e: ViewerEvent) => {
+      const next = viewerReducer(state, e, graph);
+      if (next === state) return;
+      // Corte sin video: fundido desde la imagen que se estaba viendo.
+      if (next.kind === 'idle' && !(state.kind === 'transitioning' && playing)) {
+        setFadeFrom(imageOf(state.kind === 'idle' ? state.scene : state.from));
+      }
+      if (e.type !== 'NAVIGATE') setPlayingUrl(null);
+      setState(next);
+    },
+    [state, graph, playing, imageOf],
+  );
+
+  const sceneId = currentScene(state);
+  const scene = sceneById.get(sceneId) ?? scenes[0];
+  const near = neighbors(transitions, sceneId);
 
   // Debajo del video queda la escena de origen hasta que el video arranca; después, la de destino,
   // para que al terminar no haya salto (la imagen fija es el último cuadro del video).
@@ -110,6 +120,7 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
 
   const toggleNight = () => {
     const n = !night;
+    if (state.kind === 'idle') setFadeFrom(imageOf(state.scene));
     setNight(n);
     window.history.replaceState(null, '', `${base}/explore/${sceneId}${n ? '?noche=1' : ''}`);
   };
@@ -127,6 +138,18 @@ export function SceneViewer({ base, projectName, scenes, transitions, initialSce
     <main className="relative h-dvh w-full select-none overflow-hidden bg-black text-ink">
       {/* eslint-disable-next-line @next/next/no-img-element -- capas que cambian sin recargar; el tamaño lo da object-cover */}
       <img src={imageOf(baseSceneId)} alt={`${projectName}: vista ${scene?.name ?? ''} (imagen ilustrativa)`} className="absolute inset-0 h-full w-full object-cover" draggable={false} />
+      {fadeFrom && (
+        // eslint-disable-next-line @next/next/no-img-element -- capa temporal del fundido
+        <img
+          key={fadeFrom}
+          src={fadeFrom}
+          alt=""
+          aria-hidden
+          className="scene-fade-out absolute inset-0 h-full w-full object-cover"
+          onAnimationEnd={() => setFadeFrom(null)}
+          draggable={false}
+        />
+      )}
       {state.kind === 'transitioning' && (
         <video
           key={state.videoUrl}

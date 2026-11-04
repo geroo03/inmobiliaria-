@@ -40,3 +40,7 @@ html, body { background: #0B1418; color: var(--color-ink); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
 }
+
+/* Fundido entre escenas cuando no hay video de transición. */
+@keyframes scene-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.scene-fade-out { animation: scene-fade-out .7s ease forwards; pointer-events: none; }

@@ -1,5 +1,5 @@
 // Genera la planta tipo del piso: render cenital 3D (JPG) y plano técnico 2D (SVG) con el mismo encuadre,
-// y las máscaras de cada unidad en coordenadas 0–1. Uso: THREE_DIR=... node floors.mjs <salida>
+// y las máscaras de cada unidad en coordenadas 0–1. Uso: THREE_DIR=... node floors.mjs <salida> [--px-per-m=122]
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, serve, routeThree } from './harness.mjs';
@@ -14,8 +14,9 @@ const UNITS = [
   { letter: 'D', model: 'tipologia-d', at: [0, 11.2] },
   { letter: 'C', model: 'tipologia-c', at: [5, 10.7] },
 ];
-const BOUNDS = { x0: -1.2, y0: -2.6, w: 16.8, h: 22.7 }; // incluye balcones y un margen
-const PX_PER_M = 100;
+// Encuadre 2:3 (el formato vertical de los generadores de imágenes), centrado en el piso con sus balcones.
+const BOUNDS = { x0: -1.2, y0: -3.85, w: 16.8, h: 25.2 };
+const PX_PER_M = Number((process.argv.find((a) => a.startsWith('--px-per-m=')) || '--px-per-m=100').split('=')[1]);
 
 const srv = serve(8793);
 const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });

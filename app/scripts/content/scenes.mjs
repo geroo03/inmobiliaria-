@@ -1,5 +1,6 @@
 // Genera las escenas exteriores (día y noche), los cuadros de las transiciones y los hotspots
-// a partir de la torre 3D del showroom. Uso: THREE_DIR=... node scenes.mjs <salida> [--frames N] [--only-stills]
+// a partir de la torre 3D del showroom.
+// Uso: THREE_DIR=... node scenes.mjs <salida> [--frames=N] [--only-stills] [--size=1920x1080]
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, serve, routeThree } from './harness.mjs';
@@ -7,7 +8,8 @@ import { chromium, serve, routeThree } from './harness.mjs';
 const OUT = path.resolve(process.argv[2] || 'out');
 const FRAMES = Number((process.argv.find((a) => a.startsWith('--frames=')) || '--frames=75').split('=')[1]);
 const ONLY_STILLS = process.argv.includes('--only-stills');
-const W = 1920, H = 1080;
+const [W, H] = (process.argv.find((a) => a.startsWith('--size=')) || '--size=1920x1080').split('=')[1].split('x').map(Number);
+if (!(W > 0 && H > 0)) throw new Error('--size tiene que ser ANCHOxALTO, por ejemplo 3072x2048');
 // Ángulo de la cámara alrededor de la torre, en grados desde el norte (frente) hacia el este.
 const SCENES = [
   { id: 'frente', name: 'Frente', theta: -28 },
