@@ -352,6 +352,28 @@ svg text { font-family: var(--body); }
 .tw-unit small { color: #9FB3BD; }
 .tw-unit .tw-p { text-align: right; font-variant-numeric: tabular-nums; }
 
+/* Sol, clima y vistas */
+.tw-env { position: absolute; left: 16px; top: 52px; width: min(280px, calc(100% - 32px)); padding: 10px 12px; font-size: 12px; color: #EAF1F4;
+  background: rgba(11, 22, 32, .86); border: 1px solid rgba(234, 241, 244, .16); border-radius: 12px; }
+.tw-env summary { cursor: pointer; font-weight: 700; font-size: 13px; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.tw-env summary::-webkit-details-marker { display: none; }
+.tw-env summary::after { content: "▾"; color: #9FB3BD; }
+.tw-env[open] summary::after { content: "▴"; }
+.tw-env-body { display: grid; gap: 8px; margin-top: 8px; }
+.tw-seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.tw-seg button { border: 1px solid rgba(234, 241, 244, .22); background: transparent; color: #EAF1F4; border-radius: 999px; padding: 4px 9px; font: 600 12px/1.2 var(--body); cursor: pointer; }
+.tw-seg button[aria-pressed="true"] { background: #EAF1F4; color: #0B1620; border-color: #EAF1F4; }
+.tw-seg button:focus-visible, .tw-env summary:focus-visible, .tw-env input:focus-visible { outline: 3px solid #4FD1C5; outline-offset: 2px; }
+.tw-hour { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 600; }
+.tw-hour output { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.tw-env input[type="range"] { width: 100%; accent-color: #4FD1C5; margin: 0; }
+.tw-sunread { margin: 0; color: #9FB3BD; }
+.tw-vbar { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px);
+  padding: 6px 6px 6px 14px; font-size: 13px; background: rgba(11, 22, 32, .88); border: 1px solid rgba(234, 241, 244, .2); border-radius: 999px; }
+.tw-vbar span { min-width: 0; }
+.tw-vista { display: grid; gap: 8px; }
+@media (max-width: 600px) { .tw-counter { display: none; } .tw-vbar { top: 52px; font-size: 12px; } }
+
 /* Plano en grande */
 .modal { position: fixed; inset: 0; z-index: 50; background: var(--scrim); display: grid; place-items: center;
   padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
@@ -833,7 +855,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   rebuild();
 
   var firstCasaDisp = CASAS.filter(function (c) { return c.estado === 'disp' && c.modelo === 'patio'; })[0] || CASAS[0];
-  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0, roof: true, vtTab: 0, vtMsg: '', vtKind: 'unidad', torrePiso: 7, disp: true };
+  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0, roof: true, vtTab: 0, vtMsg: '', vtKind: 'unidad', torrePiso: 7, disp: true, vista: null, envOpen: window.innerWidth > 700 };
 
   function $(sel) { return document.querySelector(sel); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -1214,7 +1236,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
       V3.renderer.shadowMap.enabled = true;
       V3.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       V3.renderer.outputEncoding = THREE.sRGBEncoding;
-      V3.camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400);
+      V3.camera = new THREE.PerspectiveCamera(38, 1, 0.1, 1000);
       V3.controls = new THREE.OrbitControls(V3.camera, V3.renderer.domElement);
       V3.controls.enableDamping = true;
       V3.controls.maxPolarAngle = 1.45;
@@ -1473,6 +1495,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   function v3Loop() {
     V3.raf = requestAnimationFrame(v3Loop);
     V3.controls.update();
+    animateWeather();
     V3.renderer.render(V3.scene, V3.camera);
     v3Hotspots();
   }
@@ -1489,7 +1512,8 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (!slot || !v3Ensure()) { v3Stop(); V3.hot = null; return; }
     if (mode === 'torre') {
       if (V3.key !== 'torre') torreBuild();
-      torreColors();
+      applySun();
+      if (S.vista && V3.vistaOn !== S.vista) twView(S.vista);
       V3.hot = null;
       v3Stop();
       V3.slot = slot;
@@ -1636,6 +1660,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     vitrinaEl.innerHTML = '';
     document.documentElement.style.overflow = '';
     V3.hot = null;
+    if (S.vista) { S.vista = null; twViewExit(); }
     if (S.vtKind === 'torre' && S.piso !== S.torrePiso) {
       var us = UNITS.filter(function (u) { return u.piso === S.torrePiso; });
       S.piso = S.torrePiso;
@@ -1659,25 +1684,188 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     x.fillStyle = gr; x.fillRect(0, 0, 2, 256);
     var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
   }
+  /* Sol en Córdoba: latitud real, hora del reloj (UTC-3) corregida a hora solar por la longitud. */
+  var SUN = { hour: 17.5, season: 'otono', weather: 'despejado', live: false };
+  var SEASON_DOY = { verano: 355, otono: 80, invierno: 172, primavera: 264 };
+  var SEASON_LABEL = { verano: 'Verano', otono: 'Otoño', invierno: 'Invierno', primavera: 'Primavera' };
+  var CBA_LAT = -31.42, CBA_LON = -64.18;
+  function cbaNow() {
+    var n = new Date(Date.now() - 3 * 3600e3);
+    var doy = Math.floor((n - Date.UTC(n.getUTCFullYear(), 0, 1)) / 864e5) + 1;
+    return { doy: doy, hour: n.getUTCHours() + n.getUTCMinutes() / 60 };
+  }
+  function sunPosition(doy, hour) {
+    var rad = Math.PI / 180, phi = CBA_LAT * rad;
+    var decl = -23.44 * rad * Math.cos(2 * Math.PI / 365 * (doy + 10));
+    var solar = hour + (CBA_LON + 45) / 15; // el huso de Córdoba es el meridiano -45°
+    var H = (solar - 12) * 15 * rad;
+    var alt = Math.asin(Math.sin(phi) * Math.sin(decl) + Math.cos(phi) * Math.cos(decl) * Math.cos(H));
+    var az = Math.atan2(-Math.cos(decl) * Math.sin(H), Math.sin(decl) * Math.cos(phi) - Math.cos(decl) * Math.sin(phi) * Math.cos(H));
+    return { alt: alt / rad, az: (az / rad + 360) % 360 };
+  }
+  function compass(az) { return ['norte', 'noreste', 'este', 'sureste', 'sur', 'suroeste', 'oeste', 'noroeste'][Math.round(az / 45) % 8]; }
+  function fmtHour(h) { var hh = Math.floor(h), mm = Math.round((h - hh) * 60); if (mm === 60) { hh++; mm = 0; } return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm; }
+  function skyFor(alt, w) {
+    var C = function (h) { return new THREE.Color(h); };
+    var top, hor, t;
+    if (alt <= -6) { top = C('#08111F'); hor = C('#1B2A40'); }
+    else if (alt < 0) { t = (alt + 6) / 6; top = C('#08111F').lerp(C('#5F7FA6'), t); hor = C('#1B2A40').lerp(C('#F2A86E'), t); }
+    else if (alt < 15) { t = alt / 15; top = C('#5F7FA6').lerp(C('#4F86C6'), t); hor = C('#F2B47E').lerp(C('#CFE3EF'), t); }
+    else { top = C('#4F86C6'); hor = C('#CFE3EF'); }
+    if (w !== 'despejado') {
+      var rain = w === 'lluvia', k = rain ? .8 : .55, day = alt > 0;
+      top.lerp(C(day ? (rain ? '#5E666C' : '#8E979E') : '#0D1218'), k);
+      hor.lerp(C(day ? (rain ? '#858C91' : '#B5BBBF') : '#1A2129'), k);
+    }
+    return { top: top, hor: hor };
+  }
+  function drawSky(top, hor) {
+    var x = V3.skyCanvas.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, top.getStyle()); gr.addColorStop(1, hor.getStyle());
+    x.fillStyle = gr; x.fillRect(0, 0, 2, 256);
+    V3.skyTex.needsUpdate = true;
+  }
+  function applySun() {
+    if (V3.mode !== 'torre' || !V3.sunLight) return;
+    var t = SUN.live ? cbaNow() : { doy: SEASON_DOY[SUN.season], hour: SUN.hour };
+    if (SUN.live) SUN.hour = t.hour;
+    var p = sunPosition(t.doy, t.hour), rad = Math.PI / 180, w = SUN.weather, ca = Math.cos(p.alt * rad);
+    V3.sunLight.position.set(ca * Math.sin(p.az * rad) * 90, Math.max(Math.sin(p.alt * rad), .02) * 90, -ca * Math.cos(p.az * rad) * 90);
+    var dayF = Math.max(0, Math.min(1, (p.alt + 2) / 10)), wF = w === 'despejado' ? 1 : (w === 'nublado' ? .35 : .2);
+    V3.sunLight.intensity = 1.25 * dayF * wF;
+    V3.sunLight.castShadow = dayF > .05 && w !== 'lluvia';
+    V3.sunLight.color.set(p.alt < 12 ? 0xFFC890 : 0xFFF3E4);
+    V3.hemi.intensity = .14 + .5 * dayF * (w === 'despejado' ? 1 : .85);
+    V3.hemi.color.set(dayF < .2 ? 0x6C7FA6 : 0xFFF1E0);
+    var sk = skyFor(p.alt, w);
+    drawSky(sk.top, sk.hor);
+    V3.scene.fog.color.copy(sk.hor).convertSRGBToLinear();
+    V3.scene.fog.near = w === 'lluvia' ? 25 : (w === 'nublado' ? 90 : 160);
+    V3.scene.fog.far = w === 'lluvia' ? 170 : (w === 'nublado' ? 450 : 700);
+    V3.night = p.alt < -3;
+    V3.lobbyMat.emissiveIntensity = V3.night ? 1.3 : .45;
+    V3.cityMats.forEach(function (m) { m.emissiveIntensity = V3.night ? .07 : 0; });
+    V3.rain.visible = w === 'lluvia';
+    V3.clouds.visible = w !== 'despejado';
+    V3.cloudMat.color.set(w === 'lluvia' ? 0x7C858B : 0xE9ECEE).convertSRGBToLinear();
+    torreColors();
+    var out = document.getElementById('tw-hour-out'), rng = document.getElementById('tw-hour'), rd = document.getElementById('tw-sunread');
+    if (out) out.textContent = fmtHour(SUN.hour);
+    if (rng && SUN.live) rng.value = String(Math.min(21, Math.max(5, SUN.hour)));
+    if (rd) rd.textContent = p.alt < 0 ? 'El sol está bajo el horizonte.' : 'Sol a ' + Math.round(p.alt) + '° sobre el horizonte, hacia el ' + compass(p.az) + '.';
+  }
+  setInterval(function () { if (SUN.live && !vitrinaEl.hidden && S.vtKind === 'torre') applySun(); }, 30000);
+
+  function buildCity(scene) {
+    // Barrio alrededor (seeded, siempre igual) y las sierras al oeste, para que las vistas tengan algo que mirar.
+    var rnd = mulberry32(9131), pal = [0xE6DED2, 0xD8CFC2, 0xCFC6B8, 0xE9E4DC, 0xC9B49E, 0xBFA58A];
+    V3.cityMats = pal.map(function (c) { return new THREE.MeshStandardMaterial({ color: new THREE.Color(c).convertSRGBToLinear(), roughness: .9, emissive: new THREE.Color(0xF2B866).convertSRGBToLinear(), emissiveIntensity: 0 }); });
+    var placed = 0, tries = 0;
+    while (placed < 90 && tries < 600) {
+      tries++;
+      var ang = rnd() * Math.PI * 2, r = 30 + rnd() * 150, cx = Math.cos(ang) * r, cz = Math.sin(ang) * r;
+      var w = 8 + rnd() * 10, d = 8 + rnd() * 8, h = 6 + Math.pow(rnd(), 2) * 30;
+      if (r < 100) h = Math.min(h, 4 + rnd() * 8);                         // cerca, solo casas bajas: la cámara gira a ~76 m y 24 m de alto
+      if (cz + d / 2 > -13 && cz - d / 2 < -1) continue;                  // la calle de enfrente queda libre
+      if (Math.abs(cx) < 30 && cz > -2 && cz < 14) continue;               // la torre y sus vecinos
+      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), V3.cityMats[Math.floor(rnd() * pal.length)]);
+      m.position.set(cx, h / 2, cz); m.castShadow = true; m.receiveShadow = true;
+      scene.add(m); placed++;
+    }
+    var mtn = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x7D8C99).convertSRGBToLinear(), roughness: 1, flatShading: true });
+    for (var i = 0; i < 10; i++) {
+      var cone = new THREE.Mesh(new THREE.ConeGeometry(70 + rnd() * 40, 45 + rnd() * 35, 6), mtn);
+      cone.position.set(-320 + rnd() * 50, 20, -300 + i * 65 + rnd() * 20);
+      scene.add(cone);
+    }
+  }
+  function buildWeather(scene) {
+    var N = 1400, pos = new Float32Array(N * 6), rnd = mulberry32(42);
+    for (var i = 0; i < N; i++) {
+      var x = (rnd() - .5) * 90, y = rnd() * 60, z = (rnd() - .5) * 90;
+      pos.set([x, y, z, x + .08, y - .7, z], i * 6);
+    }
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    V3.rain = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0xBFD3E0, transparent: true, opacity: .55 }));
+    V3.rain.visible = false;
+    scene.add(V3.rain);
+    V3.cloudMat = new THREE.MeshStandardMaterial({ color: 0xE9ECEE, roughness: 1, transparent: true, opacity: .9 });
+    V3.clouds = new THREE.Group();
+    for (var c = 0; c < 12; c++) {
+      var cl = new THREE.Group();
+      for (var k = 0; k < 4; k++) {
+        var sp = new THREE.Mesh(new THREE.SphereGeometry(6 + rnd() * 6, 10, 8), V3.cloudMat);
+        sp.position.set(k * 7 - 10, rnd() * 2, rnd() * 6 - 3); sp.scale.y = .45; cl.add(sp);
+      }
+      cl.position.set((rnd() - .5) * 260, 55 + rnd() * 20, (rnd() - .5) * 260);
+      V3.clouds.add(cl);
+    }
+    V3.clouds.visible = false;
+    scene.add(V3.clouds);
+  }
+  function animateWeather() {
+    if (V3.mode !== 'torre') return;
+    if (V3.rain && V3.rain.visible) {
+      var a = V3.rain.geometry.attributes.position, arr = a.array;
+      for (var i = 0; i < arr.length; i += 6) {
+        arr[i + 1] -= .9; arr[i + 4] -= .9;
+        if (arr[i + 4] < 0) { arr[i + 1] += 60; arr[i + 4] += 60; }
+      }
+      a.needsUpdate = true;
+    }
+    if (V3.clouds && V3.clouds.visible) V3.clouds.children.forEach(function (cl) { cl.position.x += .03; if (cl.position.x > 140) cl.position.x = -140; });
+  }
+
+  /* Vista desde el balcón de una unidad: la cámara se para en el balcón y gira sobre sí misma. */
+  function twView(id) {
+    var u = unitById(id); if (!u) return;
+    var b = TW_BALC[u.letra], y0 = TW_PB + (u.piso - 1) * TW_FH, north = b[1] < 0;
+    var ex = -TW_W / 2 + b[0] + b[2] / 2, ez = -TW_D / 2 + (north ? b[1] + .45 : b[1] + b[3] - .45), ey = y0 + 1.8;
+    var c = V3.controls;
+    V3.camera.fov = 62; V3.camera.updateProjectionMatrix();
+    V3.camera.position.set(ex, ey, ez);
+    c.target.set(ex, ey, ez + (north ? -.25 : .25));
+    c.minDistance = c.maxDistance = .25; c.enableZoom = false; c.enablePan = false;
+    c.minPolarAngle = .7; c.maxPolarAngle = 2.1; c.rotateSpeed = -.35; c.autoRotate = false;
+    c.update();
+    V3.vistaOn = id;
+  }
+  function twViewExit() {
+    var c = V3.controls;
+    V3.vistaOn = null;
+    V3.camera.fov = 38; V3.camera.updateProjectionMatrix();
+    c.minDistance = 18; c.maxDistance = 95; c.enableZoom = true; c.enablePan = true;
+    c.minPolarAngle = 0; c.maxPolarAngle = 1.45; c.rotateSpeed = 1;
+    V3.camera.position.set(-40, 24, -64); c.target.set(0, 14, 0); c.update();
+  }
+
   function torreBuild() {
     var scene = new THREE.Scene();
-    scene.background = skyTexture();
-    scene.fog = new THREE.Fog(new THREE.Color(0xD9C2AE).convertSRGBToLinear().getHex(), 70, 170);
-    scene.add(new THREE.HemisphereLight(0xFFF1E0, 0x5A5148, .6));
+    V3.skyCanvas = document.createElement('canvas'); V3.skyCanvas.width = 2; V3.skyCanvas.height = 256;
+    V3.skyTex = new THREE.CanvasTexture(V3.skyCanvas); V3.skyTex.encoding = THREE.sRGBEncoding;
+    scene.background = V3.skyTex;
+    scene.fog = new THREE.Fog(0xD9C2AE, 160, 700);
+    V3.hemi = new THREE.HemisphereLight(0xFFF1E0, 0x5A5148, .6);
+    scene.add(V3.hemi);
     var sun = new THREE.DirectionalLight(0xFFD2A0, 1.15);
-    sun.position.set(-40, 35, -25); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
-    var sc = sun.shadow.camera; sc.left = -40; sc.right = 40; sc.top = 45; sc.bottom = -20; sc.near = 1; sc.far = 150; sun.shadow.bias = -.0005;
-    scene.add(sun);
+    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+    var sc = sun.shadow.camera; sc.left = -45; sc.right = 45; sc.top = 45; sc.bottom = -45; sc.near = 1; sc.far = 220; sun.shadow.bias = -.0005;
+    scene.add(sun); scene.add(sun.target);
+    V3.sunLight = sun;
+    buildCity(scene);
+    buildWeather(scene);
     var g = new THREE.Group(), glass = mat(COL.glass, { transparent: true, opacity: .35, roughness: .1 });
-    box(g, -45, -.12, -40, 100, .1, 80, 0x8D9A7C, { noShadow: true });
-    box(g, -45, -.06, -10, 100, .06, 7, 0x4E5458, { noShadow: true });
-    box(g, -45, -.02, -3, 100, .1, 3, 0xCFC9BD, { noShadow: true });
+    box(g, -400, -.12, -400, 800, .1, 800, 0x8D9A7C, { noShadow: true });
+    box(g, -300, -.06, -10, 600, .06, 7, 0x4E5458, { noShadow: true });
+    box(g, -300, -.02, -3, 600, .1, 3, 0xCFC9BD, { noShadow: true });
     for (var tx = -10; tx <= 22; tx += 6) tree3d(g, tx, -1.6, .85);
     box(g, -16, 0, -.4, 13, 13, 9, 0xD8CFC2);
     box(g, 14, 0, -.4, 12, 19, 9, 0xCFC6B8);
     // Planta baja: lobby vidriado con luz cálida.
     box(g, 0, 0, .3, TW_W, TW_PB, TW_D - .3, COL.wall);
-    box(g, .6, .1, -.02, TW_W - 1.2, TW_PB - .5, .06, 0, { mat: mat(0xF6D9A8, { emissive: new THREE.Color(0xF2B866).convertSRGBToLinear(), emissiveIntensity: .45, roughness: .3 }), noShadow: true });
+    V3.lobbyMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xF6D9A8).convertSRGBToLinear(), emissive: new THREE.Color(0xF2B866).convertSRGBToLinear(), emissiveIntensity: .45, roughness: .3 });
+    box(g, .6, .1, -.02, TW_W - 1.2, TW_PB - .5, .06, 0, { mat: V3.lobbyMat, noShadow: true });
     box(g, 4.6, 0, -.08, .9, TW_PB, .1, COL.deck);
     TW.units = [];
     for (var p = 1; p <= PISOS; p++) {
@@ -1708,9 +1896,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     g.position.set(-TW_W / 2, 0, -TW_D / 2);
     scene.add(g);
     V3.scene = scene; V3.key = 'torre'; V3.roof = null; V3.plan = null; V3.mode = 'torre';
-    V3.camera.position.set(-40, 24, -64);
-    V3.controls.target.set(0, 14, 0);
-    V3.controls.minDistance = 18; V3.controls.maxDistance = 95;
+    twViewExit();
     V3.controls.autoRotate = !reduced.matches; V3.controls.autoRotateSpeed = .3;
     V3.controls.update();
   }
@@ -1721,8 +1907,13 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
       mt.color.set(col).convertSRGBToLinear();
       mt.opacity = on ? .94 : .82;
       mt.metalness = on ? 0 : .35; mt.roughness = on ? .55 : .15;
-      if (on) { mt.emissive.set(col).convertSRGBToLinear(); mt.emissiveIntensity = sel ? .6 : (hov ? .45 : .16); }
-      else { mt.emissive.set(0x4FD1C5).convertSRGBToLinear(); mt.emissiveIntensity = sel ? .55 : (hov ? .3 : 0); }
+      if (on) { mt.emissive.set(col).convertSRGBToLinear(); mt.emissiveIntensity = (sel ? .6 : (hov ? .45 : .16)) + (V3.night ? .3 : 0); }
+      else if (sel || hov) { mt.emissive.set(0x4FD1C5).convertSRGBToLinear(); mt.emissiveIntensity = sel ? .55 : .3; }
+      else {
+        // De noche, alrededor de 6 de cada 10 departamentos tienen la luz prendida.
+        var lit = V3.night && (u.id.charCodeAt(0) * 7 + u.id.charCodeAt(1) * 13) % 10 < 6;
+        mt.emissive.set(0xF2B866).convertSRGBToLinear(); mt.emissiveIntensity = lit ? .85 : 0;
+      }
     });
   }
   function twPick(e) {
@@ -1738,7 +1929,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     TW.wired = true;
     var el = V3.renderer.domElement;
     el.addEventListener('pointermove', function (e) {
-      if (V3.mode !== 'torre') return;
+      if (V3.mode !== 'torre' || S.vista) return;
       var d = twPick(e), tip = vitrinaEl.querySelector('.tw-tip');
       var piso = d ? d.piso : 0;
       if (piso !== TW.hoverPiso) { TW.hoverPiso = piso; torreColors(); }
@@ -1753,7 +1944,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     el.addEventListener('pointerleave', function () { if (V3.mode === 'torre' && TW.hoverPiso) { TW.hoverPiso = 0; torreColors(); } });
     el.addEventListener('pointerdown', function (e) { TW.down = [e.clientX, e.clientY]; });
     el.addEventListener('pointerup', function (e) {
-      if (V3.mode !== 'torre' || !TW.down) return;
+      if (V3.mode !== 'torre' || !TW.down || S.vista) return;
       var moved = Math.abs(e.clientX - TW.down[0]) + Math.abs(e.clientY - TW.down[1]);
       TW.down = null;
       if (moved > 6) return; // fue un arrastre para girar
@@ -1761,6 +1952,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
       if (!d) return;
       V3.controls.autoRotate = false;
       S.torrePiso = d.piso;
+      S.vista = null;
       renderVitrina();
     });
   }
@@ -1791,7 +1983,20 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
         '<div class="tw-row"><span><i class="res"></i>Reservadas</span><b>' + cnt.res + '</b></div>' +
         '<div class="tw-row"><span><i class="vend"></i>Vendidas</span><b>' + cnt.vend + '</b></div>' +
         '<button class="tw-toggle" type="button" data-action="tw-disp" aria-pressed="' + S.disp + '">Ver disponibilidad</button></div>';
-      h += '<div class="tw-tip" hidden></div><span class="vt-badge">Modelo ilustrativo · arrastrá para girar, tocá un piso</span>';
+      h += '<div class="tw-tip" hidden></div><span class="vt-badge">' + (S.vista ? 'Vista ilustrativa · arrastrá para mirar alrededor' : 'Modelo ilustrativo · arrastrá para girar, tocá un piso') + '</span>';
+      h += '<details class="tw-env"' + (S.envOpen ? ' open' : '') + '><summary>Sol y clima</summary><div class="tw-env-body">' +
+        '<div class="tw-seg" role="group" aria-label="Clima">' + [['despejado', 'Despejado'], ['nublado', 'Nublado'], ['lluvia', 'Lluvia']].map(function (o) {
+          return '<button type="button" data-action="tw-weather" data-w="' + o[0] + '" aria-pressed="' + (SUN.weather === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>' +
+        '<div class="tw-hour"><label for="tw-hour">Hora</label><output id="tw-hour-out" for="tw-hour">' + fmtHour(SUN.hour) + '</output></div>' +
+        '<input type="range" id="tw-hour" min="5" max="21" step="0.25" value="' + Math.min(21, Math.max(5, SUN.hour)) + '" aria-label="Hora del día">' +
+        '<div class="tw-seg" role="group" aria-label="Época del año">' + Object.keys(SEASON_LABEL).map(function (k) {
+          return '<button type="button" data-action="tw-season" data-s="' + k + '" aria-pressed="' + (!SUN.live && SUN.season === k) + '">' + SEASON_LABEL[k] + '</button>'; }).join('') +
+        '<button type="button" data-action="tw-live" aria-pressed="' + SUN.live + '">Ahora</button></div>' +
+        '<p class="tw-sunread" id="tw-sunread"></p></div></details>';
+      if (S.vista) {
+        var vu = unitById(S.vista);
+        h += '<div class="tw-vbar"><span>Vista desde el balcón de ' + vu.nombre + ' · hacia el ' + (TW_BALC[vu.letra][1] < 0 ? 'norte' : 'sur') + '</span><button class="vt-btn" type="button" data-action="tw-view-exit">Volver al edificio</button></div>';
+      }
     } else if (fachada && fachada.src) {
       h += '<img class="vt-img" src="' + esc(fachada.src) + '" alt="Fachada de Torre Algarrobo (imagen ilustrativa)"><div class="vt-shade"></div><span class="vt-badge">Imagen ilustrativa</span>' +
         '<div class="vt-title"><p>Torre Algarrobo · Córdoba</p><h2>Fachada</h2></div>';
@@ -1805,6 +2010,9 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     h += '<div class="tw-step"><button class="vt-btn" type="button" data-action="tw-step" data-d="-1" aria-label="Piso anterior"' + (p <= 1 ? ' disabled' : '') + '>−</button>' +
       '<span class="tw-num" aria-live="polite">' + p + '</span><button class="vt-btn" type="button" data-action="tw-step" data-d="1" aria-label="Piso siguiente"' + (p >= PISOS ? ' disabled' : '') + '>+</button>' +
       '<p>' + dispP + ' de 4 unidades<br>disponibles</p></div>';
+    h += '<div class="tw-vista"><p class="vt-eye">Ver la vista desde el balcón</p><div class="tw-seg" role="group" aria-label="Vista desde el balcón">' + us.map(function (u) {
+      return '<button type="button" data-action="tw-view" data-unit="' + u.id + '" aria-pressed="' + (S.vista === u.id) + '">' + u.nombre + '</button>';
+    }).join('') + '</div></div>';
     h += '<div class="tw-mini">' + torreMiniPlan(p) + '</div>';
     h += '<div class="tw-units">' + us.map(function (u) {
       return '<button class="tw-unit" type="button" data-action="tw-unit" data-unit="' + u.id + '"><b>' + u.nombre + '</b><span>' + u.amb + ' amb · ' + u.cub + ' m²<br><small>' + u.orient + '</small></span>' +
@@ -2103,10 +2311,16 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (action === 'vt-open') { openVitrina(el); return; }
     if (action === 'torre-open') { openVitrina(el, 'torre'); return; }
     if (action === 'vt-torre') { S.vtKind = 'torre'; S.torrePiso = item.piso; S.vtTab = 0; renderVitrina(); refocus('#vitrina [data-action="vt-close"]'); return; }
-    if (action === 'tw-step') { S.torrePiso = Math.min(PISOS, Math.max(1, S.torrePiso + Number(el.dataset.d))); renderVitrina(); refocus('#vitrina [data-action="tw-step"][data-d="' + el.dataset.d + '"]'); return; }
+    if (action === 'tw-weather') { SUN.weather = el.dataset.w; renderVitrina(); refocus('#vitrina [data-action="tw-weather"][data-w="' + SUN.weather + '"]'); return; }
+    if (action === 'tw-season') { SUN.season = el.dataset.s; SUN.live = false; renderVitrina(); refocus('#vitrina [data-action="tw-season"][data-s="' + SUN.season + '"]'); return; }
+    if (action === 'tw-live') { SUN.live = !SUN.live; if (!SUN.live) SUN.season = 'otono'; renderVitrina(); refocus('#vitrina [data-action="tw-live"]'); return; }
+    if (action === 'tw-view') { S.vista = S.vista === el.dataset.unit ? null : el.dataset.unit; if (!S.vista) twViewExit(); renderVitrina(); refocus('#vitrina [data-action="tw-view"][data-unit="' + el.dataset.unit + '"]'); return; }
+    if (action === 'tw-view-exit') { S.vista = null; twViewExit(); renderVitrina(); refocus('#vitrina [data-action="tw-view"]'); return; }
+    if (action === 'tw-step') { if (S.vista) { S.vista = null; twViewExit(); } S.torrePiso = Math.min(PISOS, Math.max(1, S.torrePiso + Number(el.dataset.d))); renderVitrina(); refocus('#vitrina [data-action="tw-step"][data-d="' + el.dataset.d + '"]'); return; }
     if (action === 'tw-disp') { S.disp = !S.disp; el.setAttribute('aria-pressed', String(S.disp)); torreColors(); return; }
     if (action === 'tw-unit') {
       var tu = unitById(el.dataset.unit);
+      if (S.vista) { S.vista = null; twViewExit(); }
       if (tu) { S.view = 'edificio'; S.unidad = tu.id; S.piso = tu.piso; S.vtKind = 'unidad'; S.vtTab = 0; S.vtMsg = ''; renderVitrina(); refocus('#vitrina [data-action="vt-torre"]'); }
       return;
     }
@@ -2207,9 +2421,10 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (e.key === 'Escape') { e.preventDefault(); closeVitrina(); }
     else if (S.vtKind === 'torre' && (e.key === 'ArrowUp' || e.key === 'ArrowDown') && tag !== 'input') {
       e.preventDefault();
+      if (S.vista) { S.vista = null; twViewExit(); }
       S.torrePiso = Math.min(PISOS, Math.max(1, S.torrePiso + (e.key === 'ArrowUp' ? 1 : -1)));
       renderVitrina();
-    } else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && tag !== 'input') {
+    } else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && tag !== 'input' && tag !== 'summary') {
       e.preventDefault();
       S.vtTab += e.key === 'ArrowRight' ? 1 : -1;
       renderVitrina();
@@ -2271,6 +2486,15 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     S.act = { kind: 'visita-ok', id: S.act.id, nombre: nombre, dia: dia };
     renderAll();
   });
+
+  document.addEventListener('input', function (e) {
+    if (e.target.id !== 'tw-hour') return;
+    SUN.hour = Number(e.target.value);
+    if (SUN.live) { SUN.live = false; var lb = vitrinaEl.querySelector('[data-action="tw-live"]'); if (lb) lb.setAttribute('aria-pressed', 'false'); }
+    vitrinaEl.querySelectorAll('[data-action="tw-season"]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.s === SUN.season)); });
+    applySun();
+  });
+  document.addEventListener('toggle', function (e) { if (e.target.classList && e.target.classList.contains('tw-env')) S.envOpen = e.target.open; }, true);
 
   document.getElementById('dev-toggle').addEventListener('change', function (e) {
     S.dev = e.target.checked; S.devMsg = '';

@@ -19,6 +19,15 @@ Cada ficha tiene el botón «Ver vitrina a pantalla completa»: fondo oscuro, la
 
 En la vista Edificio, «Ver el edificio en 3D» abre la torre completa a pantalla completa: cada departamento se pinta según su estado (o como vidrio, con «Ver disponibilidad»), al pasar el mouse sobre un piso se ve cuántas unidades quedan y al tocarlo se elige. El panel muestra el piso elegido con su planta y sus unidades; tocar una abre la vitrina de esa unidad, que tiene «‹ Edificio» para volver. Las flechas arriba y abajo del teclado cambian de piso.
 
+El panel «Sol y clima» cambia el cielo, la luz y las sombras:
+
+- **Hora** (5 a 21 h) y **estación** (verano, otoño, invierno, primavera): el sol se ubica con la latitud y la longitud de Córdoba, y el panel dice su altura y hacia dónde está.
+- **Ahora:** usa la hora actual de Córdoba (UTC-3) y se actualiza cada 30 segundos.
+- **Clima:** despejado, nublado o lluvia. Es una simulación: la página no puede consultar el clima real porque el Artifact no permite llamar a servicios externos.
+- **De noche** se prenden el lobby y, en la vista de vidrio, parte de los departamentos.
+
+«Ver la vista desde el balcón» pone la cámara en el balcón de cada unidad, a la altura de su piso, para mirar alrededor arrastrando. El barrio y las sierras son ilustrativos.
+
 ## Fotos
 
 Las rutas de las fotos están en `imagenes.json`, una lista por modelo (`tipologia-a` a `tipologia-d`, `casa-patio`, `casa-compacta` y `lote`). Para cargar una foto:
