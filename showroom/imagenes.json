@@ -4,15 +4,15 @@
     "tipologia-a": [
       {
         "ambiente": "Fachada",
-        "src": ""
+        "src": "img/edificio/fachada.webp"
       },
       {
         "ambiente": "Living",
-        "src": ""
+        "src": "img/departamento/living.webp"
       },
       {
         "ambiente": "Dormitorio",
-        "src": ""
+        "src": "img/departamento/dormitorio.webp"
       },
       {
         "ambiente": "Baño",
@@ -22,15 +22,15 @@
     "tipologia-b": [
       {
         "ambiente": "Fachada",
-        "src": ""
+        "src": "img/edificio/fachada.webp"
       },
       {
         "ambiente": "Living",
-        "src": ""
+        "src": "img/departamento/living.webp"
       },
       {
         "ambiente": "Dormitorio",
-        "src": ""
+        "src": "img/departamento/dormitorio.webp"
       },
       {
         "ambiente": "Baño",
@@ -40,15 +40,15 @@
     "tipologia-c": [
       {
         "ambiente": "Fachada",
-        "src": ""
+        "src": "img/edificio/fachada.webp"
       },
       {
         "ambiente": "Living",
-        "src": ""
+        "src": "img/departamento/living.webp"
       },
       {
         "ambiente": "Dormitorio",
-        "src": ""
+        "src": "img/departamento/dormitorio.webp"
       },
       {
         "ambiente": "Baño",
@@ -58,15 +58,15 @@
     "tipologia-d": [
       {
         "ambiente": "Fachada",
-        "src": ""
+        "src": "img/edificio/fachada.webp"
       },
       {
         "ambiente": "Ambiente único",
-        "src": ""
+        "src": "img/monoambiente/ambiente.webp"
       },
       {
         "ambiente": "Kitchenette",
-        "src": ""
+        "src": "img/monoambiente/kitchenette.webp"
       },
       {
         "ambiente": "Baño",
