@@ -191,5 +191,18 @@
       ]
     }
   },
-  "_instrucciones_maqueta": "En maquetas va la imagen isométrica de cada modelo, el color de fondo de la imagen (fondo) y sus puntos clickeables."
+  "_instrucciones_maqueta": "En maquetas va la imagen isométrica de cada modelo, el color de fondo de la imagen (fondo) y sus puntos clickeables.",
+  "vistas": {
+    "norte": {
+      "dia": "img/vistas/norte-dia.webp",
+      "atardecer": "img/vistas/norte-atardecer.webp",
+      "noche": "img/vistas/norte-noche.webp"
+    },
+    "sur": {
+      "dia": "img/vistas/sur-dia.webp",
+      "atardecer": "img/vistas/sur-atardecer.webp",
+      "noche": ""
+    }
+  },
+  "_instrucciones_vistas": "En vistas va la foto desde el balcón para cada orientación (norte: unidades A y B; sur: C y D) y momento (dia, atardecer, noche). Si queda vacía, se ve el modelo 3D."
 }

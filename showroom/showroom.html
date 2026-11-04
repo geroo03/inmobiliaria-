@@ -368,11 +368,29 @@ svg text { font-family: var(--body); }
 .tw-hour output { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
 .tw-env input[type="range"] { width: 100%; accent-color: #4FD1C5; margin: 0; }
 .tw-sunread { margin: 0; color: #9FB3BD; }
-.tw-vbar { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px);
+.tw-vbar { position: absolute; left: 50%; bottom: 72px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px);
   padding: 6px 6px 6px 14px; font-size: 13px; background: rgba(11, 22, 32, .88); border: 1px solid rgba(234, 241, 244, .2); border-radius: 999px; }
 .tw-vbar span { min-width: 0; }
 .tw-vista { display: grid; gap: 8px; }
-@media (max-width: 600px) { .tw-counter { display: none; } .tw-vbar { top: 52px; font-size: 12px; } }
+.tw-vbar { width: max-content; flex-wrap: wrap; justify-content: center; border-radius: 22px; }
+.tw-vbar .tw-seg button { padding: 6px 12px; }
+.tw-vbar em { font-style: normal; color: #9FB3BD; }
+/* Foto de la vista: el clima se simula encima con filtros y una capa de lluvia. */
+.tw-photo { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: #0B1620; }
+.tw-photo img { display: block; width: 100%; height: 100%; object-fit: cover; transition: filter .4s ease; }
+.tw-photo::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .4s ease;
+  background: linear-gradient(rgba(138, 147, 155, .75), rgba(138, 147, 155, .2) 45%, rgba(40, 48, 55, .15)); }
+.tw-photo[data-w="nublado"] img { filter: saturate(.6) brightness(.92) contrast(.92); }
+.tw-photo[data-w="nublado"]::after { opacity: .7; }
+.tw-photo[data-w="lluvia"] img { filter: saturate(.42) brightness(.72) contrast(.9); }
+.tw-photo[data-w="lluvia"]::after { opacity: 1; }
+.tw-rain { position: absolute; inset: 0; display: none; pointer-events: none; z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cpath d='M37.8 16.5l-2.5 11.8M37.8 -143.5l-2.5 11.8M37.8 176.5l-2.5 11.8M-122.2 16.5l-2.5 11.8M-122.2 -143.5l-2.5 11.8M-122.2 176.5l-2.5 11.8M197.8 16.5l-2.5 11.8M197.8 -143.5l-2.5 11.8M197.8 176.5l-2.5 11.8M24.8 10.6l-2.5 11.8M24.8 -149.4l-2.5 11.8M24.8 170.6l-2.5 11.8M-135.2 10.6l-2.5 11.8M-135.2 -149.4l-2.5 11.8M-135.2 170.6l-2.5 11.8M184.8 10.6l-2.5 11.8M184.8 -149.4l-2.5 11.8M184.8 170.6l-2.5 11.8M146.9 128.1l-3.0 14.4M146.9 -31.9l-3.0 14.4M146.9 288.1l-3.0 14.4M-13.1 128.1l-3.0 14.4M-13.1 -31.9l-3.0 14.4M-13.1 288.1l-3.0 14.4M306.9 128.1l-3.0 14.4M306.9 -31.9l-3.0 14.4M306.9 288.1l-3.0 14.4M35.5 85.9l-2.3 10.9M35.5 -74.1l-2.3 10.9M35.5 245.9l-2.3 10.9M-124.5 85.9l-2.3 10.9M-124.5 -74.1l-2.3 10.9M-124.5 245.9l-2.3 10.9M195.5 85.9l-2.3 10.9M195.5 -74.1l-2.3 10.9M195.5 245.9l-2.3 10.9M27.6 17.0l-2.2 10.5M27.6 -143.0l-2.2 10.5M27.6 177.0l-2.2 10.5M-132.4 17.0l-2.2 10.5M-132.4 -143.0l-2.2 10.5M-132.4 177.0l-2.2 10.5M187.6 17.0l-2.2 10.5M187.6 -143.0l-2.2 10.5M187.6 177.0l-2.2 10.5M148.4 132.6l-3.1 14.6M148.4 -27.4l-3.1 14.6M148.4 292.6l-3.1 14.6M-11.6 132.6l-3.1 14.6M-11.6 -27.4l-3.1 14.6M-11.6 292.6l-3.1 14.6M308.4 132.6l-3.1 14.6M308.4 -27.4l-3.1 14.6M308.4 292.6l-3.1 14.6M128.1 30.9l-2.3 11.2M128.1 -129.1l-2.3 11.2M128.1 190.9l-2.3 11.2M-31.9 30.9l-2.3 11.2M-31.9 -129.1l-2.3 11.2M-31.9 190.9l-2.3 11.2M288.1 30.9l-2.3 11.2M288.1 -129.1l-2.3 11.2M288.1 190.9l-2.3 11.2M100.3 117.1l-3.1 15.0M100.3 -42.9l-3.1 15.0M100.3 277.1l-3.1 15.0M-59.7 117.1l-3.1 15.0M-59.7 -42.9l-3.1 15.0M-59.7 277.1l-3.1 15.0M260.3 117.1l-3.1 15.0M260.3 -42.9l-3.1 15.0M260.3 277.1l-3.1 15.0M140.8 13.9l-2.8 13.2M140.8 -146.1l-2.8 13.2M140.8 173.9l-2.8 13.2M-19.2 13.9l-2.8 13.2M-19.2 -146.1l-2.8 13.2M-19.2 173.9l-2.8 13.2M300.8 13.9l-2.8 13.2M300.8 -146.1l-2.8 13.2M300.8 173.9l-2.8 13.2M107.5 81.0l-2.2 10.2M107.5 -79.0l-2.2 10.2M107.5 241.0l-2.2 10.2M-52.5 81.0l-2.2 10.2M-52.5 -79.0l-2.2 10.2M-52.5 241.0l-2.2 10.2M267.5 81.0l-2.2 10.2M267.5 -79.0l-2.2 10.2M267.5 241.0l-2.2 10.2M75.8 14.3l-3.3 15.5M75.8 -145.7l-3.3 15.5M75.8 174.3l-3.3 15.5M-84.2 14.3l-3.3 15.5M-84.2 -145.7l-3.3 15.5M-84.2 174.3l-3.3 15.5M235.8 14.3l-3.3 15.5M235.8 -145.7l-3.3 15.5M235.8 174.3l-3.3 15.5M138.5 87.6l-2.3 11.1M138.5 -72.4l-2.3 11.1M138.5 247.6l-2.3 11.1M-21.5 87.6l-2.3 11.1M-21.5 -72.4l-2.3 11.1M-21.5 247.6l-2.3 11.1M298.5 87.6l-2.3 11.1M298.5 -72.4l-2.3 11.1M298.5 247.6l-2.3 11.1M145.4 91.6l-3.2 15.2M145.4 -68.4l-3.2 15.2M145.4 251.6l-3.2 15.2M-14.6 91.6l-3.2 15.2M-14.6 -68.4l-3.2 15.2M-14.6 251.6l-3.2 15.2M305.4 91.6l-3.2 15.2M305.4 -68.4l-3.2 15.2M305.4 251.6l-3.2 15.2M135.7 81.3l-2.5 11.9M135.7 -78.7l-2.5 11.9M135.7 241.3l-2.5 11.9M-24.3 81.3l-2.5 11.9M-24.3 -78.7l-2.5 11.9M-24.3 241.3l-2.5 11.9M295.7 81.3l-2.5 11.9M295.7 -78.7l-2.5 11.9M295.7 241.3l-2.5 11.9M95.8 69.0l-2.1 10.1M95.8 -91.0l-2.1 10.1M95.8 229.0l-2.1 10.1M-64.2 69.0l-2.1 10.1M-64.2 -91.0l-2.1 10.1M-64.2 229.0l-2.1 10.1M255.8 69.0l-2.1 10.1M255.8 -91.0l-2.1 10.1M255.8 229.0l-2.1 10.1M48.8 130.0l-2.0 9.3M48.8 -30.0l-2.0 9.3M48.8 290.0l-2.0 9.3M-111.2 130.0l-2.0 9.3M-111.2 -30.0l-2.0 9.3M-111.2 290.0l-2.0 9.3M208.8 130.0l-2.0 9.3M208.8 -30.0l-2.0 9.3M208.8 290.0l-2.0 9.3' stroke='rgba(228,236,242,0.55)' stroke-width='1.1' stroke-linecap='round' fill='none'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='230'%3E%3Cpath d='M10.7 144.1l-2.3 11.0M10.7 -85.9l-2.3 11.0M10.7 374.1l-2.3 11.0M-219.3 144.1l-2.3 11.0M-219.3 -85.9l-2.3 11.0M-219.3 374.1l-2.3 11.0M240.7 144.1l-2.3 11.0M240.7 -85.9l-2.3 11.0M240.7 374.1l-2.3 11.0M123.0 108.4l-2.4 11.4M123.0 -121.6l-2.4 11.4M123.0 338.4l-2.4 11.4M-107.0 108.4l-2.4 11.4M-107.0 -121.6l-2.4 11.4M-107.0 338.4l-2.4 11.4M353.0 108.4l-2.4 11.4M353.0 -121.6l-2.4 11.4M353.0 338.4l-2.4 11.4M229.4 45.0l-2.5 11.9M229.4 -185.0l-2.5 11.9M229.4 275.0l-2.5 11.9M-0.6 45.0l-2.5 11.9M-0.6 -185.0l-2.5 11.9M-0.6 275.0l-2.5 11.9M459.4 45.0l-2.5 11.9M459.4 -185.0l-2.5 11.9M459.4 275.0l-2.5 11.9M46.6 145.5l-2.3 10.9M46.6 -84.5l-2.3 10.9M46.6 375.5l-2.3 10.9M-183.4 145.5l-2.3 10.9M-183.4 -84.5l-2.3 10.9M-183.4 375.5l-2.3 10.9M276.6 145.5l-2.3 10.9M276.6 -84.5l-2.3 10.9M276.6 375.5l-2.3 10.9M81.8 171.8l-2.4 11.2M81.8 -58.2l-2.4 11.2M81.8 401.8l-2.4 11.2M-148.2 171.8l-2.4 11.2M-148.2 -58.2l-2.4 11.2M-148.2 401.8l-2.4 11.2M311.8 171.8l-2.4 11.2M311.8 -58.2l-2.4 11.2M311.8 401.8l-2.4 11.2M128.5 208.0l-2.0 9.7M128.5 -22.0l-2.0 9.7M128.5 438.0l-2.0 9.7M-101.5 208.0l-2.0 9.7M-101.5 -22.0l-2.0 9.7M-101.5 438.0l-2.0 9.7M358.5 208.0l-2.0 9.7M358.5 -22.0l-2.0 9.7M358.5 438.0l-2.0 9.7M14.2 52.6l-3.0 14.4M14.2 -177.4l-3.0 14.4M14.2 282.6l-3.0 14.4M-215.8 52.6l-3.0 14.4M-215.8 -177.4l-3.0 14.4M-215.8 282.6l-3.0 14.4M244.2 52.6l-3.0 14.4M244.2 -177.4l-3.0 14.4M244.2 282.6l-3.0 14.4M141.5 54.6l-2.4 11.3M141.5 -175.4l-2.4 11.3M141.5 284.6l-2.4 11.3M-88.5 54.6l-2.4 11.3M-88.5 -175.4l-2.4 11.3M-88.5 284.6l-2.4 11.3M371.5 54.6l-2.4 11.3M371.5 -175.4l-2.4 11.3M371.5 284.6l-2.4 11.3M40.8 105.6l-2.0 9.3M40.8 -124.4l-2.0 9.3M40.8 335.6l-2.0 9.3M-189.2 105.6l-2.0 9.3M-189.2 -124.4l-2.0 9.3M-189.2 335.6l-2.0 9.3M270.8 105.6l-2.0 9.3M270.8 -124.4l-2.0 9.3M270.8 335.6l-2.0 9.3M160.4 206.1l-3.3 15.7M160.4 -23.9l-3.3 15.7M160.4 436.1l-3.3 15.7M-69.6 206.1l-3.3 15.7M-69.6 -23.9l-3.3 15.7M-69.6 436.1l-3.3 15.7M390.4 206.1l-3.3 15.7M390.4 -23.9l-3.3 15.7M390.4 436.1l-3.3 15.7' stroke='rgba(228,236,242,0.35)' stroke-width='1.1' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+  animation: tw-rain .5s linear infinite; }
+.tw-photo[data-w="lluvia"] .tw-rain { display: block; }
+@keyframes tw-rain { from { background-position: 0 0, 0 0; } to { background-position: -34px 160px, -48px 230px; } }
+@media (prefers-reduced-motion: reduce) { .tw-rain { animation: none; } }
+@media (max-width: 600px) { .tw-counter { display: none; } .tw-vbar { bottom: 64px; font-size: 12px; } }
 
 /* Plano en grande */
 .modal { position: fixed; inset: 0; z-index: 50; background: var(--scrim); display: grid; place-items: center;
@@ -745,6 +763,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   var IMAGES = {};
   Object.keys(IMG_DEFAULT).forEach(function (k) { IMAGES[k] = IMG_DEFAULT[k].map(function (a) { return { ambiente: a, src: '' }; }); });
   var IMG_PATH = /^img\/[A-Za-z0-9_\-\/]+\.(jpe?g|png|webp|avif)$/i;
+  var VISTAS = { norte: { dia: '', atardecer: '', noche: '' }, sur: { dia: '', atardecer: '', noche: '' } }; // fotos desde el balcón, por orientación y momento
   var MAQUETAS = {}; // imagen isométrica por modelo, con sus puntos clickeables
   function cleanSrc(v) { var src = typeof v === 'string' ? v.trim() : ''; return (IMG_PATH.test(src) && src.indexOf('..') === -1) ? src : ''; }
   function applyImageJson(data) {
@@ -767,6 +786,12 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
         return pt && typeof pt.ambiente === 'string' && typeof pt.x === 'number' && typeof pt.y === 'number' && pt.x >= 0 && pt.x <= 1 && pt.y >= 0 && pt.y <= 1;
       }).map(function (pt) { return { ambiente: pt.ambiente.trim().slice(0, 40), x: pt.x, y: pt.y }; });
       MAQUETAS[k] = { src: cleanSrc(mq.src), puntos: pts, fondo: /^#[0-9A-Fa-f]{6}$/.test(mq.fondo || '') ? mq.fondo : '' };
+    });
+    var vs = data.vistas && typeof data.vistas === 'object' ? data.vistas : {};
+    Object.keys(VISTAS).forEach(function (o) {
+      var v = vs[o];
+      if (!v || typeof v !== 'object') return;
+      Object.keys(VISTAS[o]).forEach(function (m) { VISTAS[o][m] = cleanSrc(v[m]); });
     });
     return true;
   }
@@ -856,7 +881,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
   rebuild();
 
   var firstCasaDisp = CASAS.filter(function (c) { return c.estado === 'disp' && c.modelo === 'patio'; })[0] || CASAS[0];
-  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0, roof: true, vtTab: 0, vtMsg: '', vtKind: 'unidad', torrePiso: 7, disp: true, vista: null, envOpen: window.innerWidth > 700 };
+  var S = { view: 'edificio', piso: 7, unidad: '7a', casa: firstCasaDisp.id, amb: 'todos', modelo: 'todos', soloDisp: false, dev: false, act: null, devMsg: '', codes: {}, slide: 0, roof: true, vtTab: 0, vtMsg: '', vtKind: 'unidad', torrePiso: 7, disp: true, vista: null, vistaFoto: true, envOpen: window.innerWidth > 700 };
 
   function $(sel) { return document.querySelector(sel); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -1497,6 +1522,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     V3.raf = requestAnimationFrame(v3Loop);
     V3.controls.update();
     animateWeather();
+    if (V3.mode === 'torre' && V3.photoOn) return;
     if (V3.mode === 'torre' && V3.pmrem) twEnvUpdate();
     V3.renderer.render(V3.scene, V3.camera);
     v3Hotspots();
@@ -1758,6 +1784,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (out) out.textContent = fmtHour(SUN.hour);
     if (rng && SUN.live) rng.value = String(Math.min(21, Math.max(5, SUN.hour)));
     if (rd) rd.textContent = p.alt < 0 ? 'El sol está bajo el horizonte.' : 'Sol a ' + Math.round(p.alt) + '° sobre el horizonte, hacia el ' + compass(p.az) + '.';
+    twPhotoUpdate();
   }
   setInterval(function () { if (SUN.live && !vitrinaEl.hidden && S.vtKind === 'torre') applySun(); }, 30000);
 
@@ -2023,6 +2050,32 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (V3.clouds && V3.clouds.visible) V3.clouds.children.forEach(function (cl) { cl.position.x += .03; if (cl.position.x > 140) cl.position.x = -140; });
   }
 
+  /* Foto de la vista según el momento: de mañana con el sol bajo se usa la de día; al caer el sol, la del atardecer. */
+  var MOMENT_LABEL = { dia: 'de día', atardecer: 'al atardecer', noche: 'de noche' };
+  function twMoment() {
+    var t = SUN.live ? cbaNow() : { doy: SEASON_DOY[SUN.season], hour: SUN.hour }, p = sunPosition(t.doy, t.hour);
+    if (p.alt > 8) return 'dia';
+    if (p.az < 180) return p.alt < 0 ? 'noche' : 'dia';
+    return p.alt < -6 ? 'noche' : 'atardecer';
+  }
+  function twPhotoUpdate() {
+    var ph = vitrinaEl.querySelector('.tw-photo'), note = vitrinaEl.querySelector('#tw-vnote'), badge = vitrinaEl.querySelector('.vt-stage > .vt-badge');
+    V3.photoOn = false;
+    if (!ph || !S.vista) return;
+    var u = unitById(S.vista), ori = TW_BALC[u.letra][1] < 0 ? 'norte' : 'sur', mo = twMoment(), src = VISTAS[ori][mo];
+    var img = ph.querySelector('img'), show = S.vistaFoto && !!src && !ph.dataset.failed;
+    ph.dataset.w = SUN.weather;
+    if (show && img.getAttribute('src') !== src) {
+      img.onerror = function () { ph.dataset.failed = '1'; twPhotoUpdate(); };
+      img.src = src;
+    }
+    img.alt = 'Vista ilustrativa desde el balcón hacia el ' + ori + ', ' + MOMENT_LABEL[mo];
+    ph.hidden = !show;
+    V3.photoOn = show;
+    if (note) note.textContent = !S.vistaFoto ? ' · modelo 3D' : (show ? ' · foto ' + MOMENT_LABEL[mo] : ' · foto ' + MOMENT_LABEL[mo] + ' en preparación, se ve el 3D');
+    if (badge) badge.textContent = show ? 'Imagen ilustrativa' + (SUN.weather !== 'despejado' ? ' · clima simulado' : '') : 'Vista ilustrativa · arrastrá para mirar alrededor';
+  }
+
   /* Vista desde el balcón de una unidad: la cámara se para en el balcón y gira sobre sí misma. */
   function twView(id) {
     var u = unitById(id); if (!u) return;
@@ -2202,6 +2255,7 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (t === 0) {
       h += v3Available() ? '<div class="v3d-slot" role="img" aria-label="Edificio en 3D. Arrastrá para girar y tocá un piso."></div>' :
         '<div class="vt-pending"><b>Edificio en 3D</b><span>No se pudo cargar el visor 3D en este navegador.</span></div>';
+      if (S.vista) h += '<div class="tw-photo" hidden><img alt=""><div class="tw-rain"></div></div>';
       h += '<div class="tw-counter"><div class="tw-row"><span><i class="disp"></i>Disponibles</span><b>' + cnt.disp + '</b></div>' +
         '<div class="tw-row"><span><i class="res"></i>Reservadas</span><b>' + cnt.res + '</b></div>' +
         '<div class="tw-row"><span><i class="vend"></i>Vendidas</span><b>' + cnt.vend + '</b></div>' +
@@ -2218,7 +2272,10 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
         '<p class="tw-sunread" id="tw-sunread"></p></div></details>';
       if (S.vista) {
         var vu = unitById(S.vista);
-        h += '<div class="tw-vbar"><span>Vista desde el balcón de ' + vu.nombre + ' · hacia el ' + (TW_BALC[vu.letra][1] < 0 ? 'norte' : 'sur') + '</span><button class="vt-btn" type="button" data-action="tw-view-exit">Volver al edificio</button></div>';
+        h += '<div class="tw-vbar"><span>Vista desde el balcón de ' + vu.nombre + ' · hacia el ' + (TW_BALC[vu.letra][1] < 0 ? 'norte' : 'sur') + '<em id="tw-vnote"></em></span>' +
+          '<div class="tw-seg" role="group" aria-label="Tipo de vista"><button type="button" data-action="tw-vmode" data-m="foto" aria-pressed="' + S.vistaFoto + '">Foto</button>' +
+          '<button type="button" data-action="tw-vmode" data-m="3d" aria-pressed="' + !S.vistaFoto + '">3D</button></div>' +
+          '<button class="vt-btn" type="button" data-action="tw-view-exit">Volver al edificio</button></div>';
       }
     } else if (fachada && fachada.src) {
       h += '<img class="vt-img" src="' + esc(fachada.src) + '" alt="Fachada de Torre Algarrobo (imagen ilustrativa)"><div class="vt-shade"></div><span class="vt-badge">Imagen ilustrativa</span>' +
@@ -2538,6 +2595,12 @@ td .state-cell { display: inline-flex; align-items: center; gap: 6px; }
     if (action === 'tw-season') { SUN.season = el.dataset.s; SUN.live = false; renderVitrina(); refocus('#vitrina [data-action="tw-season"][data-s="' + SUN.season + '"]'); return; }
     if (action === 'tw-live') { SUN.live = !SUN.live; if (!SUN.live) SUN.season = 'otono'; renderVitrina(); refocus('#vitrina [data-action="tw-live"]'); return; }
     if (action === 'tw-view') { S.vista = S.vista === el.dataset.unit ? null : el.dataset.unit; if (!S.vista) twViewExit(); renderVitrina(); refocus('#vitrina [data-action="tw-view"][data-unit="' + el.dataset.unit + '"]'); return; }
+    if (action === 'tw-vmode') {
+      S.vistaFoto = el.dataset.m === 'foto';
+      vitrinaEl.querySelectorAll('[data-action="tw-vmode"]').forEach(function (b) { b.setAttribute('aria-pressed', String((b.dataset.m === 'foto') === S.vistaFoto)); });
+      twPhotoUpdate();
+      return;
+    }
     if (action === 'tw-view-exit') { S.vista = null; twViewExit(); renderVitrina(); refocus('#vitrina [data-action="tw-view"]'); return; }
     if (action === 'tw-step') { if (S.vista) { S.vista = null; twViewExit(); } S.torrePiso = Math.min(PISOS, Math.max(1, S.torrePiso + Number(el.dataset.d))); renderVitrina(); refocus('#vitrina [data-action="tw-step"][data-d="' + el.dataset.d + '"]'); return; }
     if (action === 'tw-disp') { S.disp = !S.disp; el.setAttribute('aria-pressed', String(S.disp)); torreColors(); return; }

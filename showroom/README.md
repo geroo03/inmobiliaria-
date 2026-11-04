@@ -30,9 +30,11 @@ La escena usa texturas dibujadas en la propia página (revoque, pasto, asfalto, 
 
 «Ver la vista desde el balcón» pone la cámara en el balcón de cada unidad, a la altura de su piso, para mirar alrededor arrastrando. El barrio y las sierras son ilustrativos.
 
+En la vista desde el balcón, el botón **Foto | 3D** alterna entre una foto ilustrativa y el modelo 3D. La foto depende de la orientación del balcón (norte para las unidades A y B, sur para C y D) y del momento que marca la barra de la hora: de día, al atardecer (con el sol bajo hacia el oeste) o de noche. Con nublado o lluvia, el clima se simula sobre la foto con filtros y gotas animadas, y el rótulo lo aclara. Las rutas están en `imagenes.json`, sección `vistas`; si una queda vacía, se ve el 3D. Hoy falta la foto del sur de noche.
+
 ## Fotos
 
-Las rutas de las fotos están en `imagenes.json`, una lista por modelo (`tipologia-a` a `tipologia-d`, `casa-patio`, `casa-compacta` y `lote`). Para cargar una foto:
+Las rutas de las fotos están en `imagenes.json`, una lista por modelo (`tipologia-a` a `tipologia-d`, `casa-patio`, `casa-compacta` y `lote`), más las maquetas (`maquetas`) y las vistas desde el balcón (`vistas`). Para cargar una foto:
 
 1. Guardala en `img/`, por ejemplo `img/tipologia-a/living.jpg`.
 2. Escribí esa ruta en `src` del ambiente que corresponda.
