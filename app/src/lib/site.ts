@@ -1,8 +1,9 @@
 import 'server-only';
 import { headers } from 'next/headers';
 import { slugFromHost } from './tenant';
+import { siteUrl } from './siteUrl';
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+const SITE_URL = siteUrl();
 const ROOT_DOMAIN = process.env.ROOT_DOMAIN;
 
 /**

@@ -38,6 +38,17 @@ npm run lint
 npm run build
 ```
 
+## Publicar en Vercel
+
+1. En vercel.com, **Add New → Project** e importar el repo de GitHub.
+2. **Root Directory:** `app`. El framework (Next.js) y los comandos se detectan solos.
+3. **Variables de entorno:** ninguna es obligatoria. Opcionales: `NEXT_PUBLIC_SITE_URL` (dominio propio), `DEFAULT_PROJECT_SLUG`, y más adelante `ROOT_DOMAIN` para los subdominios por proyecto.
+4. **Deploy.** Cada push a la rama de producción vuelve a publicar.
+
+Sin `NEXT_PUBLIC_SITE_URL`, la vista previa al compartir usa el dominio de producción de Vercel (`VERCEL_PROJECT_PRODUCTION_URL`).
+
+Limitaciones de la demo publicada: las consultas quedan en memoria del servidor y **se pierden** (Vercel corre funciones que se reinician), y el límite de envíos es por instancia. Las dos cosas se resuelven al conectar Supabase.
+
 ## Datos
 
 Hoy la app usa **datos de prueba en memoria** (`src/data/seed/torre-algarrobo`): proyecto ficticio de planta baja y 8 pisos con 4 unidades por piso, con las mismas tipologías, precios y estados que el showroom estático del repositorio. Los leads quedan en memoria y se pierden al reiniciar.
