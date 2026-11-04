@@ -5,7 +5,9 @@ Demo de un showroom digital para mostrar a desarrolladoras y propietarios. Usa d
 - **Torre Algarrobo:** fachada con un piso por fila, planta de cada piso y ficha de cada departamento.
 - **Barrio Los Talas:** plano de 20 lotes con casas o lotes sin construir.
 
-Cada unidad muestra su estado (disponible, reservada o vendida), su precio de lista, un carrusel de imágenes y un plano de arquitecto: muros con espesor, puertas con arco de apertura, ventanas, mobiliario y medidas por ambiente. El botón «Ver plano grande» lo abre en pantalla completa. Las medidas son ficticias y coherentes con la superficie cubierta de cada modelo. Desde la ficha se puede pedir una visita, armar el mensaje de WhatsApp con un código de seguimiento o copiar un enlace directo (`#u-7a`, `#lote-3`).
+Cada unidad muestra su estado (disponible, reservada o vendida), su precio de lista, un carrusel de imágenes y un plano de arquitecto: muros con espesor, puertas con arco de apertura, ventanas, mobiliario y medidas por ambiente. El botón «Ver plano grande» lo abre en pantalla completa.
+
+La primera vista del carrusel es la **casa en 3D**, armada con los mismos datos del plano: muros de 2,60 m con sus huecos de puertas y ventanas, mobiliario, jardín, galería y techo a cuatro aguas (se puede sacar con «Ver por dentro»). Usa Three.js 0.128 desde jsDelivr; si no carga, el carrusel sigue funcionando con las fotos. Las medidas son ficticias y coherentes con la superficie cubierta de cada modelo. Desde la ficha se puede pedir una visita, armar el mensaje de WhatsApp con un código de seguimiento o copiar un enlace directo (`#u-7a`, `#lote-3`).
 
 El **modo desarrolladora** permite cambiar el estado y el precio de una unidad. Esos cambios se guardan solo en el navegador de quien los hace (`localStorage`). En una versión real, irían a una base de datos compartida.
 
