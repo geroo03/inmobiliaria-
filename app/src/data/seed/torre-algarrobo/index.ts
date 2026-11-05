@@ -15,6 +15,8 @@ import type {
   PublicUnit,
   Scene,
   SceneTransition,
+  TourScene,
+  TourSpot,
   Typology,
   UnitStatus,
 } from '@/types/domain';
@@ -76,6 +78,28 @@ const SPECS: Record<Letter, TypologySpec> = {
   },
 };
 
+/**
+ * Recorridos 360 (panorámicas ilustrativas). Las puertas se marcan sobre cada imagen en fracción
+ * de ancho y alto; `start` es hacia dónde se mira al entrar.
+ */
+const DOORS: Record<'a' | 'b' | 'c', { living: TourSpot; bedroom: TourSpot }> = {
+  a: { living: { u: 0.94, v: 0.48 }, bedroom: { u: 0.504, v: 0.47 } },
+  b: { living: { u: 0.185, v: 0.45 }, bedroom: { u: 0.504, v: 0.45 } },
+  c: { living: { u: 0.025, v: 0.5 }, bedroom: { u: 0.537, v: 0.48 } },
+};
+const living = (l: string, start: TourSpot, door: TourSpot): TourScene => ({
+  id: 'living', name: 'Living comedor', url: media(`tour360/${l}.webp`), start, links: [{ to: 'dormitorio', at: door }],
+});
+const bedroom = (l: string, start: TourSpot, door: TourSpot): TourScene => ({
+  id: 'dormitorio', name: 'Dormitorio', url: media(`tour360/${l}-dormitorio.webp`), start, links: [{ to: 'living', at: door }],
+});
+const TOURS: Record<Letter, TourScene[]> = {
+  A: [living('a', { u: 0.5, v: 0.5 }, DOORS.a.living), bedroom('a', { u: 0.161, v: 0.55 }, DOORS.a.bedroom)],
+  B: [living('b', { u: 0.53, v: 0.5 }, DOORS.b.living), bedroom('b', { u: 0.215, v: 0.55 }, DOORS.b.bedroom)],
+  C: [living('c', { u: 0.6, v: 0.5 }, DOORS.c.living), bedroom('c', { u: 0.805, v: 0.55 }, DOORS.c.bedroom)],
+  D: [{ id: 'ambiente', name: 'Ambiente único', url: media('tour360/d.webp'), start: { u: 0.5, v: 0.5 }, links: [] }],
+};
+
 const typologies: Typology[] = LETTERS.map((l) => {
   const s = SPECS[l];
   return {
@@ -88,7 +112,7 @@ const typologies: Typology[] = LETTERS.map((l) => {
     bedrooms: s.bedrooms,
     bathrooms: s.bathrooms,
     images: s.images,
-    tour360Url: media(`tour360/${l.toLowerCase()}.webp`),
+    tour360: TOURS[l],
   };
 });
 

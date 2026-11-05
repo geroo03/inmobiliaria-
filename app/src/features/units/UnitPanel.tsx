@@ -50,7 +50,7 @@ export function UnitPanel({ projectSlug, buildingName, unit, typology, floor, on
           </>
         )}
         <button type="button" onClick={onClose} aria-label="Cerrar ficha" className="pill absolute right-2 top-2 size-9 justify-center p-0"><Close className="size-5" /></button>
-        {typology.tour360Url && (
+        {typology.tour360.length > 0 && (
           <button type="button" onClick={() => setTour(true)} className="pill absolute bottom-2 right-2 text-xs">360° Recorrido</button>
         )}
       </div>
@@ -81,7 +81,7 @@ export function UnitPanel({ projectSlug, buildingName, unit, typology, floor, on
         ) : (
           <p className="rounded-xl bg-paper p-3 text-sm text-muted">Esta unidad no está a la venta. Mirá las disponibles en este u otros pisos.</p>
         )}
-        {tour && typology.tour360Url && <Tour360 src={mediaUrl(typology.tour360Url)} title={`Unidad ${unit.code} · ${typology.name}`} onClose={() => setTour(false)} />}
+        {tour && typology.tour360.length > 0 && <Tour360 scenes={typology.tour360} title={`Unidad ${unit.code} · ${typology.name}`} onClose={() => setTour(false)} />}
         <p className="text-[11px] leading-snug text-muted">Superficies, precios e imágenes ilustrativos, sujetos a cambios. Proyecto ficticio de demostración.</p>
       </div>
     </aside>

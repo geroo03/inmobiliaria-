@@ -108,8 +108,25 @@ export interface Typology {
   bedrooms: number;
   bathrooms: number;
   images: { url: string; caption: string }[];
-  /** Panorámica equirectangular (2:1) para el recorrido 360, o null si no hay. */
-  tour360Url: string | null;
+  /** Recorrido 360: ambientes con su panorámica; el primero es donde arranca. Vacío si no hay. */
+  tour360: TourScene[];
+}
+
+/** Punto sobre una panorámica, en fracción de la imagen (0–1 desde arriba a la izquierda). */
+export interface TourSpot {
+  u: number;
+  v: number;
+}
+
+export interface TourScene {
+  id: string;
+  name: string;
+  /** Panorámica equirectangular 2:1. */
+  url: string;
+  /** Hacia dónde mira al entrar. */
+  start: TourSpot;
+  /** Puertas a otros ambientes del mismo recorrido. */
+  links: { to: string; at: TourSpot }[];
 }
 
 /**
