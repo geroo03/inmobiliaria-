@@ -67,6 +67,8 @@ La foto de noche puede tener otro encuadre que la de día: cada una lleva sus pr
 
 **Interiores, amenities, planta y video de giro:** imágenes y video ilustrativos generados con IA (ElevenLabs: GPT Image para las fotos y Kling 3 Pro para el giro Frente → Esquina). La vuelta del giro es el mismo video invertido con ffmpeg. Las imágenes base que usa la IA están en `scripts/content/base/`.
 
+**Recorrido 360:** una panorámica equirectangular 2:1 por tipología (`public/media/torre-algarrobo/tour360`), generada con IA; los bordes izquierdo y derecho se funden para que no haya costura al dar la vuelta. El visor (`src/features/units/Tour360.tsx`) usa Three.js, que se carga recién al abrir el recorrido.
+
 **Renders base y planta:** `scripts/content/` genera, desde el modelo 3D del showroom estático (`../showroom/showroom.html`), las vistas base para la IA, sus transiciones en video y la planta tipo (render cenital y plano 2D con el mismo encuadre, con la máscara de cada unidad):
 
 ```bash

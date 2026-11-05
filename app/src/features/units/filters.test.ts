@@ -6,7 +6,7 @@ import type { UnitListItem, UnitStatus } from '@/types/domain';
 function item(code: string, level: number, status: UnitStatus, price: number | null, bedrooms: number, totalArea = 50): UnitListItem {
   return {
     unit: { id: code, floorId: `f${level}`, typologyId: 't', code, status, price, currency: 'USD', orientation: 'Norte', polygon: [], labelAnchor: [0, 0] },
-    typology: { id: 't', name: 'Tipología', totalArea, coveredArea: totalArea, uncoveredArea: 0, rooms: bedrooms + 1, bedrooms, bathrooms: 1, images: [] },
+    typology: { id: 't', name: 'Tipología', totalArea, coveredArea: totalArea, uncoveredArea: 0, rooms: bedrooms + 1, bedrooms, bathrooms: 1, images: [], tour360Url: null },
     floor: { id: `f${level}`, level, name: `${level}°` },
     building: { id: 'b', name: 'Torre' },
   };

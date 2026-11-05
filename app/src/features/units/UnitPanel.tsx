@@ -5,6 +5,7 @@ import type { Floor, PublicUnit, Typology } from '@/types/domain';
 import { mediaUrl } from '@/lib/media';
 import { ChevronLeft, ChevronRight, Close } from '@/components/icons';
 import { LeadForm } from '@/features/leads/LeadForm';
+import { Tour360 } from './Tour360';
 import { STATUS, isOpenForSale } from './status';
 import { formatArea, formatPrice, formatRooms } from './format';
 
@@ -20,6 +21,7 @@ interface Props {
 export function UnitPanel({ projectSlug, buildingName, unit, typology, floor, onClose }: Props) {
   const [img, setImg] = useState(0);
   const [asking, setAsking] = useState(false);
+  const [tour, setTour] = useState(false);
   const st = STATUS[unit.status];
   const images = typology.images;
   const rows: [string, string][] = [
@@ -48,6 +50,9 @@ export function UnitPanel({ projectSlug, buildingName, unit, typology, floor, on
           </>
         )}
         <button type="button" onClick={onClose} aria-label="Cerrar ficha" className="pill absolute right-2 top-2 size-9 justify-center p-0"><Close className="size-5" /></button>
+        {typology.tour360Url && (
+          <button type="button" onClick={() => setTour(true)} className="pill absolute bottom-2 right-2 text-xs">360° Recorrido</button>
+        )}
       </div>
       <div className="grid gap-4 overflow-y-auto p-5">
         <div className="flex items-start justify-between gap-3">
@@ -76,6 +81,7 @@ export function UnitPanel({ projectSlug, buildingName, unit, typology, floor, on
         ) : (
           <p className="rounded-xl bg-paper p-3 text-sm text-muted">Esta unidad no está a la venta. Mirá las disponibles en este u otros pisos.</p>
         )}
+        {tour && typology.tour360Url && <Tour360 src={mediaUrl(typology.tour360Url)} title={`Unidad ${unit.code} · ${typology.name}`} onClose={() => setTour(false)} />}
         <p className="text-[11px] leading-snug text-muted">Superficies, precios e imágenes ilustrativos, sujetos a cambios. Proyecto ficticio de demostración.</p>
       </div>
     </aside>

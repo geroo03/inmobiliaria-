@@ -88,6 +88,7 @@ const typologies: Typology[] = LETTERS.map((l) => {
     bedrooms: s.bedrooms,
     bathrooms: s.bathrooms,
     images: s.images,
+    tour360Url: media(`tour360/${l.toLowerCase()}.webp`),
   };
 });
 

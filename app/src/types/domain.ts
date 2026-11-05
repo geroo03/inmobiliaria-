@@ -108,6 +108,8 @@ export interface Typology {
   bedrooms: number;
   bathrooms: number;
   images: { url: string; caption: string }[];
+  /** Panorámica equirectangular (2:1) para el recorrido 360, o null si no hay. */
+  tour360Url: string | null;
 }
 
 /**
